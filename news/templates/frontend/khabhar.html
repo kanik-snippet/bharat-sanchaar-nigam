@@ -1,0 +1,350 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}News Feed{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="{% static 'css/news.css' %}" />
+
+<div class="container-fluid px-4 mt-4">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h3 class="pod-heading" style="margin-top: 12px;">{% trans 'News Feed'%}</h3>
+        </div>
+        
+        <!-- News Toggle Buttons -->
+        <div class="col-12 mb-4">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline news-toggle-btn active" data-toggle="nearby">
+                    Nearby News
+                </button>
+                <button type="button" class="btn btn-outline news-toggle-btn" data-toggle="resident">
+                    Resident News
+                </button>
+                {% if user.role != 'janta' %}
+                <button type="button" class="btn btn-outline news-toggle-btn" data-toggle="myposts">
+                    My Posts
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- News Content Sections -->
+        <div class="col-12">
+            <!-- Nearby News Section -->
+            <div class="news-section" id="nearby-news-section">
+                <div class="row" id="nearby-news-container">
+                    <!-- Nearby news will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Resident News Section -->
+            <div class="news-section d-none" id="resident-news-section">
+                <div class="row" id="resident-news-container">
+                    <!-- Resident news will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- My Posts Section (only for non-janta users) -->
+            {% if user.role != 'janta' %}
+            <div class="news-section d-none" id="myposts-section">
+                <div class="row" id="myposts-container">
+                    <!-- User's posts will be loaded here -->
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- Post Detail Modal -->
+<div class="modal fade" id="postDetailModal" tabindex="-1" aria-labelledby="postDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body p-0 d-flex">
+          <!-- Left Media Column (40%) -->
+          <div class="w-40" style="margin: 10px;">
+            <div id="modalMediaContainer" style="height: 100%; min-height: 400px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+              <!-- Media content appears here -->
+              <div class="text-muted">Media Preview</div>
+            </div>
+          </div>
+  
+          <!-- Right Content Column (60%) -->
+          <div class="w-60 p-3 d-flex flex-column">
+            <!-- Top Right: Post By -->
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="text-muted">Post By: <span id="modalCreatorName" class="fw-bold ms-1"></span></div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+  
+            <!-- Center: Main Content -->
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+              <p id="modalContent" class="text-center"></p>
+            </div>
+  
+            <!-- Bottom Left: Created At -->
+            <div class="mt-auto">
+              <small class="text-muted">
+                <i class="bi bi-clock me-1"></i>
+                <span id="modalDate"></span>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('access_token');
+        const userRole = '{{ user.role }}';
+    
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+    
+        // -------------------- Fetch Resident & User Posts --------------------
+        fetch('/news/my-news-feed', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.assigned_news) {
+                renderNews(data.assigned_news, 'nearby-news-container');
+            }
+    
+            if (data.resident_news) {
+                renderNews(data.resident_news, 'resident-news-container');
+            }
+    
+            if (userRole !== 'janta') {
+                if (data.user_posts) {
+                    renderNews(data.user_posts, 'myposts-container');
+                } else {
+                    document.getElementById('myposts-container').innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <p class="text-muted">You haven't created any posts yet</p>
+                        </div>
+                    `;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching news:', error);
+            const errorHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-danger">Error loading news. Please try again later.</p>
+                </div>
+            `;
+            document.getElementById('nearby-news-container').innerHTML = errorHTML;
+            document.getElementById('resident-news-container').innerHTML = errorHTML;
+            if (userRole !== 'janta') {
+                document.getElementById('myposts-container').innerHTML = errorHTML;
+            }
+        });
+    
+        // -------------------- Fetch Nearby News Using Location --------------------
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+    
+                try {
+                    // Reverse geocode using Nominatim (OpenStreetMap)
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                    const locationData = await res.json();
+    
+                    const cityVillage = locationData.address.city || locationData.address.town || locationData.address.village || '';
+                    const district = locationData.address.county || locationData.address.state_district || '';
+    
+                    console.log('Detected City/Village:', cityVillage);
+                    console.log('Detected District:', district);
+    
+                    // Now send to Django API
+                    const nearbyRes = await fetch('/news/filter-by-location/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            city_village: cityVillage,
+                            district: district
+                        })
+                    });
+    
+                    const nearbyData = await nearbyRes.json();
+    
+                    if (nearbyData.news && nearbyData.news.length > 0) {
+                        renderNews(nearbyData.news, 'nearby-news-container');
+                    } else {
+                        document.getElementById('nearby-news-container').innerHTML = `
+                            <div class="col-12 text-center py-5">
+                                <p class="text-muted">No nearby news found</p>
+                            </div>
+                        `;
+                    }
+                } catch (err) {
+                    console.error('Error fetching nearby news:', err);
+                }
+    
+            }, (error) => {
+                console.warn('Geolocation failed:', error);
+            });
+        } else {
+            console.warn('Geolocation not supported by this browser');
+        }
+    
+        // -------------------- Toggle Sections --------------------
+        document.querySelectorAll('.news-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.news-toggle-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.news-section').forEach(section => section.classList.add('d-none'));
+                const toggleType = this.getAttribute('data-toggle');
+                const sectionId = toggleType === 'myposts' ? 'myposts-section' : `${toggleType}-news-section`;
+                document.getElementById(sectionId).classList.remove('d-none');
+            });
+        });
+    
+        // -------------------- Render Function --------------------
+        function renderNews(newsItems, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+    
+            if (!newsItems || newsItems.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No news found</p>
+                    </div>
+                `;
+                return;
+            }
+    
+            newsItems.forEach(news => {
+                const creatorName = news.creator_name || 'Anonymous';
+                const contentPreview = news.content_preview || news.content || 'No content preview available';
+                const dateSubmitted = news.date_submitted || news.created_at || 'Date not available';
+                const newsTypeBadge = news.news_type === 'photo' ?
+                    '<span class="badge bg-primary me-2">Photo</span>' :
+                    '<span class="badge bg-secondary me-2">Text</span>';
+    
+                    const encodedNews = JSON.stringify(news).replace(/"/g, '&quot;'); // encode to avoid breaking HTML
+
+const newsCard = `
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 news-card" data-news="${encodedNews}">
+                            ${news.photo || news.photo_url ? `<img src="${news.photo || news.photo_url}" class="card-img-top" alt="News Photo" style="height: 200px; object-fit: cover;">` : ''}
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        ${newsTypeBadge}
+                                        <span class="badge bg-info">${news.creator_role || userRole}</span>
+                                    </div>
+                                    <small class="text-muted">${new Date(dateSubmitted).toLocaleString()}</small>
+                                </div>
+                                <h6 class="card-title">${creatorName}</h6>
+                                <p class="card-text">${contentPreview}</p>
+                                ${news.has_media && !news.photo_url ? '<div class="text-center mt-2"><i class="bi bi-image text-primary"></i></div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+    
+                container.innerHTML += newsCard;
+            });
+        }
+    });
+        // ------------- Post Detail Modal -------------
+        document.addEventListener('click', function (e) {
+        const card = e.target.closest('.news-card');
+        if (!card) return;
+
+        const newsData = JSON.parse(card.getAttribute('data-news'));
+        const modal = new bootstrap.Modal(document.getElementById('postDetailModal'));
+        const modalBody = document.querySelector('#postDetailModal .modal-body');
+
+        // Left: Image or video
+        let mediaHTML = '';
+        if (newsData.photo || newsData.photo_url) {
+            mediaHTML = `<img src="${newsData.photo || newsData.photo_url}" alt="Post Media" class="img-fluid rounded">`;
+        } else if (newsData.video_url) {
+            mediaHTML = `<video controls class="img-fluid rounded"><source src="${newsData.video_url}" type="video/mp4"></video>`;
+        } else {
+            mediaHTML = `<div class="text-muted">No media available</div>`;
+        }
+
+        const detailHTML = `
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    ${mediaHTML}
+                </div>
+                <div class="col-md-7">
+                    <h5>${newsData.creator_name || 'Anonymous'}</h5>
+                    <p class="text-muted mb-1">${newsData.creator_role || ''}</p>
+                    <p>${newsData.content || newsData.content_preview || 'No content available'}</p>
+                    <p class="text-muted"><i class="bi bi-clock"></i> ${new Date(newsData.date_submitted || newsData.created_at).toLocaleString()}</p>
+                </div>
+            </div>
+        `;
+        modalBody.innerHTML = detailHTML;
+        modal.show();
+    });
+
+    </script>
+    
+    
+
+<style>
+    /* #postDetailModal img, 
+#postDetailModal video {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+}    */
+.news-toggle-btn {
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+.news-toggle-btn.active {
+    background-color: #f04438;
+    color: white;
+    border-color: #f04438;
+}
+
+.news-section {
+    transition: all 0.3s ease;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.card-title {
+    color: #333;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.badge {
+    font-weight: 500;
+}
+</style>
+{% endblock %}

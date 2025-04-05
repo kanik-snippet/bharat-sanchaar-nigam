@@ -1,0 +1,369 @@
+body {
+    font-family:'Inter', sans-serif !important;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header Button */
+#addNewPodButton {
+    background: #F04438;
+    font-weight: bold;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+}
+
+/* Custom Cards */
+.custom-card {
+    border: 1px solid #EAECF0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.custom-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.icon1, .icon2, .icon3 {
+    height: 45px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.icon1 {
+    background-color: #fcf1f2;
+    color: #f83649;
+}
+
+.icon2 {
+    background-color: #f1f6fc;
+    color: #1e73e8;
+}
+
+.icon3 {
+    background-color: #f7f9fc;
+    color: #28a745;
+}
+.datatable{
+  overflow-x: auto; 
+  border:1px solid #0001; 
+  border-radius:10px
+}
+
+/* Table Styling */
+.table {
+  width: 100%; /* Ensure the table takes the full width */
+  min-width: 600px; /* Set a minimum width to allow scrolling if the content is larger */
+  border-collapse: collapse;
+}
+
+.custom-table th, .custom-table td {
+  white-space: nowrap; /* Prevent wrapping of text in cells */
+  padding: 10px;
+  text-align: left;
+  border: none;
+}
+
+div[style*="overflow-x"] {
+  margin-top: 10px; /* Add spacing around the scrollable area */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile devices */
+}
+
+/* Responsive Sidebar Contacts */
+.contacts {
+    max-height: 465px;
+    overflow-y: auto;
+    
+}
+.contectsec{
+  border-left: 1px dashed #0001;
+  margin-top: -32px; /* Adjust this value as needed */
+
+}
+
+.contacts::-webkit-scrollbar {
+    width: 6px;
+}
+
+.contacts::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.contacts::-webkit-scrollbar-track {
+    background-color: #f8f9fa;
+}
+
+body {
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    background-color: #fff;
+    padding: 10px 0 0 10px;
+  }
+
+  .name {
+    font-size: 30px;
+    font-weight: 600;
+  }
+
+  .emailDisplay {
+    font-size: 16px;
+    font-weight: 400;
+    color: #475467;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #182230;
+  }
+
+  .card-body {
+    padding: 2px 15px;
+  }
+
+  .card_col {
+    position: relative;
+  }
+  
+  .custom-card {
+    position: relative;
+    border: 1px solid #EAECF0;
+    border-radius: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0;
+  } 
+
+  .card { 
+    padding-top: 20px;
+    margin-bottom: 10px;
+    width: 100%;
+  }    
+
+  .counts {
+    font-size: 36px;
+    font-weight: 600;
+    color: #182230;
+  }
+
+  .updates {
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+    color: #667085;
+  }
+
+  .custom-card .icon1,
+  .custom-card .icon2,
+  .custom-card .icon3 {
+    position: relative;
+    background-color: #fcf1f2;
+    height: 45px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25%;
+  }
+
+  .icon1 img,
+  .icon2 i,
+  .icon3 i {
+    font-size: 27px;
+    color: #f83649;
+  }
+  .contact-item{
+    border: 1px solid #0001;
+    border-radius: .5vw;
+  }
+  .contact-initials{
+    width:2vw; 
+    height:2vw;
+    display: flex;
+    text-align: center;
+    align-items: center; 
+    justify-content: center;
+    border-radius:50%;
+    color: #fff;
+    font-weight: bold;
+  }
+  .contact-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+.contact-details {
+  min-width: 0; /* Ensures the container respects overflow rules */
+}
+
+.contact-info {
+  max-width: 100%; /* Ensures the contact info doesn't overflow its container */
+}
+.contact-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  display: inline-flex; 
+  justify-content: center;
+  align-items: center;
+  border: 3px solid white; 
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.1); 
+  margin-right: -5px; 
+}
+  /* Remaining table, sidebar, modal, and other styling omitted for brevity */
+  .modal-sm {
+    max-width: 400px !important;
+  }
+  .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    justify-content: center;
+    position: relative;
+    padding-bottom: 0;
+  }
+  
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .modal-subtitle {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: center;
+  }
+  
+  .btn-close {
+    margin: 0;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .form-control {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .d-flex.align-items-center.justify-content-between {
+    gap: 0.5rem; /* Adjust gap between label and toggle */
+  }
+  
+  .form-check-input {
+    width: 2rem;
+    height: 1rem;
+    border-radius: 1rem;
+    background-color: #ccc;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    outline: none;
+    border:none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-check-input:checked {
+    background-color: #28a745;
+    border:none;
+  }
+  
+  .form-check-input:before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.8rem;
+    height: 0.8rem;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+  }
+  
+  .form-check-input:checked:before {
+    transform: translateX(1rem);
+  }
+  
+  .btn-secondary, .btn-danger {
+    width: 45%;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    border-radius: 8px;
+  }
+  
+  .btn-danger {
+    background-color: #f44336;
+    border-color: #f44336;
+  }
+  .not-assigned {
+    color: #F04438;
+    font-weight: bold;
+  }
+  .status {
+    border: 1px solid lightgray; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 2px; /* Inner spacing */
+    margin-top: 25px; /* Adds top margin to the button */
+  }
+  
+  .status-active {
+    color: green;
+  }
+  
+  .status-danger {
+    color: #667085;
+  }
+
+  .bi-box-arrow-up-right{
+    color: #475467;
+    font-size: 15px;
+  }
+  .table thead th {
+    background-color: #F04438;
+    color: white;
+  }
+  .i-button {
+    color: #f04438;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .i-button:hover {
+    color: #d03b32; /* Slightly darker shade on hover */
+    text-decoration: underline; /* Optional underline effect on hover */
+  }
+  
+  @media (max-width: 992px) {
+    .contacts-sidebar {
+      margin-top: 60px; /* Adjust the value as needed */
+    }
+  }
+  
+  

@@ -1,0 +1,152 @@
+/* General body styling */
+            /* General body styling */
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #f8f9fa;
+                margin: 0;
+                padding: 0;
+            }
+            .pod-heading {
+                font-weight: bold;
+            }
+            /* Heading and text styles */
+            .emergency-log {
+                font-size: 30px;
+                font-weight: 600;
+                color: #182230;
+            }
+    
+            .pod-mgt {
+                font-size: 16px;
+                font-weight: 400;
+                color: #475467;
+                line-height: 24px;
+            }
+    
+            /* Table styling */
+            
+
+    
+            .table th, .table td {
+                vertical-align: middle;
+                text-align: left;
+            }
+            .table th {
+                font-size: 15px;
+                font-weight: bold;
+
+                background-color: #f04438;
+                color:white;
+                border: none; 
+
+            }
+            .table thead {
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+
+    
+            .table td {
+                font-size: 14px;
+                font-weight: 400;
+                
+            }
+           
+            .table tr:last-child td {
+                border-bottom: none; /* Removes the bottom border of the last row */
+            }
+    
+            .table td:first-child,
+            .table th:first-child {
+                padding-left: 20px;
+            }
+    
+            /* Button styles */
+            .watch-video-btn {
+                background-color: #F04438 !important;
+                color: white !important;
+                border: none;
+            }
+    
+            /* Pagination styling */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+                flex-wrap: wrap;
+            }
+            .page-btn {
+                border-radius: 50%;
+                margin: 0 5px;
+                padding: 8px 12px;
+                cursor: pointer;
+                border: none;
+            }
+    
+            .page-btn.active {
+                background-color: #F04438;
+                color: #fff;
+                font-weight: bold;
+            }
+    
+            .page-btn:hover {
+                background-color: #F04438;
+                color: white;
+                font-weight: bold;
+            }
+            .table td{
+                color: #475467 !important;
+                border-top: none;
+            }
+        
+        /* Toast container z-index adjustment */
+        .toast-container {
+            z-index: 1050;
+        }
+        .overflow-auto {
+            overflow-x: auto; /* Enables horizontal scrolling */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling for touch devices */
+        }
+        .table {
+            min-width: 100%; /* Ensures the table takes up the available space */
+        }
+        
+        /* Responsive styles */
+
+        @media only screen and (min-width: 320px) and (max-width: 425px) {
+            .container-fluid {
+                padding: 0 !important;
+            }
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            border-radius:10px
+        }
+        
+        .filter-section input,
+        .filter-section select,
+        .filter-section button {
+            margin-right: 10px;
+        }
+        
+        /* Remove border on focus for inputs and select */
+        .filter-section input:focus,
+        .filter-section select:focus {
+            border: none;
+            box-shadow: none;
+            /* Optional: Remove any shadow on focus */
+        }
+        
+        .input-group-text {
+            background-color: transparent;
+            border: none;
+        }
+        
+        /* Optional: Add styling for calendar icon */
+        .input-group .input-group-text i {
+            font-size: 18px;
+        }
+        
+        .input-group input {
+            pointer-events: none;
+        }

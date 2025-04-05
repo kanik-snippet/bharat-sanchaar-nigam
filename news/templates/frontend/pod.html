@@ -1,0 +1,536 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}ICE Buttons Management{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="{% static 'css/pod.css'%}">
+
+<div class="container-fluid px-4 mt-4">
+    <div class="row">
+        <!-- Heading Section -->
+        <div class="col-12 mb-4">
+            <h3 class="pod-heading" style="margin-top: 12px;">{% trans 'Button Management'%}</h3>
+            <p class="text-muted">{% trans 'Button management description will be written here'%}</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="col-12 mb-4 mt-3">
+            <form id="filterForm" class="row g-3 bg-white border border-1 rounded " style="padding-bottom:12px">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <input type="text" id="searchPod" class="form-control border-0" placeholder="{% trans 'Search by Button Name' %}">
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-2">
+                    <div class="input-container position-relative">
+                        <input 
+                            type="text" 
+                            id="startDateTime" 
+                            class="form-control border-0 pe-5"  
+                            placeholder="{% trans 'Start Date & Time'%}"
+                        />
+                        <i class="fa-solid fa-calendar-days position-absolute top-50 end-0 translate-middle-y pe-3" style="color: grey; cursor: pointer; transition: color 0.3s ease;"
+                        onmouseover="this.style.color='#555';"
+                        onmouseout="this.style.color='grey';"></i>
+                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-6 col-lg-2">
+                    <div class="input-container position-relative">
+                        <input 
+                            type="text" 
+                            id="endDateTime" 
+                            class="form-control border-0 pe-5"  
+                            placeholder="{% trans 'End Date & Time'%}"
+                        />
+                        <i class="fa-solid fa-calendar-days position-absolute top-50 end-0 translate-middle-y pe-3" style="color: grey; cursor: pointer; transition: color 0.3s ease;"
+                        onmouseover="this.style.color='#555';"
+                        onmouseout="this.style.color='grey';"></i>
+                    </div>
+                </div>
+                
+                  
+                <!-- Status Filter with Same Style as Other Fields -->
+                <div class="col-sm-12 col-md-6 col-lg-2">
+                <select id="statusFilter" class="form-control border-0">
+                    <option value="">{% trans 'Status All'%}</option>
+                    <option value="Active">{% trans 'Active'%}</option>
+                    <option value="Inactive">{% trans 'Inactive'%}</option>
+                </select>
+                </div>
+
+                <!-- Buttons with reduced gap -->
+                <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center gap-2"> <!-- Use 'gap-2' to reduce space between buttons -->
+                    <button type="button" id="resetFilter" class="btn btn-secondary">{% trans 'Reset'%}</button>
+                    <button type="button" id="applyFilter" onclick="applyFilters()" class="btn btn-primary">{% trans 'Apply'%}</button>
+                </div>
+            </form>
+        </div>
+        
+
+        <!-- Table Section -->
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table custom-table">
+                    <thead >
+                        <tr>
+                            <th>{% trans 'Button Name'%}</th>
+                            <th>{% trans 'Contacts'%}</th>
+                            <th>{% trans 'Status'%}</th>
+                            <th>{% trans 'Control'%}</th>
+                            <th>{% trans 'MAC Address'%}</th>
+                            <th>{% trans 'Link Date'%}</th>
+                            <th>{% trans 'Actions'%}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="podTableBody">
+                        <!-- Dynamic rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans 'Confirm Deletion'%}</h5>
+            </div>
+            <div class="modal-body">
+                {% trans 'Are you sure you want to delete this device?'%}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel'%}</button>
+                <button type="button" class="btn btn-del-device" id="confirmDeleteBtn">{% trans 'Delete'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Modal -->
+<div class="modal fade" id="successErrorModal" tabindex="-1" aria-labelledby="successErrorModalLabel" aria-hidden="true"data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans 'Status'%}</h5>
+            </div>
+            <div class="modal-body" id="modalMessage"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success-close" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    const accessToken = localStorage.getItem('access_token');
+    const searchInput = document.getElementById('searchPod');
+
+    let allDevices = [];  // This will hold all the data fetched initially
+
+    if (!accessToken) {
+        window.location.href = '/news/login';
+    } else {
+        fetch('/api/user-device-list/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        window.location.href = '/news/login';
+                    } else {
+                        throw new Error('Failed to fetch data');
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+                allDevices = data.devices || [];  // Store fetched data for filtering
+                updateTable(allDevices);          // Display all data initially
+
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Update table function to render devices
+    function updateTable(devices) {
+        const tableBody = document.getElementById('podTableBody');
+        tableBody.innerHTML = '';
+        if (devices.length === 0) {
+            const row = document.createElement('tr');  // Create a new table row
+            
+            const td = document.createElement('td');
+            td.colSpan = 7;
+            td.classList.add( "text-center")
+            // Create an image element
+            const img = document.createElement('img');
+            img.src = '{% static 'images/no_data.jpg' %}'; // Replace with your image source
+            img.alt = 'No Data Found'; // Optional alt text for the image
+            img.style.width = '30%'; // Optional: make image width 100% of the td (you can adjust this)
+            // Append the image to the td
+                // Create a paragraph element for the message
+            const p = document.createElement('p');
+            p.classList.add('text-muted', 'mt-3'); // Add classes for muted text and margin
+            p.textContent = 'No device data found'; // The message text
+            td.appendChild(img);
+            td.appendChild(p);
+            
+            // Append the td to the row
+            row.appendChild(td);
+            
+            // Append the row to the tbody with id 'device-tbody'
+            document.getElementById('podTableBody').appendChild(row);
+            return;
+        }
+        devices.forEach(device => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-device-id', device.id);
+
+            // Device Name & Info
+// Device Name & Info
+const deviceNameCell = document.createElement('td');
+const trimmedDescription = device.description.length > 50 ? device.description.substring(0, 50) + '...' : device.description;
+
+deviceNameCell.innerHTML = `
+    <div class="pod-info d-flex align-items-center">
+        <div class="me-3">
+            <img src="{% static 'images/bsnk.png' %}" alt="Device Image" width="50" height="50">
+        </div>  
+        <div>
+            ${device.device_name}<br>
+            <small title="${device.description}">${trimmedDescription}</small> <!-- Add title attribute here -->
+        </div>
+    </div>
+`;
+
+
+            // Other table cells as per original data
+            const contactsCell = document.createElement('td');
+            contactsCell.innerText = `${device.total_contacts} Contacts`;
+
+            const statusCell = document.createElement('td');
+            const statusClass = device.device_status === 'Active' ? 'status-active' : 'status-inactive';
+            statusCell.innerHTML = `<span class="${statusClass}">● ${device.device_status}</span>`;
+
+            // Toggle Button (icon change based on status)
+            const toggleCell = document.createElement('td');
+            const toggleIconClass = device.device_status === 'Active' ? 'bi-toggle-on' : 'bi-toggle-off';
+            toggleCell.innerHTML = `
+        <i class="bi ${toggleIconClass} toggle-btn" data-status="${device.device_status}" 
+        onclick="toggleDeviceStatus(this)">
+        </i>
+    `;
+
+            const macAddressCell = document.createElement('td');
+            macAddressCell.innerText = device.mac_address;
+
+
+            // Link Date (Formatted)
+// Link Date (Formatted)
+            const linkDateCell = document.createElement('td');
+            const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            linkDateCell.innerText = new Date(device.created_at).toLocaleString('en-US', options);
+            
+
+
+            // Actions (View & Delete icons)
+            const actionsCell = document.createElement('td');
+            actionsCell.innerHTML = `
+    <!-- View button with device ID -->
+    <a href="#" class="view-btn" data-device-id="${device.id}" style="text-decoration: none; margin-left:10px; margin-right: 10px;">
+        <i class="bi bi-box-arrow-up-right icon-remot"></i> 
+    </a>
+    <a href="#" class="delete-btn" data-device-id="${device.id}" style="text-decoration: none;">
+        <i class="bi bi-trash icon"></i>
+    </a>
+`;
+
+
+            // Append cells to the row
+            row.appendChild(deviceNameCell);
+            row.appendChild(contactsCell);
+            row.appendChild(statusCell);
+            row.appendChild(toggleCell);
+            row.appendChild(macAddressCell);
+            row.appendChild(linkDateCell);
+            row.appendChild(actionsCell);
+            tableBody.appendChild(row);
+        });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                const deviceId = event.target.closest('a').getAttribute('data-device-id');
+
+                // Show confirmation modal
+                $('#confirmDeleteModal').modal('show');
+
+                // Set the device ID in the modal's delete button
+                const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+                confirmDeleteBtn.setAttribute('data-device-id', deviceId);
+            });
+        });
+
+        // Inside updateTable function, move the event listener for confirm delete button
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            const deviceId = document.getElementById('confirmDeleteBtn').getAttribute('data-device-id');
+            deleteDevice(deviceId);
+
+            // Close the modal after deletion
+            $('#confirmDeleteModal').modal('hide');
+        });
+
+        // Add event listener for "View" button
+        document.querySelectorAll('.view-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                const deviceId = event.target.closest('a').getAttribute('data-device-id');
+
+                // Redirect to pod_detail page with the device ID in the URL
+                window.location.href = `/ice_detail/${deviceId}/`; // Using Django URL pattern
+            });
+        });
+    }
+
+    // Delete function with success/error messages inside the modal
+    function deleteDevice(deviceId) {
+        const accessToken = localStorage.getItem('access_token');
+
+        const url = `/api/device/${deviceId}/delete/`;
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        window.location.href = '/news/login';
+                    } else {
+                        throw new Error('Failed to delete device');
+                    }
+                }
+
+                if (response.status === 204) {
+                    return;
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                const row = document.querySelector(`tr[data-device-id="${deviceId}"]`);
+                if (row) row.remove();
+
+                showModalMessage(`{% trans 'Device deleted successfully!'%}`, 'success');
+            })
+            .catch(error => {
+                console.error('Error deleting device:', error);
+                showModalMessage(`{% trans 'There was an error deleting the device.'%}`, 'error');
+            });
+    }
+
+    // Function to display success/error messages inside the modal
+    function showModalMessage(message, type) {
+        const messageContainer = document.getElementById('modalMessage');
+
+        // Clear any previous messages before showing the new one
+        messageContainer.textContent = '';
+
+        // Set the new message and style based on type (success or error)
+        messageContainer.textContent = message;
+        messageContainer.className = type === 'success' ? 'text-dark' : 'text-dark';
+        messageContainer.style.padding = '15px';
+
+        // Show the modal with the ID 'successErrorModal'
+        $('#successErrorModal').modal('show');
+    }
+    function toggleDeviceStatus(iconElement) {
+        const currentStatus = iconElement.getAttribute('data-status');
+        const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+    
+        // Update the icon and status
+        iconElement.classList.toggle('bi-toggle-on', newStatus === 'Active');
+        iconElement.classList.toggle('bi-toggle-off', newStatus === 'Inactive');
+        iconElement.setAttribute('data-status', newStatus);
+    
+        // Add animation
+        iconElement.classList.add('toggle-animation');
+        setTimeout(() => {
+            iconElement.classList.remove('toggle-animation');
+        }, 300); // Adjust to match your animation duration
+    
+        // Update device status in the backend
+        const accessToken = localStorage.getItem('access_token');
+        const deviceId = iconElement.closest('tr').getAttribute('data-device-id');
+    
+        const url = `/api/device/toggle-status/${deviceId}/`;
+    
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ device_status: newStatus })
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('access_token');
+                    window.location.href = 'frontend:login';
+                } else {
+                    throw new Error('Failed to toggle device status');
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Update the status in the table
+            const row = document.querySelector(`tr[data-device-id="${deviceId}"]`);
+            if (row) {
+                const statusCell = row.querySelector('td:nth-child(3) span');
+                const statusClass = newStatus === 'Active' ? 'status-active' : 'status-inactive';
+                statusCell.className = statusClass;
+                statusCell.textContent = `● ${newStatus}`;
+            }
+    
+            // Show success message in the modal
+            showModalMessage(`{% trans 'Device status changed to'%} ${newStatus}`, 'success');
+        })
+        .catch(error => {
+            console.error('Error updating device status:', error);
+            // Show error message in the modal
+            showModalMessage('There was an error updating the device status.', 'error');
+        });
+    }
+    
+// Modify the applyFilters function to include time
+function applyFilters() {
+    const searchTerm = document.getElementById("searchPod").value.trim().toLowerCase();
+    const startDateTime = document.getElementById("startDateTime").value
+        ? new Date(document.getElementById("startDateTime").value)
+        : null;
+    const endDateTime = document.getElementById("endDateTime").value
+        ? new Date(document.getElementById("endDateTime").value)
+        : null;
+    const status = document.getElementById("statusFilter").value;
+
+    const filteredDevices = allDevices.filter((device) => {
+        const matchesName = device.device_name.toLowerCase().includes(searchTerm.toLowerCase());
+        const deviceDateTime = new Date(device.created_at);
+
+        const matchesStartDateTime = startDateTime ? deviceDateTime >= startDateTime : true;
+        const matchesEndDateTime = endDateTime ? deviceDateTime <= endDateTime : true;
+        const matchesStatus = status ? device.device_status === status : true;
+
+        return matchesName && matchesStartDateTime && matchesEndDateTime && matchesStatus;
+    });
+
+    updateTable(filteredDevices);
+}
+
+document.getElementById("resetFilter").addEventListener("click", () => {
+    document.getElementById("searchPod").value = "";
+    document.getElementById("startDateTime").value = "";
+    document.getElementById("endDateTime").value = "";
+    document.getElementById("statusFilter").value = "";
+    updateTable(allDevices);
+});
+
+    document.getElementById("searchPod").addEventListener("input", applyFilters);
+    document.getElementById("startDateTime").addEventListener("change", applyFilters);
+    document.getElementById("endDateTime").addEventListener("change", applyFilters);
+    document.getElementById("statusFilter").addEventListener("change", applyFilters);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const startInput = document.getElementById('startDateTime');
+    const endInput = document.getElementById('endDateTime');
+    
+    if (!startInput || !endInput) return;
+
+    const commonConfig = {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minuteIncrement: 1,
+        maxDate: "today",
+        disableMobile: true,
+        placeholder: "",
+        onReady: function(_, __, instance) {
+            // Get placeholder specific to each instance
+            const placeholder = instance.element.dataset.placeholder || 
+                              instance.element.getAttribute('placeholder') || 
+                              'Select Date & Time';
+            instance.element.setAttribute('placeholder', placeholder);
+            instance.element.style.color = '#6b7280';
+        }
+    };
+
+    const startDateTimePicker = flatpickr("#startDateTime", {
+        ...commonConfig,
+        onChange: function(selectedDates) {
+            endDateTimePicker.set("minDate", selectedDates[0]);
+        }
+    });
+
+    const endDateTimePicker = flatpickr("#endDateTime", {
+        ...commonConfig,
+        onChange: function(selectedDates) {
+            startDateTimePicker.set("maxDate", selectedDates[0]);
+        }
+    });
+
+    // Mobile fallback
+    if(/Mobi|Android/i.test(navigator.userAgent)) {
+        [startInput, endInput].forEach(input => {
+            if (!input.value) {
+                const placeholder = input.dataset.placeholder || 
+                                  input.getAttribute('placeholder') || 
+                                  'Select Date';
+                input.setAttribute('placeholder', placeholder);
+            }
+        });
+    }
+});
+// Add Event Listeners for Calendar Icons
+document.querySelectorAll('.fa-calendar-days').forEach(icon => {
+    icon.addEventListener('click', function () {
+        const associatedInputId = this.previousElementSibling.id; // Get the ID of the input field
+        document.getElementById(associatedInputId).focus(); // Trigger Flatpickr by focusing the input
+    });
+});
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if the URL contains ?deleted=true
+        const urlParams = new URLSearchParams(window.location.search);
+        const deleted = urlParams.get('deleted');
+
+        if (deleted === 'true') {
+            // Show the success modal
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        }
+    });
+</script>
+
+
+{% endblock %}

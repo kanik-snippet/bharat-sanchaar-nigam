@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Latest Updates{% endblock %}
+
+{% block content %}
+<h1>Latest Updates</h1>
+<ul id="news-container"></ul>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/news-list/')  // Your API Endpoint
+    .then(response => response.json())
+    .then(data => {
+        let newsContainer = document.getElementById("news-container");
+        data.forEach(news => {
+            let li = document.createElement("li");
+            li.innerHTML = `<a href="/news/${news.id}/"><strong>${news.title}</strong></a> - Posted by ${news.role}`;
+            newsContainer.appendChild(li);
+        });
+    })
+    .catch(error => console.error("Error fetching news:", error));
+});
+</script>
+{% endblock %}

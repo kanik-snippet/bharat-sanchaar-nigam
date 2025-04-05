@@ -1,0 +1,168 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Add New Button{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4" style="color: #f04438;">Add New Button</h3>
+                    <form id="addDeviceForm" method="POST" action="{% url 'customadmin:add_user_device' %}" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Email Field with Searchable Dropdown -->
+                        <div class="form-group mb-3">
+                            <label for="id_email">{{ form.email.label }}<span style="color:red;">*</span></label>
+                            <select id="id_email" name="email" class="form-control" style="width: 100%;" required>
+                                <option value="">Enter or select email</option>
+                                {% for user in registered_users %}
+                                    <option value="{{ user.email }}">{{ user.email }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please provide a valid email address.</div>
+                            <div class="invalid" style="color:red;font-size:12px">
+                                {% for error in form.email.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Device Name Field -->
+                        <div class="form-group mb-3">
+                            <label for="id_device_name">{{ form.device_name.label }}<span style="color:red;">*</span></label>
+                            <input type="text" id="id_device_name" name="device_name" class="form-control" placeholder="Enter button name"
+                                   maxlength="30" required
+                                   pattern="[0-9A-Za-z_- ]{1,30}" 
+                                   title="Button name must be 1-30 characters long and can include letters, numbers, underscores, or hyphens."
+                                   autocomplete="off"
+                                   oninput="this.value = this.value.replace(/[^0-9A-Za-z_- ]/g, '');">
+                            <div class="invalid-feedback">Please provide a valid Button name (up to 30 characters).</div>
+                            <div class="invalid " style="color:red;font-size:12px">
+                                {% for error in form.device_name.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Device Status Field -->
+                            <div class="form-group col-md-3 mb-3">
+                                <label for="id_device_status">{{ form.device_status.label }}<span style="color:red;">*</span></label>
+                                <select id="id_device_status" name="device_status" class="form-control" required autocomplete="off">
+                                    <option value="">Select status</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                                <div class="invalid-feedback">Button status is required.</div>
+                                <div class="invalid" style="color:red;font-size:12px">
+                                    {% for error in form.device_status.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- MAC Address Field -->
+                            <div class="form-group col-md-9 mb-3">
+                                <label for="id_mac_address">{{ form.mac_address.label }}<span style="color:red;">*</span></label>
+                                <input type="text" id="id_mac_address" name="mac_address" class="form-control" placeholder="Enter MAC address (format: XX:XX:XX:XX:XX:XX)"
+                                       maxlength="17" required
+                                       pattern="^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$" 
+                                       title="MAC address must be in the format XX:XX:XX:XX:XX:XX."
+                                       autocomplete="off"
+                                       oninput="this.value = this.value.replace(/[^0-9A-Fa-f:]/g, '');">
+                                <div class="invalid-feedback">Please provide a valid MAC address (format: XX:XX:XX:XX:XX:XX).</div>
+                                <div class="invalid" style="color:red;font-size:12px">
+                                    {% for error in form.mac_address.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message Field -->
+                        <div class="form-group mb-3">
+                            <label for="id_message">{{ form.message.label }}<span style="color:red;">*</span></label>
+                            <input type="text" id="id_message" name="message" class="form-control" placeholder="Enter message"
+                                   maxlength="100" required
+                                   pattern=".{1,100}" 
+                                   title="Message must be 1-100 characters long."
+                                   autocomplete="off"
+                                   oninput="this.value = this.value.replace(/[^a-zA-Z0-9\s]/g, '');">
+                            <div class="invalid-feedback">Message is required.</div>
+                            <div class="invalid" style="color:red;font-size:12px">
+                                {% for error in form.message.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block" id="addDeviceButton"
+                                    style="background-color: #f04438; border-color: #f04438;">
+                                <i class="fas fa-plus"></i> Add Button
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery and Select2 CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Select2 on the email field
+        $('#id_email').select2({
+            placeholder: 'Enter or select email',
+            allowClear: true
+        });
+
+        const form = document.getElementById('addDeviceForm');
+
+        // Real-time validation for individual fields
+        function validateField(input) {
+            input.classList.remove('is-invalid');
+            input.nextElementSibling.textContent = ''; // Clear error message
+
+            if (input.checkValidity()) {
+                input.classList.remove('is-invalid');
+            } else {
+                input.classList.add('is-invalid');
+                input.nextElementSibling.textContent = input.validationMessage;
+            }
+        }
+
+        const fieldsToValidate = [
+            'email',
+            'device_name',
+            'mac_address',
+            'message',
+        ];
+
+        fieldsToValidate.forEach(function(fieldName) {
+            document.querySelector(`input[name="${fieldName}"]`).addEventListener('input', function() {
+                validateField(this);
+            });
+        });
+
+        // Form submission validation
+        form.addEventListener('submit', function(event) {
+            fieldsToValidate.forEach(function(fieldName) {
+                const input = document.querySelector(`input[name="${fieldName}"]`);
+                if (!input.checkValidity()) {
+                    event.preventDefault();
+                    validateField(input);
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

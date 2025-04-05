@@ -1,0 +1,171 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Blog Post Management{% endblock %}
+{% block body %}
+
+<div class="mt-5 d-flex flex-column col-sm-10 flex-md-row justify-content-between" id="header">
+  <div class="d-flex flex-column flex-md-row align-items-md-center">
+      <h1>Blog Posts</h1>
+  </div>
+  <a href="{% url 'customadmin:blogpost_create' %}" 
+     class="btn text-white" 
+     style="background-color: #f04438; border-color: #f04438;">
+     <i class="fas fa-newspaper"></i> Create Blog Post
+  </a>
+</div>
+
+<!-- Filter Form -->
+<div class="col-md-12 my-5 new-class">
+  <form method="get" class="row g-3">
+    <div class="form-row ml-3">
+      <!-- Search Filter -->
+      <div class="form-group col-md-6 col-lg-4 col-xl-3">
+        <label for="title" class="mr-2">Search:</label>
+        <input type="text" class="form-control" id="search-bar" name="title" maxlength="30" 
+               value="{{ title_filter }}" placeholder="Search By Title" onkeyup="applyFiltersWithDelay()">
+      </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-3">
+        <label for="start-date-selector" class="mr-2">From:</label>
+        <input type="datetime-local" class="form-control" id="start-date-selector" name="date_from" value="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-3">
+        <label for="end-date-selector" class="mr-2">To:</label>
+        <input type="datetime-local" class="form-control" id="end-date-selector" name="date_to" value="{{ date_to_filter }}" min="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <!-- Clear and Search Buttons -->
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="button" class="btn btn-secondary btn-block mb-2 mt-md-0" id="clear-button"
+          onclick="clearFilters()" {% if not title_filter and not date_from_filter and not date_to_filter  %}disabled{% endif %}>Clear</button>
+      </div>
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="submit" style="background-color: #f04438; color: white; text-decoration: none;" class="btn btn-block mb-2 mt-md-0" id="search-button">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Blog Posts Table -->
+  <div class="table-container mt-4 text-left">
+    {% if posts %}
+      <table class="table table-hover" style="width: 100%; border-collapse: collapse;">
+        <thead style="background-color: #f04438; color: white;">
+            <tr>
+                <th>Title</th>
+                <th>Slug</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td>{{ post.title }}</td>
+                <td>{{ post.slug }}</td>
+                <td>{{ post.created_at }}</td>
+                <td>{{ post.updated_at }}</td>
+                <td>
+                  <div class="d-flex justify-content-between">
+                    <!-- Edit Blog Post -->
+                    <a href="{% url 'customadmin:blogpost_update' slug=post.slug %}" title="Edit Blog Post">
+                      <i class="fas fa-edit mr-1" style="font-size: 24px; color: #f04438;"></i>
+                    </a>
+                    
+                    <!-- Delete Blog Post -->
+                    <a href="#" onclick="showDeletePostPopup('{% url 'customadmin:blogpost_delete' slug=post.slug %}')" title="Delete Blog Post">
+                      <i class="fa fa-trash" style="font-size: 24px; color: #a7364b;"></i>
+                  </a>
+                  </div>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+    <div class="no-data">
+      <img src="{% static 'images/no_data.jpg' %}" alt="No data available" style="max-width: 40%; height: auto;">
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Pagination -->
+  {% if posts.has_other_pages %}
+    <nav class="d-flex justify-content-center">
+      <ul class="pagination">
+        {% if posts.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo;&laquo;</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ posts.previous_page_number }}">&laquo;</a>
+          </li>
+        {% endif %}
+        {% for i in posts.paginator.page_range %}
+          {% if i >= posts.number|add:"-2" and i <= posts.number|add:"2" %}
+            <li class="page-item {% if i == posts.number %}active{% endif %}">
+              <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ i }}">{{ i }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        {% if posts.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ posts.next_page_number }}">&raquo;</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ posts.paginator.num_pages }}">&raquo;&raquo;</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+<div class="overlay" id="deletePostOverlay" style="display:none;">
+  <div id="deletePostPopupCard" class="text-center mt-3">
+      <h5 class="mb-3">Delete Blog Post</h5>
+      <p class="mb-3">Are you sure you want to delete this blog post?</p>
+      <form id="deletePostForm" method="post">
+          {% csrf_token %}
+          <input type="hidden" id="deletePostUrl" name="deletePostUrl" value="">
+          <div class="row">
+              <div class="col">
+                  <button type="button" class="btn btn-secondary btn-block btn-sm" id="delete-cancel" onclick="hideDeletePostPopup()"
+                          style="background: #ddd; color: #000; border-radius: 19px; padding: 10px;">Cancel
+                  </button>
+              </div>
+              <div class="col">
+                  <button type="button" class="btn btn-block btn-sm" id="delete-button"
+                          style="background: #a7364b; color: white; border-radius: 19px; padding: 10px;"
+                          onclick="confirmDeletePost()"><span id="deleteLoader" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>Delete
+                  </button>
+              </div>
+          </div>
+      </form>
+  </div>
+</div>
+<script>
+  function showDeletePostPopup(url) {
+    document.getElementById('deletePostUrl').value = url;
+    document.getElementById('deletePostOverlay').style.display = 'block';
+}
+
+function hideDeletePostPopup() {
+    document.getElementById('deletePostOverlay').style.display = 'none';
+}
+
+function confirmDeletePost() {
+    const url = document.getElementById('deletePostUrl').value;
+    const form = document.getElementById('deletePostForm');
+    form.action = url;
+    form.submit();
+}
+
+function applyFiltersWithDelay() {
+    clearTimeout(window.filterTimeout);
+    window.filterTimeout = setTimeout(function() {
+        document.querySelector('form').submit();
+    }, 500);
+}
+</script>
+
+{% endblock %}

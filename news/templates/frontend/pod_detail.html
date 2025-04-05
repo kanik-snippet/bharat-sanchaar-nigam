@@ -1,0 +1,1242 @@
+
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}ICE Button Detail{% endblock %}
+{% block body %}
+<link href="{% static 'css/pod_details.css' %}" rel="stylesheet" />
+
+<div class="container">
+    <div class="topComtainer">
+    <!-- Path -->
+    <div class="mt-3">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/ice/" class='text-dark text-decoration-none'>{% trans 'Button Management'%} </a></li>
+                <li class="breadcrumb-item active" aria-current="page">{% trans 'Button Details'%}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Info -->
+    
+        <div class="d-flex flex-row justify-content-between align-items-center m-0">
+            <h3 id="device-name" class="pod_name ">Loading...</h3>
+            <div class="top-right-actions d-flex justify-content-center align-items-center">
+                <i class="bi bi-pencil-square actionIcon"  id="addNewPodButton" data-bs-toggle="modal" data-bs-target="#linkNewPodModal" style="cursor: pointer;" ></i>
+                <i id="delete-device-icon" class="bi bi-trash actionIcon" style="cursor: pointer;"></i>
+            </div>
+        </div>
+            <div class="row">
+            <div class="d-flex flex-wrap">
+                <div class="me-3">
+                    <h5 class="info">{% trans 'MAC Address'%}:</h5>
+                </div>
+                <div>
+                    <h5 id="mac-address" class="load">Loading...</h5>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap">
+                <div class="me-3">
+                    <h5 class="info">{% trans 'Status'%}:</h5>
+                </div>
+                <div>
+                    <h5 id="message" class="load">Loading...</h5>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap">
+                <div class="me-3">
+                    <h5 class="info">{% trans 'Link Date'%}:</h5>
+                </div>
+                <div>
+                    <h5 id="link-date" class="load">Loading...</h5>
+                </div>
+            </div> 
+    </div>
+</div>
+    <!-- Table Section -->
+
+    <div class="row">
+        <div class="col-6">
+            <h3 class="emergency mt-5">{% trans 'Emergency Log'%}</h3>
+            <div class="table-containers emer p-0"  style="max-height: 500px; overflow-y: auto;">
+                <table class="table" id="event-log">
+                    <thead>
+                        <tr>
+                            <th style="position: sticky; top: 0; background-color: #f04438; color:white; z-index: 2;">{% trans 'Event ID'%}</th>
+                            <th style="position: sticky; top: 0; background-color: #f04438; color:white; z-index: 2;">{% trans 'Time Stamp'%}</th>
+                            <th style="position: sticky; top: 0; background-color: #f04438; color:white; z-index: 2;">{% trans 'Action'%}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Events or No-Data Image will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    
+    
+    <div class="col-6">
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <h3 class="contact">{% trans 'Contacts'%}</h3>
+            <button type="button" class="btn btn-primary " style="margin-top:-6px;padding:4px;" data-bs-toggle="modal" data-bs-target="#updateDeviceModal">
+                {% trans 'Assign Contact'%}
+            </button>
+        </div>
+        <div class="table-containers">
+            <table class="table" id="sos-contacts">
+                <tbody>
+                    <!-- Contacts will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+        <!-- Modal for video playback -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="videoModalLabel">{% trans 'Emergency Video'%}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        <video id="videoPlayer" width="100%" controls>
+            <source id="videoSource" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Danger Notification Toast -->
+<div id="danger-toast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body">
+            {% trans 'Video not Found!'%}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+
+<div class="modal fade" id="linkNewPodModal" tabindex="-1" aria-labelledby="linkNewPodModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content p-4">
+            <div class="modal-header border-0 text-center flex-column">
+                <h5 class="modal-title fw-bold" id="linkNewPodModalLabel">{% trans 'Update ICE Button'%}</h5>
+                <p class="modal-subtitle text-muted mb-0">{% trans 'Update Button details'%}</p>
+            </div>
+            <div class="modal-body">
+                <form id="linkNewPodForm">
+                    <div class="mb-3">
+                        <label for="pod-name" class="form-label">{% trans 'Button Name'%}</label>
+                        <input type="text" class="form-control" id="pod-name" placeholder="{% trans 'Enter device name'%}" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{% trans 'Description'%}</label>
+                        <textarea class="form-control" id="description" placeholder="{% trans 'Enter description (optional)'%}"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4 w-100 gap-3">
+                        <button type="button" class="btn btn-update-no btn-lg px-4" data-bs-dismiss="modal">{% trans 'Cancel'%}</button>
+                        <button type="button" id="submit-button" class="btn btn-update-yes btn-lg px-4">{% trans 'Update'%}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal for Deleting Device -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
+            </div>
+            <div class="modal-body">
+                {% trans 'Are you sure you want to delete this device? This action cannot be undone.'%}
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100 gap-3">
+                    <button type="button" class="btn btn-del-no" data-bs-dismiss="modal">{% trans 'No'%}</button>
+                    <button type="button" class="btn btn-del-yes" id="confirmDeleteButton">{% trans 'Yes'%}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Success Notification Modal -->
+<div class="modal fade" id="updatesuccessModal"  aria-labelledby="updatesuccessModalLabel" aria-hidden="true" style="z-index: 2000;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatesuccessModalLabel">{% trans 'Device Updated Successfully'%}</h5>
+            </div>
+            <div class="modal-body">
+                {% trans 'Your device has been updated successfully.'%}  
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="refreshButton">{% trans 'OK'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Notification Modal (on Pod page) -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">{% trans 'Device Deleted Successfully'%}</h5>
+            </div>
+            <div class="modal-body">
+                {% trans 'The device has been successfully deleted.'%}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="redirectToPodPage">{% trans 'OK'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<script>  
+
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        // Extract device ID from URL
+        const pathParts = window.location.pathname.split('/');
+        const deviceId = pathParts[pathParts.length - 2];
+    
+        if (!deviceId) {
+            //console.error('Device ID not found in URL!');
+            return;
+        }
+    
+        // Get the access token from localStorage
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            //console.error('Access token not found!');
+            return;
+        }
+    
+        // Get the delete icon and show confirmation modal
+        const deleteIcon = document.getElementById('delete-device-icon');
+        if (deleteIcon) {
+            deleteIcon.addEventListener('click', function () {
+                // Show the confirmation modal
+                const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                confirmationModal.show();
+    
+                // Handle the confirmation
+                document.getElementById('confirmDeleteButton').addEventListener('click', function () {
+                    // Send DELETE request to delete the device
+                    deleteDevice(deviceId, accessToken);
+                    confirmationModal.hide();  // Hide the confirmation modal after confirming
+                });
+                // Handle No button click (also hides the modal properly)
+                document.querySelector('.btn-del-no').addEventListener('click', function () {
+                    confirmationModal.hide();  // Hide the modal when clicking No
+                });
+            });
+        }
+    
+        // Function to delete the device
+        function deleteDevice(deviceId, accessToken) {
+            const deleteUrl = `/api/device/${deviceId}/delete/`;
+    
+            fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete device. Status code: ' + response.status);
+                }
+    
+                // Check if the response has content (if it doesn't, we don't need to parse it)
+                return response.text().then(text => {
+                    if (text) {
+                        // If there's content in the response, parse it as JSON
+                        return JSON.parse(text);
+                    } else {
+                        // If the response is empty, return a simple object indicating success
+                        return { success: true };
+                    }
+                });
+            })
+            .then(data => {
+                //console.log('Delete response:', data);  // Log the response for debugging
+    
+                if (data.success) {
+                    // Show success modal after successful deletion
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+    
+                    // Add event listener for the "OK" button after showing the success modal
+                    const redirectButton = document.getElementById('redirectToPodPage');
+                    //console.log('redirectButton', redirectButton);  // Debug log
+    
+                    if (redirectButton) {
+                        //console.log("Adding redirect listener");
+                        redirectButton.addEventListener('click', function () {
+                            //console.log("Redirecting to Pod page...");
+                        window.location.href = "{% url 'pod' %}";  // Use Django's URL template tag
+                            // Use Django's URL template tag
+                        });
+                    } else {
+                        //console.error("Redirect button not found.");
+                    }
+                } else {
+                    //console.error('Failed to delete device:', data.message || 'Unknown error');
+                    alert('Failed to delete device: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                //console.error('Error deleting device:', error);
+                alert('An error occurred while deleting the device.');
+            });
+        }
+    });  
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Extract the device ID from the URL
+        const pathParts = window.location.pathname.split('/');
+        const deviceId = pathParts[pathParts.length - 2];
+        if (!deviceId) {
+            //console.error('Device ID not found in URL!');
+            return;
+        }
+    
+        // Get the access token from localStorage
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            //console.error('Access token not found!');
+            return;
+        }
+    
+        // Function to fetch and populate form data
+        async function fetchDeviceData() {
+            const apiUrl = `/api/device/${deviceId}/`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                const data = await response.json();
+                console.log('Device data fetched:', data);
+    
+                // Populate the form with fetched data
+                document.getElementById('pod-name').value = data.device.device_name || '';
+                document.getElementById('description').value = data.device.description || '';
+            } catch (error) {
+                //console.error('Error fetching device data:', error);
+            }
+        }
+    
+        // Function to handle form submission
+        async function updateDeviceData(e) {
+            e.preventDefault(); // Prevent form submission
+    
+            const deviceData = {
+                device_name: document.getElementById('pod-name').value,
+                description: document.getElementById('description').value || null,
+            };
+    
+            // Validate required fields
+            if (!deviceData.device_name) {
+                alert('Device name is required.');
+                return;
+            }
+    
+            const updateUrl = `/api/device/${deviceId}/update/`;
+    
+            try {
+                const response = await fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(deviceData),
+                });
+    
+                if (response.ok) {
+                    //console.log('Device updated successfully.');
+                    const successModal = new bootstrap.Modal(document.getElementById('updatesuccessModal'));
+                    successModal.show();
+    
+                    // Optionally, reload the data or page
+                    setTimeout(() => {
+                        location.reload(); // Refresh the page after a delay
+                    }, 3000);
+                } else {
+                    const result = await response.json();
+                    //console.error('Error updating device:', result.message);
+                    alert(`Failed to update device: ${result.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                //console.error('Error updating device:', error);
+                alert('An error occurred while updating the device.');
+            }
+        }
+    
+        // Attach event listeners
+        document.getElementById('submit-button').addEventListener('click', updateDeviceData);
+    
+        // Fetch device data when the page loads
+        fetchDeviceData();
+    });
+    </script>
+
+
+    <!-- Delete Assigned Contact Modal -->
+    <div class="modal fade" id="deleteAssignContactModal" tabindex="-1" aria-labelledby="deleteAssignContactModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAssignContactModalLabel">Confirm Contact Deletion</h5>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this assigned contact? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100 gap-3">
+                        <button type="button" class="btn btn-del-no" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-del-yes" id="confirmDeleteAssignContact">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Delete Assign Success Modal -->
+<div class="modal fade" id="deleteAssignSuccessModal" tabindex="-1" aria-labelledby="deleteAssignSuccessModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAssignSuccessModalLabel">Contact Deleted Successfully</h5>
+            </div>
+            <div class="modal-body">
+                The contact has been successfully removed.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ensure the modal element exists in the DOM
+        const deleteModalElement = document.getElementById('deleteAssignContactModal');
+        if (!deleteModalElement) {
+            console.error('Delete modal element not found!');
+            return;  // Early return to prevent further errors if the modal element is missing
+        }
+    
+        // Initialize the delete modal
+        let deleteModal = new bootstrap.Modal(deleteModalElement);
+
+    function setupDeleteContactModal(contactRow, contactId) {
+        if (!deleteModalElement) {
+            console.error('Delete modal element not found!');
+            return;
+        }
+    
+        
+        // Set up the confirm delete button action
+        document.getElementById('confirmDeleteAssignContact').onclick = () => {
+            deleteAssignedContact(contactRow, contactId);  // Call the function to remove the contact
+            deleteModal.hide();  // Hide the modal after confirming the deletion
+        };
+
+        deleteModal.show();  // Ensure the modal instance is correctly initialized before showing it
+    }
+    function deleteAssignedContact(contactRow, contactId) {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            return;
+        }
+    
+        const deleteUrl = `/api/remove-contact/${contactId}/`;
+    
+        // Log the API call details
+        console.log('API Request Details:');
+        console.log('URL:', deleteUrl);
+        console.log('Method: DELETE');
+        console.log('Headers:', {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        });
+    
+        fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Log the API response
+            console.log('API Response:', data);
+    
+            if (data.success) {
+                // Remove the contact row from the table
+                contactRow.remove();
+                showSuccessModal();  // Show success modal after deletion
+            } else {
+                alert('Failed to delete contact: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting contact:', error);
+            alert('An error occurred while deleting the contact.');
+        });
+    }
+    
+    
+    // Attach the delete modal to trash icons
+    document.querySelectorAll('.bi-trash').forEach(icon => {
+        icon.addEventListener('click', function () {
+            const contactRow = this.closest('tr');
+            const contactId = contactRow.dataset.contactId;
+            setupDeleteContactModal(contactRow, contactId);
+        });
+    });
+    // Show success modal after successful deletion
+    function showSuccessModal() {
+        const successModalElement = document.getElementById('deleteAssignSuccessModal');
+        if (successModalElement) {
+            const successModal = new bootstrap.Modal(successModalElement);
+            successModal.show();
+        } else {
+            console.error('Success modal element not found!');
+        }
+    }
+// Attach event listener to trash icons to open the delete modal
+    document.querySelectorAll('.bi-trash').forEach(icon => {
+        icon.addEventListener('click', function () {
+            const contactRow = this.closest('tr');
+            const contactId = contactRow.dataset.contactId;
+            setupDeleteContactModal(contactRow, contactId);  // Setup and show the delete modal
+        });
+    });
+
+    // Function to show alert modals
+    function showAlertInModal(message) {
+        const alertModalHtml = `
+            <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                        </div>
+                        <div class="modal-body">${message}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', alertModalHtml);
+        const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+        alertModal.show();
+
+        // Optional: Automatically remove the alert modal after 3 seconds
+        setTimeout(() => {
+            const alertModalElement = document.getElementById('alertModal');
+            alertModalElement?.remove();  // Remove the modal after showing it
+        }, 3000);
+    }
+
+
+});
+    
+document.addEventListener('DOMContentLoaded', function () {
+    // Extract the device_id from the URL path
+    const pathParts = window.location.pathname.split('/');
+    const deviceId = pathParts[pathParts.length - 2];
+    //console.log("Device ID:", deviceId);
+
+    if (!deviceId) {
+        console.error('Device ID not found in URL!');
+        return;
+    }
+
+    // Get the access token from localStorage
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+        return;
+    }
+
+    // API URL
+    const apiUrl = `/api/device/${deviceId}/`;
+
+      // Function to toggle the no-data image inside the table body
+function toggleNoDataImage(eventTableBody, events) {
+    if (events.length === 0) {
+        // Create a single row with a "no-data" image
+        const noDataRow = document.createElement('tr');
+        noDataRow.innerHTML = `
+        <td colspan="3" style="text-align: center; padding: 20px;">
+            <img src="{% static 'images/no_data_placeholder.png' %}" 
+                 alt="No data available" 
+                 style="">
+            <p style="font-size: 14px; color: gray;">No Logs Found</p>
+        </td>
+    `;
+    
+        eventTableBody.appendChild(noDataRow);
+    }
+}
+    // Fetch data from the API
+    fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            //console.log("Fetched Data:", data);
+
+            const device = data.device;
+            const events = data.events || [];
+            const sosContacts = data.device_sos_contacts_data;
+
+            // Update the page with device details
+            document.getElementById('device-name').textContent = device.device_name;
+            document.getElementById('mac-address').textContent = device.mac_address;
+            document.getElementById('message').textContent = device.device_status;
+
+            const options = {
+                month: 'short', // Short month (e.g., Jan, Feb)
+                day: 'numeric', // Day of the month (e.g., 1, 2, 3)
+                year: 'numeric', // Full year (e.g., 2023)
+                hour: '2-digit', // Hour (e.g., 01, 12)
+                minute: '2-digit', // Minutes (e.g., 05, 30)
+                second: '2-digit', // Seconds (e.g., 09, 45)
+                hour12: false, // 24-hour format (false for 24-hour, true for 12-hour)
+            };
+
+            document.getElementById('link-date').textContent = new Date(device.created_at).toLocaleString('en-US', options);
+
+            // Handle device deletion
+            const deleteDeviceIcon = document.getElementById('delete-device-icon');
+            if (deleteDeviceIcon) {
+                deleteDeviceIcon.addEventListener('click', function () {
+                    // Show the confirmation modal
+                    const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                    confirmationModal.show();
+
+                    // Handle the confirmation click
+                    document.getElementById('confirmDeleteButton').onclick = function () {
+                        deleteDevice(deviceId, accessToken);
+                        confirmationModal.hide(); // Close the modal after confirming
+                    };
+                });
+            }
+
+        // Populate the event log table
+        const eventTableBody = document.getElementById('event-log').getElementsByTagName('tbody')[0];
+        eventTableBody.innerHTML = ''; // Clear existing rows
+
+        if (events.length === 0) {
+            // Add "No Data" image row when no events exist
+            const noDataRow = document.createElement('tr');
+            noDataRow.innerHTML = `
+                <td colspan="3" style="text-align: center; padding: 20px;">
+                    <img src="{% static 'images/no_data.jpg' %}" 
+                         alt="No data available" 
+                         style="width: 100%; max-width: 300px; object-fit: cover;">
+                         <p> No Logs Found</p>
+                </td>
+            `;
+            eventTableBody.appendChild(noDataRow);
+        } else {
+            events.forEach(event => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${event.event_id}</td>
+                    <td>${new Date(event.created_at).toLocaleString('en-US', options)}</td>
+                    <td>
+                        ${
+                            event.video_url
+                                ? `<i class="bi bi-camera-video" style="cursor: pointer;" onclick="playVideo('${event.video_url}')"></i>`
+                                : ''
+                        }
+                    </td>
+                `;
+                eventTableBody.appendChild(row);
+            });
+        }
+
+            // Populate SOS Contacts table
+            const contactsTableBody = document.getElementById('sos-contacts').getElementsByTagName('tbody')[0];
+            sosContacts.forEach(contact => {
+                // Safely access emails and phones
+// Safely access emails and phones
+const emails = contact.emails.length > 0 ? contact.emails.map(email => email.email).join(', ') : 'No emails available';
+const phones = contact.phones.length > 0 ? contact.phones.map(phone => phone.phone_numbers).join(', ') : 'No phone number';
+
+// Determine individual verification statuses
+const emailVerified = contact.emails.some(email => email.is_verified);
+const phoneVerified = contact.phones.some(phone => phone.is_verified);
+
+const emailStatus = emailVerified ? 'Email Verified' : 'Email Unverified';
+const phoneStatus = phoneVerified ? 'Phone Verified' : 'Phone Unverified';
+
+// Define color based on verification status
+const emailColor = emailVerified ? 'green' : '#f04438'; // Success color for verified, red for unverified
+const phoneColor = phoneVerified ? 'green' : '#f04438'; // Success color for verified, red for unverified
+
+const row = document.createElement('tr');
+row.classList.add('deviceData');
+row.style.display = 'flex';
+row.style.justifyContent = 'space-between'; // Add spacing between items
+
+
+row.innerHTML = `
+<td class="details">
+    <img src="{% static 'images/bsnk.png' %}" alt="User Image" style="margin: 0 10px 10px 0">
+    <div>
+        <h6 class="name">${contact.name}</h6>
+        <h6 class="relation">${contact.relation}</h6>
+        <div class="contact-info">
+            <span class="email">${emails}</span>
+            <span class="phone">${phones}</span>
+        </div> 
+    </div>  
+</td>
+<td class="actions" style="flex: 1; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between;">
+    <h6 style="margin: 0; color: ${emailColor};">
+        <span style="color: ${emailColor};">${emailStatus}</span>, 
+        <span style="color: ${phoneColor};">${phoneStatus}</span>
+    </h6>
+    <i class="bi bi-trash" style="cursor: pointer; color: #f04438; margin-top: 10px;"></i>
+</td>
+`;
+                // Attach email_id and phone_id to the row for later use
+                row.dataset.emailId = contact.emails.length > 0 ? contact.emails[0].email_id : null;
+                row.dataset.phoneId = contact.phones.length > 0 ? contact.phones[0].phone_id : null; // Ensure this is correctly set
+
+                // Add event listener for deleting contact
+                const trashIcon = row.querySelector('.bi-trash');
+                trashIcon.addEventListener('click', function () {
+                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteAssignContactModal'));
+                    deleteModal.show();
+
+                    document.getElementById('confirmDeleteAssignContact').addEventListener('click', function () {
+                        removeContact(deviceId, accessToken, row.dataset.emailId, row.dataset.phoneId, row);
+                        deleteModal.hide();
+                    }, { once: true });
+                });
+
+                contactsTableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+});
+
+    
+    // Function to delete the device
+    function deleteDevice(deviceId, accessToken) {
+    const deleteUrl = `/api/device/${deviceId}/delete/`;
+    
+    fetch(deleteUrl, {
+    method: 'DELETE',
+    headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+    },
+    })
+    .then(response => {
+    if (response.ok) {
+        window.location.href = '/ice/';
+    } else {
+        return response.json().then(data => {
+            throw new Error(data.message || 'Failed to delete device.');
+        });
+    }
+    })
+    .catch(error => {
+    //console.error('Error deleting device:', error);
+    alert('An error occurred while deleting the device.');
+    });
+    }
+    
+    // Function to show success modal
+    function showSuccessModal() {
+    const successModal = new bootstrap.Modal(document.getElementById('deleteAssignSuccessModal'));
+    successModal.show();
+    }
+    
+    // Function to show alerts in a general modal
+    function showAlertInModal(message) {
+    const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+    document.getElementById('alertModalMessage').textContent = message;
+    alertModal.show();
+    }
+    
+// Function to show alerts in a general modal
+function showAlertInModal(message) {
+// Create the alert modal dynamically if it doesn’t exist
+let alertModal = document.getElementById('alertModal');
+if (!alertModal) {
+    const modalHtml = `
+        <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                    </div>
+                    <div class="modal-body" id="alertModalBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    alertModal = document.getElementById('alertModal');
+}
+
+// Set message and show the modal
+document.getElementById('alertModalBody').textContent = message;
+
+const bootstrapModal = new bootstrap.Modal(alertModal);
+bootstrapModal.show();
+}
+function removeContact(deviceId, accessToken, emailContactId, phoneContactId, row) {
+// Check if both email_contact_id and phone_contact_id are undefined
+if (!emailContactId && !phoneContactId) {
+    console.warn("Both email_contact_id and phone_contact_id are undefined. Cannot delete contact.");
+    showAlertInModal('No email or phone contact ID available for deletion.');
+    return;
+}
+
+const deleteUrl = `/api/remove-contact-from-device/`;
+
+// Prepare the payload based on available contact IDs
+let payload = { device_id: deviceId };
+
+// Only add email_id if it's available and not null
+if (emailContactId && emailContactId !== 'null') {
+    payload.email_id = emailContactId;
+}
+
+// Only add phone_id if it's available and not null
+if (phoneContactId && phoneContactId !== 'null') {
+    payload.phone_id = phoneContactId;
+}
+
+// Log the payload being sent to the API
+console.log("Payload being sent to delete API:", payload);
+
+fetch(deleteUrl, {
+    method: 'POST',
+    headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+})
+.then(response => {
+    console.log("API Response Status:", response.status); // Log the status code of the response
+    return response.json();
+})
+.then(data => {
+    console.log("API Response Data:", data); // Log the actual data returned by the API
+    if (data.status === 'success') {
+        showSuccessModal(); // Show the success modal
+        row.remove(); 
+        location.reload();// Remove the row from the table
+    } else {
+        console.error("Failed to remove contact:", data.error || "Unknown error.");
+        showAlertInModal(`Failed to remove contact: ${data.error || 'Unknown error.'}`);
+    }
+})
+.catch(error => {
+    console.error('Error removing contact:', error); // Log any errors during the fetch
+    showAlertInModal('An error occurred while removing the contact.');
+});
+}
+
+
+    // Play video in modal
+    function playVideo(url) {
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoSource = document.getElementById('videoSource');
+    videoSource.src = url;
+    videoPlayer.load();
+    const videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
+    videoModal.show();
+    }
+    </script>
+
+<!-- Modal Structure -->
+<div class="modal fade" id="updateDeviceModal" tabindex="-1" aria-labelledby="updateDeviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateDeviceModalLabel">{% trans 'Assign Contact'%}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateDeviceForm">
+                    <div class="mb-3 hidden">
+                        <label class="form-label">{% trans 'Device Name'%}</label>
+                        <input type="text" class="form-control" id="deviceId" name="device_id" placeholder="{% trans 'Enter device ID'%}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans 'Select User'%}</label>
+                        <select class="form-control" id="userSelect">
+                            <option value="">{% trans 'Select a user'%}</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans 'Email'%}</label>
+                        <input type="text" class="form-control" id="emailContact" name="email_contact" placeholder="{% trans 'No email available'%}" readonly disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans 'Phone Number'%}</label>
+                        <input type="text" class="form-control" id="phoneContact" name="phone_contact" placeholder="{% trans 'No phone available'%}" readonly disabled>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel'%}</button>
+                        <button type="submit" class="btn btn-primary">{% trans 'Update'%}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let apiData = {};
+
+    // Function to populate user dropdown
+    function populateUserDropdown(data) {
+        const userSelect = document.getElementById('userSelect');
+        userSelect.innerHTML = '<option value="">{% trans 'Select SOS Contact'%}</option>';
+    
+        if (data.user_all_sos_contacts_data && data.user_all_sos_contacts_data.length > 0) {
+            // Extract device contacts for comparison
+            const deviceContactIds = new Set();
+    
+            // Collect email and phone IDs from assigned device contacts
+            if (data.device_sos_contacts_data && data.device_sos_contacts_data.length > 0) {
+                data.device_sos_contacts_data.forEach(contact => {
+                    if (contact.emails && contact.emails.length > 0) {
+                        contact.emails.forEach(email => {
+                            deviceContactIds.add(email.email_id); // Collect email IDs
+                        });
+                    }
+                    if (contact.phones && contact.phones.length > 0) {
+                        contact.phones.forEach(phone => {
+                            deviceContactIds.add(phone.phone_id); // Collect phone IDs
+                        });
+                    }
+                });
+            }
+    
+            // Filter and display only those contacts not already assigned to the device
+            data.user_all_sos_contacts_data.forEach((contact, index) => {
+                // Check if the contact's email or phone exists in device contacts
+                const isAssigned = (
+                    (contact.emails && contact.emails.some(email => deviceContactIds.has(email.email_id))) ||
+                    (contact.phones && contact.phones.some(phone => deviceContactIds.has(phone.phone_id)))
+                );
+    
+                if (!isAssigned) {
+                    // Add to dropdown if not assigned
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = contact.name;
+                    userSelect.appendChild(option);
+                }
+            });
+        } else {
+            console.warn('No user contacts data found.');
+        }
+    }
+    
+    // Function to populate device data
+    function populateDeviceData(data) {
+        const deviceIdField = document.getElementById('deviceId');
+        if (data.device && data.device.id) {
+            deviceIdField.value = data.device.id;
+        } else {
+            deviceIdField.value = '';
+            //console.warn('Device ID not found in the API response.');
+        }
+    }
+
+    function updateContactFields(userData) {
+        const emailField = document.getElementById('emailContact');
+        const phoneField = document.getElementById('phoneContact');
+
+        // Update email field
+        if (userData.emails && userData.emails.length > 0) {
+            emailField.value = userData.emails[0].email;
+            emailField.dataset.id = userData.emails[0].email_id; // Store email_id in a data attribute
+        } else {
+            emailField.value = '';
+            emailField.placeholder = 'No email available';
+        }
+
+        // Update phone field
+        if (userData.phones && userData.phones.length > 0) {
+            phoneField.value = userData.phones[0].phone_numbers;
+            phoneField.dataset.id = userData.phones[0].phone_id; // Store phone_id in a data attribute
+        } else {
+            phoneField.value = '';
+            phoneField.placeholder = 'No phone available';
+        }
+    }
+
+    // Handle user selection change
+    document.getElementById('userSelect').addEventListener('change', function (e) {
+        const selectedIndex = e.target.value;
+
+        if (selectedIndex === '') {
+            document.getElementById('emailContact').value = '';
+            document.getElementById('phoneContact').value = '';
+            return;
+        }
+
+        const selectedUser = apiData.user_all_sos_contacts_data[selectedIndex];
+        updateContactFields(selectedUser);
+    });
+
+    // Function to fetch and load all data
+    async function loadData() {
+        try {
+            const pathParts = window.location.pathname.split('/');
+            const deviceId = pathParts[pathParts.length - 2];
+            if (!deviceId) {
+                //console.error('Device ID not found in URL!');
+                return;
+            }
+
+            // Get the access token from localStorage
+            const accessToken = localStorage.getItem('access_token');
+            if (!accessToken) {
+                //console.error('Access token not found!');
+                return;
+            }
+
+            const response = await fetch(`/api/device/${deviceId}/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                apiData = data;
+
+                //console.log('API Data:', data);
+
+                populateDeviceData(data);
+                populateUserDropdown(data);
+            } else {
+                //console.error('Error fetching data:', response.status);
+                if (response.status === 401) {
+                    window.location.href = '/news/login/';
+                }
+            }
+        } catch (error) {
+            //console.error('Error loading data:', error);
+        }
+    }
+
+    document.getElementById('updateDeviceForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        console.log('Updating device data...');
+
+        // Create the formData object
+        const formData = {
+            device_id: document.getElementById('deviceId').value
+        };
+
+        // Only add email_id to formData if it exists
+        const emailId = document.getElementById('emailContact').dataset.id;
+        if (emailId) {
+            formData.email_id = emailId;
+        }
+
+        // Only add phone_id to formData if it exists
+        const phoneId = document.getElementById('phoneContact').dataset.id;
+        if (phoneId) {
+            formData.phone_id = phoneId;
+        }
+
+        console.log('Form data being sent to API:', formData);
+
+        try {
+            const accessToken = localStorage.getItem('access_token');
+            if (!accessToken) {
+                return;
+            }
+
+            const response = await fetch('/api/assign_contacts_to_device/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const result = await response.json();
+            console.log('API Response:', result);
+
+
+
+        // Check response for success based on the 'status' field
+        if (result.status === 'success') {
+            // Show the success modal
+            const successModal = new bootstrap.Modal(document.getElementById('updatesuccessModal'));
+            successModal.show();
+
+            // Add a 2-second timer before refreshing data
+            setTimeout(() => {
+                successModal.hide(); // Close the modal after the timer
+                refreshData();       // Refresh the data
+            }, 2000); // 2 seconds
+        } else {
+            // Handle error when 'status' is not 'success'
+            showAlertModal('Error', `Failed to assign contact: ${result.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        showAlertModal('Error', 'An error occurred while submitting the form.');
+    }
+});
+
+// Function to refresh the data
+function refreshData() {
+    location.reload();
+}
+function showAlertModal(title, message) {
+    // Create the alert modal dynamically if it doesn’t exist
+    if (!document.getElementById('alertModal')) {
+        const modalHtml = `
+            <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="alertModalLabel"></h5>
+                        </div>
+                        <div class="modal-body" id="alertModalBody"></div>
+                        <div class="modal-footer">
+                            <button type="button" id="alertModalOkButton" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        alertModal = document.getElementById('alertModal');
+
+    }
+
+    // Set the modal title and message
+    document.getElementById('alertModalLabel').textContent = title;
+    document.getElementById('alertModalBody').textContent = message;
+
+            // Show the modal
+            const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            alertModal.show();
+
+    // Add an event listener to the "OK" button
+    const okButton = document.getElementById('alertModalOkButton');
+    okButton.onclick = () => {
+        //console.log("OK button clicked, refreshing page...");
+        location.reload(); // Refresh the page when "OK" is clicked
+    };
+
+
+}
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    //console.log('Page loaded, loading data...');
+    loadData();
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const pathParts = window.location.pathname.split('/');
+        const deviceId = pathParts[pathParts.length - 2];
+
+        if (!deviceId) {
+            console.error('Device ID not found in URL!');
+            return;
+        }
+
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            return;
+        }
+
+        const apiUrl = `/api/device/${deviceId}/`;
+
+        // Fetch data from the API
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    // Update the contacts header with total count
+                    const totalContacts = data.total_soscontacts || 0;
+                    const contactsHeader = document.querySelector('.contact');
+                    if (contactsHeader) {
+                        contactsHeader.textContent = `Contacts (${totalContacts})`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    });
+</script>
+
+{% endblock %}

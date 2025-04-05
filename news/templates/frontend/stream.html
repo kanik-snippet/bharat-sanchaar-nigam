@@ -1,0 +1,501 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Live Stream Dashboard{% endblock %}
+
+{% block head %}
+<style>
+    :root {
+        --primary-color: #1a73e8;
+        --secondary-color: #5f6368;
+        --success-color: #34a853;
+        --danger-color: #ea4335;
+        --background-color: #f8f9fa;
+        --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        background: var(--background-color);
+    }
+
+    .stream-dashboard {
+        padding: 2rem 0;
+        min-height: calc(100vh - 60px);
+    }
+
+    .stream-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .stream-header {
+        padding: 2rem;
+        background: white;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .stream-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+    }
+
+    .video-container {
+        position: relative;
+        background: #000;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        max-height: 80vh;
+    }
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .stream-info {
+        padding: 2rem;
+        background: white;
+    }
+
+    .stream-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .stat-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 16px;
+        text-align: center;
+        transition: transform 0.2s;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--secondary-color);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 100%;
+        padding: 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+        color: white;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-subtext {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.75rem 1.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .status-badge.active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-badge::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .status-badge.active::before {
+        background: var(--success-color);
+        animation: pulse 2s infinite;
+    }
+
+    .status-badge.inactive::before {
+        background: var(--danger-color);
+    }
+
+    .stream-details {
+        margin-top: 2rem;
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: var(--secondary-color);
+        font-weight: 500;
+    }
+
+    .detail-value {
+        color: #1a1a1a;
+        font-weight: 600;
+    }
+
+    .notification-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 1000;
+        min-width: 320px;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .stream-header, .stream-info {
+            padding: 1.5rem;
+        }
+        
+        .stream-title {
+            font-size: 1.5rem;
+        }
+        
+        .stat-card {
+            padding: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+        
+        .notification-toast {
+            min-width: calc(100% - 48px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="stream-dashboard">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="stream-card">
+                    <div class="stream-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div>
+                                <h1 class="stream-title" id="stream-title">Live Stream</h1>
+                                <p class="text-muted mb-0" id="stream-description"></p>
+                            </div>
+                            <span id="stream-status" class="status-badge inactive">Offline</span>
+                        </div>
+                    </div>
+
+                    <div class="video-container">
+                        <div id="youtube-player"></div>
+                        <div id="empty-state" class="empty-state">
+                            <div class="empty-state-icon">📺</div>
+                            <h3 class="empty-state-text">No Active Stream</h3>
+                            <p class="empty-state-subtext">Waiting for the stream to begin...</p>
+                        </div>
+                    </div>
+
+                    <div class="stream-info">
+                        <div class="stream-stats">
+                            <div class="stat-card">
+                                <div class="stat-value" id="stream-duration">00:00:00</div>
+                                <div class="stat-label">Stream Duration</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="stream-quality">-</div>
+                                <div class="stat-label">Stream Quality</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="stream-resolution">-</div>
+                                <div class="stat-label">Resolution</div>
+                            </div>
+                        </div>
+
+                        <div class="stream-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Stream Status</span>
+                                <span class="detail-value" id="stream-status-detail">Offline</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Frame Rate</span>
+                                <span class="detail-value" id="frame-rate">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Last Updated</span>
+                                <span class="detail-value" id="last-updated">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-toast" class="notification-toast d-none" role="alert">
+        <span id="notification-message"></span>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusBadge = document.getElementById('stream-status');
+        const youtubePlayer = document.getElementById('youtube-player');
+        const emptyState = document.getElementById('empty-state');
+        const toast = document.getElementById('notification-toast');
+        const streamTitle = document.getElementById('stream-title');
+        const streamDescription = document.getElementById('stream-description');
+        const streamDuration = document.getElementById('stream-duration');
+        const streamQuality = document.getElementById('stream-quality');
+        const streamResolution = document.getElementById('stream-resolution');
+        const streamStatusDetail = document.getElementById('stream-status-detail');
+        const frameRate = document.getElementById('frame-rate');
+        const lastUpdated = document.getElementById('last-updated');
+        
+        let checkInterval;
+        let currentStreamUrl = null;
+        let streamStartTime = null;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
+    
+        function showNotification(message, type = 'info') {
+            const typeClasses = {
+                success: 'alert-success',
+                error: 'alert-danger',
+                warning: 'alert-warning',
+                info: 'alert-info'
+            };
+    
+            toast.className = `notification-toast alert ${typeClasses[type] || 'alert-info'}`;
+            toast.querySelector('#notification-message').textContent = message;
+            toast.classList.remove('d-none');
+    
+            setTimeout(() => {
+                toast.classList.add('d-none');
+            }, 5000);
+        }
+    
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+    
+        function updateDuration() {
+            if (streamStartTime) {
+                const duration = Math.floor((Date.now() - streamStartTime) / 1000);
+                streamDuration.textContent = formatDuration(duration);
+            }
+        }
+    
+        function setStreamOffline() {
+            statusBadge.className = 'status-badge inactive';
+            statusBadge.textContent = 'Offline';
+            streamStatusDetail.textContent = 'Offline';
+            streamTitle.textContent = 'Live Stream Dashboard';
+            streamDescription.textContent = 'No active stream';
+            streamQuality.textContent = '-';
+            streamResolution.textContent = '-';
+            frameRate.textContent = '-';
+            emptyState.style.display = 'block';
+            youtubePlayer.innerHTML = '';
+            currentStreamUrl = null;
+            streamStartTime = null;
+        }
+    
+        function updateStreamStatus(data) {
+            if (data.status === 'live') {
+                statusBadge.className = 'status-badge active';
+                statusBadge.textContent = 'Live';
+                streamStatusDetail.textContent = 'Live';
+                streamDescription.textContent = data.title || 'Live Stream';
+                
+                if (!streamStartTime) {
+                    streamStartTime = new Date(data.startTime || Date.now()).getTime();
+                    setInterval(updateDuration, 1000);
+                }
+                
+                if (currentStreamUrl !== data.streamUrl) {
+                    currentStreamUrl = data.streamUrl;
+                    streamTitle.textContent = data.title || 'Live Stream';
+                    streamQuality.textContent = data.quality || 'Good';
+                    streamResolution.textContent = data.streamDetails?.resolution || 'HD';
+                    frameRate.textContent = data.streamDetails?.frameRate || '30fps';
+                    emptyState.style.display = 'none';
+                    youtubePlayer.innerHTML = `
+                        <iframe 
+                            src="${data.streamUrl}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>`;
+                    showNotification('Stream is now live!', 'success');
+                    retryCount = 0;
+                }
+            } else {
+                setStreamOffline();
+            }
+            
+            lastUpdated.textContent = new Date().toLocaleTimeString();
+        }
+    
+        async function checkStreamStatus() {
+            try {
+                const token = localStorage.getItem("access_token");
+                if (!token) {
+                    showNotification('Authentication required. Please log in.', 'error');
+                    window.location.href = '/news/login/';
+                    return;
+                }
+    
+                const response = await fetch('/api/check-stream/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (response.status === 401) {
+                    showNotification('Session expired. Please log in again.', 'warning');
+                    window.location.href = '/news/login/';
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error('Failed to check stream status');
+                }
+                
+                const data = await response.json();
+                updateStreamStatus(data);
+                
+            } catch (error) {
+                console.error('Error checking stream status:', error);
+                retryCount++;
+                
+                if (retryCount >= MAX_RETRIES) {
+                    showNotification('Unable to connect to streaming service. Please try again later.', 'error');
+                    clearInterval(checkInterval);
+                } else {
+                    showNotification('Checking stream status...', 'info');
+                }
+            }
+        }
+    
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        // Handle visibility change to pause/resume status checks
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                clearInterval(checkInterval);
+            } else {
+                checkStreamStatus();
+                checkInterval = setInterval(checkStreamStatus, 30000);
+            }
+        });
+    
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+        });
+    
+        // Initialize status checking
+        checkStreamStatus();
+        checkInterval = setInterval(checkStreamStatus, 30000);
+    
+        // Handle network status
+        window.addEventListener('online', function() {
+            showNotification('Connection restored. Resuming stream check...', 'success');
+            retryCount = 0;
+            checkStreamStatus();
+        });
+    
+        window.addEventListener('offline', function() {
+            showNotification('Connection lost. Stream status may be unavailable.', 'warning');
+        });
+    });
+    </script>
+    {% endblock %}

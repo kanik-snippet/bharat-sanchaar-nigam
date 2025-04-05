@@ -1,0 +1,18 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Confirm Delete{% endblock %}
+{% block body %}
+<div class="container col-md-6 mt-5">
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Confirm Deletion</h5>
+            <p>Are you sure you want to delete the user "{{ user.username }}"?</p>
+            <form method="post" action="{% url 'delete_user' user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{% url 'customadmin:user-management' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

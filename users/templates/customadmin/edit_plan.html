@@ -1,0 +1,171 @@
+{% extends 'customadmin/nav.html' %}
+{% load custom_filters %}
+{% load static %}
+{% block title %}Edit Plan{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <!-- Success or Error Messages -->
+            {% if messages %}
+                <div class="mt-4">
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Display form errors -->
+            {% if errors %}
+                <div class="mt-4">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul>
+                            {% for field, error_list in errors.items %}
+                                {% for error in error_list %}
+                                    <li>{{ field|capfirst }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h1>Edit Plan: {{ plan.name }}</h1>
+
+                    <form method="post" id="editPlanForm">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <!-- Plan Name Field -->
+                            <div class="col-md-3">
+                                <label for="plan_name" class="form-label">Plan Name<span style="color:red;">*</span></label>
+                                <input type="text" name="name" class="form-control" id="plan_name" 
+                                       value="{{ plan.name }}" required maxlength="50">
+                                <div class="invalid-feedback">
+                                    Please enter a valid plan name.
+                                </div>
+                            </div>
+                    
+                            <!-- Max Emails Field -->
+                            <div class="col-md-2">
+                                <label for="max_emails" class="form-label">Max Emails<span style="color:red;">*</span></label>
+                                <input type="number" name="max_emails" class="form-control" id="max_emails" 
+                                       value="{{ plan.max_emails }}" required min="1">
+                                <div class="invalid-feedback">
+                                    Please enter a valid number for max emails.
+                                </div>
+                            </div>
+                    
+                            <!-- Max Phone Numbers Field -->
+                            <div class="col-md-2">
+                                <label for="max_phone_numbers" class="form-label">Max Phone Numbers<span style="color:red;">*</span></label>
+                                <input type="number" name="max_phone_numbers" class="form-control" id="max_phone_numbers" 
+                                       value="{{ plan.max_phone_numbers }}" required min="1">
+                                <div class="invalid-feedback">
+                                    Please enter a valid number for max phone numbers.
+                                </div>
+                            </div>
+                    
+                            <!-- Max Buttons Field -->
+                            <div class="col-md-2">
+                                <label for="max_button" class="form-label">Max Buttons<span style="color:red;">*</span></label>
+                                <input type="number" name="max_button" class="form-control" id="max_button" 
+                                       value="{{ plan.max_button }}" required min="1">
+                                <div class="invalid-feedback">
+                                    Please enter a valid number for max buttons.
+                                </div>
+                            </div>
+                    
+                            <!-- Cost Field -->
+                            <div class="col-md-2">
+                                <label for="cost" class="form-label">Cost &#8377;<span style="color:red;">*</span></label>
+                                <input type="number" name="cost" class="form-control" id="cost" 
+                                       value="{{ plan.cost }}" required min="0" step="0.01">
+                                <div class="invalid-feedback">
+                                    Please enter a valid cost.
+                                </div>
+                            </div>
+                            <!-- Stream Length Selector -->
+                            <div class="col-md-4">
+                                <label for="stream_length" class="form-label">Stream Length (MM:SS)<span style="color:red;">*</span></label>
+                                <div class="d-flex">
+                                    <select name="stream_length_minutes" class="form-select {% if form.stream_length_minutes.errors %}is-invalid{% endif %}" id="stream_length_minutes" required>
+                                        <option value="">Minutes</option>
+                                        {% for i in 60|range_filter %}
+                                            <option value="{{ i }}" {% if i == stream_length_minutes %}selected{% endif %}>{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="mx-1">:</span>
+                                    <select name="stream_length_seconds" class="form-select {% if form.stream_length_seconds.errors %}is-invalid{% endif %}" id="stream_length_seconds" required>
+                                        <option value="">Seconds</option>
+                                        {% for i in 60|range_filter %}
+                                            <option value="{{ i }}" {% if i == stream_length_seconds %}selected{% endif %}>{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% for error in form.stream_length_minutes.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                                {% for error in form.stream_length_seconds.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Subscription Type Selector -->
+                            <div class="col-md-2">
+                                <label for="subscription_type" class="form-label">Subscription Type<span style="color:red;">*</span></label>
+                                <select name="subscription_type" class="form-select {% if form.subscription_type.errors %}is-invalid{% endif %}" id="subscription_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="monthly" {% if form.subscription_type.value == 'monthly' %}selected{% endif %}>Monthly</option>
+                                    <option value="yearly" {% if form.subscription_type.value == 'yearly' %}selected{% endif %}>Yearly</option>
+                                </select>
+                                {% for error in form.subscription_type.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Stream Checkbox Field -->
+                            <div class="col-md-3 ">
+                                <label for="stream" class="form-label">Live Stream<span style="color:red;">*</span></label>
+                                <div class="form-check form-switch ml-3">
+                                    <input type="checkbox" name="stream" class="form-check-input {% if form.stream.errors %}is-invalid{% endif %}" id="stream" 
+                                        {% if form.stream.value %}checked{% endif %}>
+                                    <label class="form-check-label" for="stream">Enable Live Stream</label>
+                                    {% for error in form.stream.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <!-- Submit Button -->
+                        </div>
+                        <div class="col-md-4 justify-content-end">
+                            <a href="{% url 'customadmin:plan_management' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn text-white ml-3" style="background-color: #f04438;">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                    
+
+                    <div class="mt-3">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

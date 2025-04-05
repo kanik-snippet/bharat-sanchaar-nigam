@@ -1,0 +1,515 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Notifications Logs{% endblock %}
+{% block body %}
+<!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Loader styling */
+    .loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+    }
+    .spinner-border {
+        color: #f04438; /* Set the color of the spinner */
+        width: 5rem; /* Adjust size if needed */
+        height: 5rem; /* Adjust size if needed */
+    }
+</style>
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'css/logs.css' %}" />
+
+
+<div class="container-fluid px-4 mt-4">
+    <div class="row">
+
+        <div class="col-12 mb-4">
+            <h3 class="pod-heading" style="margin-top: 12px;">{% trans 'Notifications'%}</h3>
+            <p class="text-muted">{% trans 'Yours activity logs should be display below'%}</p>
+        </div>
+ <div class="d-flex justify-content-center align-items-center my-4 border border-1 rounded">
+    <form id="filterForm" class="row w-100 g-2 p-2 align-items-center">
+        <!-- Start Date -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="input-container position-relative">
+                <input 
+                    type="text" 
+                    id="startDateTime" 
+                    class="form-control border-0 pe-5"  
+                    placeholder="{% trans 'Start Date & Time'%}"
+                />
+                <i class="fa-solid fa-calendar-days position-absolute top-50 end-0 translate-middle-y pe-3" style="color: grey;"></i>
+            </div>
+        </div>
+        
+        <!-- End Date -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="input-container position-relative">
+                <input 
+                    type="text" 
+                    id="endDateTime" 
+                    class="form-control border-0 pe-5"  
+                    placeholder="{% trans 'End Date & Time'%}"
+                />
+                <i class="fa-solid fa-calendar-days position-absolute top-50 end-0 translate-middle-y pe-3" style="color: grey;"></i>
+            </div>
+        </div>
+
+        <!-- Buttons Group -->
+        <div class="col-12 col-md-12 col-lg-6">
+            <div class="d-flex flex-nowrap gap-2 justify-content-end">
+                <button
+                    type="button"
+                    id="resetFilterBtn"
+                    class="btn btn-outline-secondary text-truncate flex-grow-1"
+                    style="min-width: 80px;"
+                >
+                    {% trans 'Reset'%}
+                </button>
+                <button
+                    type="button"
+                    id="applyFilterBtn"
+                    class="btn text-white text-truncate flex-grow-1"
+                    style="background-color:#f04438; min-width: 80px;"
+                >
+                    {% trans 'Apply'%}
+                </button>
+                <button
+                    type="button"
+                    id="downloadBtn"  
+                    class="btn text-white text-truncate flex-grow-1"
+                    style="background-color:#f04438; min-width: 120px;"
+                >
+                    {% trans 'Download CSV'%}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Mobile-first adjustments */
+    @media (max-width: 768px) {
+        #filterForm .btn {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        #downloadBtn {
+            min-width: 100px !important;
+        }
+    }
+</style>
+    <div class="col-12 bg-white rounded mt-4">
+        <div class="border rounded">
+            <div class="table-responsive" style="overflow-x: auto; white-space: nowrap;">
+                <table class="table"  id="notificationsTable">
+                    <thead class="table-header">
+                        <tr>
+                            <th>{% trans 'SR No'%}</th>
+                            <th>{% trans 'News Message'%}</th>
+                            <th>{% trans 'Created At'%}</th>
+                            <th>{% trans 'Actions'%}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notificationsTableBody" style="color: #475467;">
+                    <div id="loader" class="loader" style="display: none;">
+                        <div class="spinner-border " role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                        <!-- Rows will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="d-flex justify-content-center mt-3"></div>
+</div>
+<!-- Modal for Log Details -->
+<div class="modal fade" id="logDetailsModal" tabindex="-1" aria-labelledby="logDetailsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered"> <!-- Center the modal vertically -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logDetailsModalLabel">{% trans 'Log Details'%}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="refreshPage()"></button> <!-- Refresh page on close -->
+            </div>
+            <div class="modal-body">
+                <p id="logDetailsContent" class="text-muted">Loading...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn " style="background-color:#f04438; color:white;" data-bs-dismiss="modal" onclick="refreshPage()">Close</button> <!-- Refresh page on close -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function refreshPage() {
+        location.reload(); // Refresh the page when the close button is clicked
+    }
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Constants and variables
+        const apiUrl = '/news/api/notifications/';
+        const accessToken = localStorage.getItem("access_token");
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        let allNotifications = [];
+        const noDataImageUrl = "{% static 'images/no_data.jpg' %}";
+
+        // DOM Elements
+        const tableBody = document.getElementById("notificationsTableBody");
+        const applyFilterBtn = document.getElementById("applyFilterBtn");
+        const resetFilterBtn = document.getElementById("resetFilterBtn");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const loader = document.getElementById("loader");
+        const paginationContainer = document.getElementById("pagination");
+
+        // Only proceed if required elements exist
+        if (!tableBody || !applyFilterBtn || !resetFilterBtn || !downloadBtn || !loader || !paginationContainer) {
+            console.error("Required DOM elements not found");
+            return;
+        }
+
+        // Flatpickr initialization
+        const commonConfig = {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minuteIncrement: 1,
+            maxDate: "today",
+            disableMobile: true,
+            placeholder: "",
+            onReady: function(_, __, instance) {
+                const placeholder = instance.element.dataset.placeholder || 
+                                  instance.element.getAttribute('placeholder') || 
+                                  'Select Date & Time';
+                instance.element.setAttribute('placeholder', placeholder);
+                instance.element.style.color = '#6b7280';
+            }
+        };
+
+        // Start Date Picker
+        const startDateTimePicker = flatpickr("#startDateTime", {
+            ...commonConfig,
+            onChange: function(selectedDates) {
+                if (selectedDates.length && endDateTimePicker) {
+                    endDateTimePicker.set("minDate", selectedDates[0]);
+                }
+            }
+        });
+
+        // End Date Picker
+        const endDateTimePicker = flatpickr("#endDateTime", {
+            ...commonConfig,
+            onChange: function(selectedDates) {
+                if (selectedDates.length && startDateTimePicker) {
+                    startDateTimePicker.set("maxDate", selectedDates[0]);
+                }
+            }
+        });
+
+        // Mobile-specific fixes
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            setTimeout(() => {
+                [startDateTimePicker.element, endDateTimePicker.element].forEach(input => {
+                    if(input && !input.value) {
+                        const placeholder = input.dataset.placeholder || 
+                                          input.getAttribute('placeholder') || 
+                                          'Select Date';
+                        input.setAttribute('placeholder', placeholder);
+                    }
+                });
+            }, 300);
+        }
+
+        // Event Listeners
+        applyFilterBtn.addEventListener('click', applyFilters);
+        resetFilterBtn.addEventListener('click', resetFilters);
+        downloadBtn.addEventListener('click', downloadCSV);
+
+        // Functions
+        function showLoader() {
+            loader.style.display = 'block';
+        }
+
+        function hideLoader() {
+            loader.style.display = 'none';
+        }
+
+        function applyFilters() {
+            const startDate = document.getElementById('startDateTime').value;
+            const endDate = document.getElementById('endDateTime').value;
+
+            if (!startDate && !endDate) {
+                showToast('Please enter at least one date.');
+                return;
+            }
+
+            const filteredNotifications = filterNotificationsByDate(allNotifications, startDate, endDate);
+            displayTableRows(filteredNotifications, 1);
+        }
+
+        function filterNotificationsByDate(notifications, startDate, endDate) {
+            const now = new Date();
+            let start = startDate ? new Date(startDate) : null;
+            let end = endDate ? new Date(endDate) : null;
+
+            if (!start && end) {
+                start = new Date(Math.min(...notifications.map(notification => new Date(notification.created_at))));
+            } else if (start && !end) {
+                end = now;
+            } else if (!start && !end) {
+                return notifications;
+            }
+
+            return notifications.filter(notification => {
+                const notificationDate = new Date(notification.created_at);
+                return notificationDate >= start && notificationDate <= end;
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('startDateTime').value = '';
+            document.getElementById('endDateTime').value = '';
+            displayTableRows(allNotifications, 1);
+        }
+
+        async function fetchDataAndDisplay(page = 1) {
+            showLoader();
+            if (!accessToken) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/login/';
+                        return;
+                    }
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                allNotifications = data;
+                displayTableRows(allNotifications, page);
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                if (tableBody) {
+                    tableBody.innerHTML = `
+                        <tr><td colspan="4" class="text-center">
+                            <img src="${noDataImageUrl}" alt="No Data Found" style="width: 30%; margin-bottom: 10px;">
+                            <p class="fs-5 text-muted">{% trans 'No notifications found' %}</p>
+                        </td></tr>`;
+                }
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function displayTableRows(data, page) {
+            if (!tableBody) return;
+
+            tableBody.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr><td colspan="4" class="text-center">
+                        <img src="${noDataImageUrl}" alt="No Data Found" style="width: 30%; margin-bottom: 10px;">
+                        <p class="fs-5 text-muted">{% trans 'No notifications found' %}</p>
+                    </td></tr>`;
+                return;
+            }
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = data.slice(start, end);
+
+            paginatedData.forEach((notification, index) => {
+                const srNo = start + index + 1;
+                const formattedDate = new Date(notification.created_at).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
+                });
+
+                const notificationMessage = notification.message.length > 100
+                    ? notification.message.substring(0, 100) + "..."
+                    : notification.message;
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${srNo}</td>
+                        <td>${notificationMessage}</td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm view-notification-btn" 
+                                    data-notification-id="${notification.id}"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#notificationModal">
+                                <i class="fas fa-eye" style="font-size: 24px; color: #f04438;"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+
+            attachViewNotificationHandlers();
+            renderPagination(data.length, page);
+        }
+
+        function attachViewNotificationHandlers() {
+            document.querySelectorAll('.view-notification-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const notificationId = this.getAttribute('data-notification-id');
+                    const notification = allNotifications.find(n => n.id == notificationId);
+                    
+                    if (notification) {
+                        const fullMessageEl = document.getElementById('notificationFullMessage');
+                        const dateEl = document.getElementById('notificationDate');
+                        
+                        if (fullMessageEl) fullMessageEl.textContent = notification.message;
+                        if (dateEl) dateEl.textContent = new Date(notification.created_at).toLocaleString();
+                        
+                        if (!notification.is_read) {
+                            markNotificationAsRead(notificationId);
+                        }
+                    }
+                });
+            });
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(`/news/api/notifications/${notificationId}/read/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to mark notification as read');
+                }
+
+                const notification = allNotifications.find(n => n.id == notificationId);
+                if (notification) {
+                    notification.is_read = true;
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        function renderPagination(totalItems, currentPage) {
+            if (!paginationContainer) return;
+
+            const totalPages = Math.ceil(totalItems / rowsPerPage);
+            paginationContainer.innerHTML = '';
+
+            const paginationButtons = document.createElement('div');
+            paginationButtons.classList.add('pagination-buttons', 'd-flex', 'gap-3');
+
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.classList.add('btn');
+                prevButton.style.backgroundColor = '#f04438';
+                prevButton.style.color = 'white';
+                prevButton.textContent = 'Previous';
+                prevButton.onclick = function() { goToPage(currentPage - 1); };
+                paginationButtons.appendChild(prevButton);
+            }
+
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.classList.add('btn');
+                nextButton.style.backgroundColor = '#f04438';
+                nextButton.style.color = 'white';
+                nextButton.textContent = 'Next';
+                nextButton.onclick = function() { goToPage(currentPage + 1); };
+                paginationButtons.appendChild(nextButton);
+            }
+
+            paginationContainer.appendChild(paginationButtons);
+        }
+
+        function goToPage(pageNumber) {
+            currentPage = pageNumber;
+            fetchDataAndDisplay(currentPage);
+        }
+
+        function downloadCSV() {
+            if (!allNotifications || allNotifications.length === 0) {
+                showToast("{% trans 'No notifications available to download.'%}");
+                return;
+            }
+
+            const headers = ['SR No', 'Notification Message', 'Created At'];
+            const rows = allNotifications.map((notification, index) => [
+                index + 1,
+                notification.message.replace(/(\r\n|\n|\r)/gm, " "),
+                new Date(notification.created_at).toLocaleString()
+            ]);
+
+            const csvContent = [headers, ...rows]
+                .map(row => row.map(value => `"${value}"`).join(","))
+                .join("\n");
+
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const downloadLink = document.createElement('a');
+            const fileName = `notifications_${new Date().toISOString()}.csv`;
+
+            if (navigator.msSaveBlob) {
+                navigator.msSaveBlob(blob, fileName);
+            } else {
+                const url = URL.createObjectURL(blob);
+                downloadLink.href = url;
+                downloadLink.setAttribute("download", fileName);
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        }
+
+        function showToast(message) {
+            const toastElement = document.getElementById('videoToast');
+            if (toastElement) {
+                const toastBody = toastElement.querySelector(".toast-body");
+                if (toastBody) {
+                    toastBody.textContent = message;
+                    const toast = new bootstrap.Toast(toastElement);
+                    toast.show();
+                }
+            }
+        }
+
+        // Initialize
+        fetchDataAndDisplay(currentPage);
+    });
+</script>
+{% endblock %}

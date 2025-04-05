@@ -1,0 +1,316 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+{% block title %}
+   Dashboard
+{% endblock %}
+{% block additional_link %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard_Admin.css' %}" />
+<link rel="stylesheet" href="{% static 'css/admin_nav_bar.css' %}" />
+    <style>
+        .responsive-logo {
+            font-size: 50px;
+            width:50px; /* Default font size */
+        }
+        
+        /* For small screens (e.g., mobile) */
+        @media (max-width: 576px) {
+            .responsive-logo {
+                font-size: 20px;
+                width:30px; /* Smaller text size */
+            }
+        }
+        
+        /* For medium screens (e.g., tablets) */
+        @media (min-width: 577px) and (max-width: 768px) {
+            .responsive-logo {
+                font-size: 30px;
+                width:40px; /* Default text size for tablets */
+            }
+        }
+        
+        /* For large screens (e.g., desktops) */
+        @media (min-width: 769px) {
+            .responsive-logo {
+                font-size: 50px;
+                width:50px; /* Larger text size for desktops */
+            }
+        }
+        /* Existing styles */
+        .main-container {
+         display: flex;
+         height: 100vh; /* Ensure the height takes the full viewport height */
+     }
+     
+     .sidebar {
+         position: fixed; /* Fix the sidebar */
+         height: calc(100vh - 80px);
+         bottom: 0; /* Extend to the bottom */
+         width: 320px; /* Fixed width */
+         background-color: white;
+         padding: 0 12px;
+         overflow-y: auto; /* Enable scrolling if content overflows */
+     }
+     
+     .content {
+         margin-left: 320px; /* Offset the content to the right of the sidebar */
+         padding: 20px; /* Add some padding for aesthetics */
+         height: calc(100vh - 80px); /* Height minus the navbar */
+         overflow-y: auto; /* Enable scrolling for content area */
+         /*background-color:white;*/
+     }
+     
+     /* Media query for screens below 765px */
+     @media (max-width: 765px) {
+         .main-container {
+             display: block; /* Change layout to block */
+             height: auto; /* Remove fixed height */
+         }
+     
+         .sidebar {
+             background-color: white;
+             padding: 0 12px;
+             height: 100vh;
+         }
+     
+         .content {
+             margin-left: 0; /* Remove left margin */
+             height: auto; /* Remove height restriction */
+             padding: 10px; /* Adjust padding for mobile view */
+         }
+     }
+     </style>
+{% endblock %}
+{% block content %}
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center fs-2" href="#">
+                <img src="{% static 'images/logo.gif' %}" alt="ICE-Button Logo" class="img-fluid responsive-logo" style="max-height: 50px; margin-right: 10px;">
+                <span class="responsive-logo" style="color:#f04438;">Sanchaar</span>
+            </a>
+            
+            <!-- Navigation Links -->
+            {% comment %} 
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" style="color:#f04438;font-size:20px;" href="{% url 'customadmin:admin_profile'%}" aria-current="page">Profile</a>
+                    </li>
+                </ul>
+            </div> 
+            {% endcomment %}
+            <!-- Sidebar Toggle Button -->
+            <button class="btn px-3 py-2 open-btn me-2 d-md-none" style="background:#f04438"><i class="fas fa-stream"></i></button>
+        </div>
+    </nav>
+            
+
+    <!-- Main Container with Sidebar and Content -->
+    <div class="main-container d-flex" style="height:100vh">
+        <!-- Sidebar -->
+        <div class="sidebar" id="side_nav" style="
+        background-color: white;
+        margin-top: 100px;
+        padding:0 12px ;
+    ">
+            <!-- Sidebar Header -->
+            {% comment %} <div class="header-box px-2 pt-3 pb-4 d-flex justify-content-between">
+                <div class="sidenav-card" style="width:270px ">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <h5>{{ request.user.username|capfirst }}</h5>
+                    <p>{{ request.user.email }}</p>
+                </div>
+            </div> {% endcomment %}
+             <!-- Sidebar Options -->
+             <div class="sidenav-options mt-5">
+                <a id="banners-link" href="{% url 'admin_dashboard' %}" >
+                    <div class="icon-text">
+                        <i class="fa-solid fa-house-chimney-crack"></i>
+                        <span>Dashboard</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="{% url 'user_management' %}" >
+                    <div class="icon-text">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>User Management</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="{% url 'state_management' %}">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-place-of-worship"></i>
+                        <span>State Management</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="{% url 'district_management' %}">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-city"></i>
+                        <span>District management</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="{% url 'cityvillage_management' %}">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Cities and Villages Management</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="{%  url 'ward_management' %}">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-people-group"></i>
+                        <span>Ward Management</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="{% url 'news_management' %}">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-newspaper"></i>
+                        <span>News Management</span>
+                    </div>
+                </a>
+                <!-- <a id="banners-link" href="#">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-message"></i>
+                        <span>ContactUs Query</span>
+                    </div>
+                </a> 
+                <a id="banners-link" href="#">
+                    <div class="icon-text">
+                        <i class="fas fa-question-circle"></i> 
+                        <span>FAQ Management</span>
+                    </div>
+                </a>
+                {% comment %} <a id="banners-link" href="#">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-envelope"></i> 
+                        <span>Email Contents</span>
+                    </div>
+                </a> {% endcomment %}
+                <a id="banners-link" href="#">
+                    <div class="icon-text">
+                        <i class="fas fa-newspaper"></i> 
+                        <span>Static Content</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="#">
+                    <div class="icon-text">
+                        <i class="fas fa-newspaper"></i> 
+                        <span>Blog Management</span>
+                    </div>
+                </a>
+                <a id="banners-link" href="#">
+                    <div class="icon-text">
+                        <i class="fa-solid fa-envelope-open-text"></i> 
+                        <span>Newsletter Management</span>
+                    </div>
+                </a> -->
+                <a id="logout" href="#">
+                    <div class="icon-text ml-2">
+                        <i class="fa-solid fa-person-running"></i>
+                        <span>Logout</span>
+                    </div>
+                </a>
+            </div>
+            
+        </div>
+        <!-- Content Area -->
+        <div class="content">
+            {% block body %} {% endblock %}
+        </div>
+    </div>
+    <!-- Logout Confirmation Popup -->
+    <div class="overlay" id="logout-popup" style="display: none;">
+        <div id="logout-popup-card" class="text-center mt-3">
+            <h5 class="mb-3">Log Out</h5>
+            <p class="mb-3">Are you sure you want to log out?</p>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-secondary btn-block btn-sm" id="logout-cancel"
+                            style="background: #f04438; color: white; border-radius: 19px; padding: 10px;">Cancel
+                    </button>
+                </div>
+                <div class="col">
+                    <a id="confirm-logout" class="btn btn-block btn-sm"
+                    style="background: #ddd; color: #000; border-radius: 19px; padding: 10px; text-decoration: none;">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            // Ensure the active class is correctly applied
+            var currentPath = window.location.pathname; // Get the current path without query parameters
+            var links = document.querySelectorAll('.sidenav-options a');
+            
+            links.forEach(function (link) {
+                // Check if the current link's href (path) matches the current page's path
+                var linkPath = new URL(link.href).pathname;
+                
+                if (linkPath === currentPath) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        
+            // Sidebar link click handler
+            $(".sidebar ul li").on('click', function () {
+                $(".sidebar ul li.active").removeClass('active');
+                $(this).addClass('active');
+            });
+        
+            // Toggle sidebar for mobile view
+            $('.open-btn').on('click', function () {
+                $('.sidebar').toggleClass('active');
+            });
+        
+            // Sidebar link click handler
+            var links = document.querySelectorAll('.sidenav-options a');
+            links.forEach(function (link) {
+                link.addEventListener('click', function () {
+                    links.forEach(function (innerLink) {
+                        innerLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        
+            // Logout popup functionality
+            var logoutLink = document.getElementById('logout');
+            var logoutPopup = document.getElementById('logout-popup');
+            var confirmLogout = document.getElementById('confirm-logout');
+            var cancelLogout = document.getElementById('logout-cancel');
+
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function (event) {
+                    event.preventDefault(); // Prevent the default link action
+                    logoutPopup.style.display = 'flex'; // Show the popup
+                });
+            }
+
+            if (confirmLogout) {
+                confirmLogout.addEventListener('click', function () {
+                    // 1. Destroy JWT token in localStorage (if it exists)
+                    localStorage.removeItem('access_token'); // Modify this to match your token key
+                    localStorage.clear(); // Clears all key-value pairs in localStorage (optional)
+
+                    // 2. Clear the CSRF token (if it's stored as a cookie)
+                    document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'; // Clear CSRF token cookie
+
+                    // 3. Optionally, if you're using cookies to store tokens, you can remove them as well:
+                    document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'; // Clear access token cookie
+                    document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'; // Clear refresh token cookie (if applicable)
+
+                    // 4. Redirect to the logout URL (or home page, depending on your app)
+                    window.location.href = logoutLink ? logoutLink.href : '/'; // You can change '/' to the path you want after logout
+                });
+            }
+
+            if (cancelLogout) {
+                cancelLogout.addEventListener('click', function () {
+                    logoutPopup.style.display = 'none'; // Hide the popup
+                });
+            }
+        });
+    </script>
+
+{% endblock %}

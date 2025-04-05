@@ -1,0 +1,275 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}Plan Management{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <!-- Success Messages -->
+            {% if messages %}
+                <div class="mt-4">
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4" style="color: #f04438;">Manage Plans</h3>
+                    <form method="post" id="planForm" action="{% url 'customadmin:plan_management' %}">
+                        {% csrf_token %}
+                        <div class="row m-1 g-3">
+                            <!-- Plan Name Field -->
+                            <div class="col-md-3">
+                                <label for="plan_name" class="form-label">Plan Name<span style="color:red;">*</span></label>
+                                <input type="text" name="name" class="form-control {% if form.name.errors %}is-invalid{% endif %}" id="plan_name" 
+                                       placeholder="Enter plan name" required maxlength="50"
+                                       value="{{ form.name.value|default_if_none:'' }}">
+                                {% for error in form.name.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                            <!-- Max Emails Field -->
+                            <div class="col-md-2">
+                                <label for="max_emails" class="form-label">Max Emails<span style="color:red;">*</span></label>
+                                <input type="number" name="max_emails" class="form-control {% if form.max_emails.errors %}is-invalid{% endif %}" id="max_emails" 
+                                       placeholder="Enter max emails" required
+                                       value="{{ form.max_emails.value|default_if_none:'' }}"
+                                       oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null;">
+                                {% for error in form.max_emails.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                            <!-- Max Phone Numbers Field -->
+                            <div class="col-md-3">
+                                <label for="max_phone_numbers" class="form-label">Max Phone Numbers<span style="color:red;">*</span></label>
+                                <input type="number" name="max_phone_numbers" class="form-control {% if form.max_phone_numbers.errors %}is-invalid{% endif %}" id="max_phone_numbers" 
+                                       placeholder="Enter max phone numbers" required
+                                       value="{{ form.max_phone_numbers.value|default_if_none:'' }}"
+                                       oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null;">
+                                {% for error in form.max_phone_numbers.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                            <!-- Max Buttons Field -->
+                            <div class="col-md-2">
+                                <label for="max_button" class="form-label">Max Buttons<span style="color:red;">*</span></label>
+                                <input type="number" name="max_button" class="form-control {% if form.max_button.errors %}is-invalid{% endif %}" id="max_button" 
+                                       placeholder="Enter max buttons" required
+                                       value="{{ form.max_button.value|default_if_none:'' }}"
+                                       oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null;">
+                                {% for error in form.max_button.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                            <!-- Cost Field -->
+                            <div class="col-md-2">
+                                <label for="cost" class="form-label">Cost &#8377;<span style="color:red;">*</span></label>
+                                <input type="number" name="cost" class="form-control {% if form.cost.errors %}is-invalid{% endif %}" id="cost" 
+                                       placeholder="Enter cost" required
+                                       value="{{ form.cost.value|default_if_none:'' }}"
+                                       oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null;">
+                                {% for error in form.cost.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Stream Length Selector -->
+                            <div class="col-md-4">
+                                <label for="stream_length" class="form-label">Stream Length (MM:SS)<span style="color:red;">*</span></label>
+                                <div class="d-flex">
+                                    <select name="stream_length_minutes" class="form-select {% if form.stream_length_minutes.errors %}is-invalid{% endif %}" id="stream_length_minutes">
+                                        <option value="">Minutes</option>
+                                        {% for i in 60|range_filter %}
+                                            <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="mx-1">:</span>
+                                    <select name="stream_length_seconds" class="form-select {% if form.stream_length_seconds.errors %}is-invalid{% endif %}" id="stream_length_seconds">
+                                        <option value="">Seconds</option>
+                                        {% for i in 60|range_filter %}
+                                            <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% for error in form.stream_length_minutes.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                                {% for error in form.stream_length_seconds.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Subscription Type Selector -->
+                            <div class="col-md-2">
+                                <label for="subscription_type" class="form-label">Subscription Type<span style="color:red;">*</span></label>
+                                <select name="subscription_type" class="form-select {% if form.subscription_type.errors %}is-invalid{% endif %}" id="subscription_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="monthly" {% if form.subscription_type.value == 'monthly' %}selected{% endif %}>Monthly</option>
+                                    <option value="yearly" {% if form.subscription_type.value == 'yearly' %}selected{% endif %}>Yearly</option>
+                                </select>
+                                {% for error in form.subscription_type.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Stream Checkbox Field -->
+                            <div class="col-md-3 ">
+                                <label for="stream" class="form-label">Live Stream<span style="color:red;">*</span></label>
+                                <div class="form-check form-switch ml-3">
+                                    <input type="checkbox" name="stream" class="form-check-input {% if form.stream.errors %}is-invalid{% endif %}" id="stream" 
+                                        {% if form.stream.value %}checked{% endif %}>
+                                    <label class="form-check-label" for="stream">Enable Live Stream</label>
+                                    {% for error in form.stream.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn text-white" style="background-color: #f04438;">
+                                    <i class="fas fa-plus-circle"></i> Add Plan
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <h4 class="mt-5">Existing Plans</h4>
+                    <div class="table-container mt-4 text-left">
+                        {% if plans %}
+                        <table class="table table-hover" style="width: 100%; border-collapse: collapse;">
+                            <thead style="background-color: #f04438; color: white;">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Max Emails</th>
+                                    <th>Max Phone Numbers</th>
+                                    <th>Max Buttons</th>  
+                                    <th>Stream Duration</th>  
+                                    <th>Live Stream</th>
+                                    <th>Subscription Type</th>
+                                    <th>Cost</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in plans %}
+                                <tr>
+                                    <td>{{ plan.name }}</td>
+                                    <td>{{ plan.max_emails }}</td>
+                                    <td>{{ plan.max_phone_numbers }}</td>
+                                    <td>{{ plan.max_button }}</td>  
+                                    <td>{{ plan.stream_length }}</td>  
+                                    <td>{{ plan.stream|yesno:"Yes,No" }}</td>
+                                    <td>
+                                        {% if plan.subscription_type == 'monthly' %}
+                                            Monthly
+                                        {% elif plan.subscription_type == 'yearly' %}
+                                            Yearly
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>&#8377; {{ plan.cost }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-between">
+                                            <!-- Edit Plan Icon -->
+                                            <a href="{% url 'customadmin:edit_plan' plan.id %}" title="Edit Plan">
+                                                <i class="fas fa-edit" style="font-size: 24px; color: #f04438;"></i>
+                                            </a>
+
+                                            <!-- Delete Plan Icon -->
+                                            <a href="#" onclick="showDeletePlanPopup('{% url 'customadmin:delete_plan' plan.id %}')" title="Delete Plan">
+                                                <i class="fa fa-trash" style="font-size: 24px; color: #a7364b;"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <div class="no-data">
+                                        <img src="{% static 'images/no_data.jpg' %}" alt="No data available" style="max-width: 40%; height: auto;">
+                                    </div>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="no-data">
+                            <img src="{% static 'images/no_data.jpg' %}" alt="No data available" style="max-width: 40%; height: auto;">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Plan Popup -->
+<div class="overlay" id="deletePlanOverlay" style="display:none;">
+    <div id="deletePlanPopupCard" class="text-center mt-3">
+        <h5 class="mb-3">Delete Plan</h5>
+        <p class="mb-3">Are you sure you want to delete this plan?</p>
+        <form id="deletePlanForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="deletePlanUrl" name="deletePlanUrl" value="">
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-secondary btn-block btn-sm" id="delete-cancel" onclick="hideDeletePlanPopup()"
+                            style="background: #ddd; color: #000; border-radius: 19px; padding: 10px;">Cancel
+                    </button>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-block btn-sm" id="delete-button"
+                            style="background: #a7364b; color: white; border-radius: 19px; padding: 10px;"
+                            onclick="confirmDeletePlan()"><span id="deleteLoader" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>Delete
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showDeletePlanPopup(url) {
+        document.getElementById('deletePlanUrl').value = url;
+        document.getElementById('deletePlanOverlay').style.display = 'block';
+    }
+
+    function hideDeletePlanPopup() {
+        document.getElementById('deletePlanOverlay').style.display = 'none';
+    }
+
+    function confirmDeletePlan() {
+        const url = document.getElementById('deletePlanUrl').value;
+        const form = document.getElementById('deletePlanForm');
+        form.action = url; // Set the action of the form to the delete URL
+        form.submit(); // Submit the form
+    }
+</script>
+{% endblock %}

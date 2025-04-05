@@ -1,0 +1,200 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Add New FAQ{% endblock %}
+{% block body %}
+<style>
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+    .alert-success {
+        background-color: #28a745;
+    }
+    .alert-danger {
+        background-color: #dc3545;
+    }
+    .alert-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .alert-info {
+        background-color: #17a2b8;
+    }
+</style>
+
+{% if messages %}
+    <div id="messages-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="min-width: 300px;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<script>
+    // Automatically hide messages after 5 seconds
+    setTimeout(function () {
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+            messagesContainer.style.transition = 'opacity 0.3s ease';
+            messagesContainer.style.opacity = '0';
+            setTimeout(() => messagesContainer.remove(), 300);
+        }
+    }, 3000);
+</script>
+<div class="container mt-5">
+    <a href="javascript:history.back()" style="background-color: #f04438; border-color: #f04438; color:white" class="btn col-md-2">
+        <i class="fa fa-arrow-left" style="color:white"></i> Back
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4" style="color: #f04438;">Add New FAQ</h3>
+                    <form id="addFAQForm" method="POST" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Heading Selection -->
+                        <div class="form-group mb-3">
+                            <label for="id_heading">Select Heading</label>
+                            <select id="id_heading" name="heading" class="form-control" required>
+                                <option value="">Select an existing heading</option>
+                                {% for heading in headings %}
+                                    <option value="{{ heading.id }}" {% if heading.id == selected_heading %}selected{% endif %}>
+                                        {{ heading.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if errors.heading %}
+                                <div class="text-danger">{{ errors.heading }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- New Heading Fields (Initially hidden) -->
+                        <div id="newHeadingFields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label for="id_new_heading">Or Create New Heading<span style="color:red;">*</span></label>
+                                <input type="text" id="id_new_heading" name="new_heading" class="form-control"
+                                       placeholder="Enter new heading title (optional)" maxlength="255" value="{{ new_heading|default:'' }}">
+                                {% if errors.new_heading %}
+                                    <div class="text-danger">{{ errors.new_heading }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="id_new_description">Heading Description (Optional)</label>
+                                <textarea id="id_new_description" name="new_description" class="form-control" rows="3"
+                                          placeholder="Enter an optional description for the new heading">{{ new_description|default:'' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Question -->
+                        <div class="form-group mb-3">
+                            <label for="id_question">Question<span style="color:red;">*</span></label>
+                            <textarea id="id_question" name="question" class="form-control" rows="3" required
+                                      placeholder="Enter the question">{{ question|default:'' }}</textarea>
+                            {% if errors.question %}
+                                <div class="text-danger">{{ errors.question }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- FAQ Answer -->
+                        <div class="form-group mb-3">
+                            <label for="id_answer">Answer<span style="color:red;">*</span></label>
+                            <textarea id="id_answer" name="answer" class="form-control" rows="5" required
+                                      placeholder="Enter the answer">{{ answer|default:'' }}</textarea>
+                            {% if errors.answer %}
+                                <div class="text-danger">{{ errors.answer }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block" id="addFAQButton"
+                                    style="background-color: #f04438; border-color: #f04438;">
+                                <i class="fas fa-plus"></i> Add FAQ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery for additional scripting -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const headingDropdown = $('#id_heading');
+        const newHeadingFields = $('#newHeadingFields');
+        const form = $('#addFAQForm');
+        const addFAQButton = $('#addFAQButton');
+
+        function toggleNewHeadingFields() {
+            if (headingDropdown.val()) {
+                // Hide new heading fields if an existing heading is selected
+                newHeadingFields.hide();
+            } else {
+                // Show new heading fields if no existing heading is selected
+                newHeadingFields.show();
+            }
+        }
+
+        // Initialize the state of the fields on page load
+        toggleNewHeadingFields();
+
+        // Add event listener for change events
+        headingDropdown.on('change', toggleNewHeadingFields);
+
+        // Real-time validation for individual fields
+        function validateField(input) {
+            input.classList.remove('is-invalid');
+            if (input.checkValidity()) {
+                input.classList.remove('is-invalid');
+            } else {
+                input.classList.add('is-invalid');
+            }
+        }
+
+        const fieldsToValidate = [
+            '#id_question',
+            '#id_answer',
+        ];
+
+        fieldsToValidate.forEach(function(selector) {
+            $(selector).on('input', function() {
+                validateField(this);
+            });
+        });
+
+        // Form submission validation
+        form.on('submit', function(event) {
+            let isValid = true;
+
+            fieldsToValidate.forEach(function(selector) {
+                const input = $(selector)[0];
+                if (!input.checkValidity()) {
+                    isValid = false;
+                    validateField(input);
+                }
+            });
+
+            // Ensure either a heading is selected or a new heading is provided
+            const newHeading = $('#id_new_heading');
+            if (!headingDropdown.val() && !newHeading.val()) {
+                isValid = false;
+                newHeading.addClass('is-invalid');
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+                addFAQButton.prop('disabled', false);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }}{% endblock %}
+{% block body %}
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-body">
+                    <h1>{{ post.title }}</h1>
+                    <p><strong>Category:</strong> {{ post.get_category_display }}</p>
+                    <p><strong>Description:</strong> {{ post.description }}</p>
+                    <p><strong>Content:</strong> {{ post.content|safe }}</p>
+                    <p><strong>Created By:</strong> {{ post.created_by.name }}</p>
+                    <p><strong>Created At:</strong> {{ post.created_at }}</p>
+                    <p><strong>Updated At:</strong> {{ post.updated_at }}</p>
+
+                    {% if post.extra_content %}
+                        <hr>
+                        <h4>Extra Content</h4>
+                        <p>{{ post.extra_content }}</p>
+                    {% endif %}
+
+                    {% if post.extra_images.count %}
+                        <hr>
+                        <h4>Extra Images</h4>
+                        <div class="row">
+                            {% for image in post.extra_images.all %}
+                                <div class="col-md-4 mb-2">
+                                    <img src="{{ image.image.url }}" alt="{{ image.title }}" class="img-fluid">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if post.quote_text %}
+                        <hr>
+                        <blockquote>
+                            <p>{{ post.quote_text }}</p>
+                            <footer>- {{ post.quote_author.name }}</footer>
+                        </blockquote>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

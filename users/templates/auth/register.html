@@ -1,0 +1,977 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+     rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
+
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin: 0;
+        background-color: #f8f9fa;
+        font-family: "Inter", sans-serif;
+      }
+      .signup-container {
+        display: flex;
+        width: 100%;
+        border-radius: 8px;
+        min-height:100vh;
+      }
+      .signup-form {
+        flex: 1;
+        padding: 40px;
+        background-color: white;
+        background-image: url('{% static "images/grid.png" %}');
+        background-position: top; /* Ensures the image starts at the top */
+        background-size: 590px; /* The image keeps its original size */
+        background-repeat: no-repeat; /* Prevents the image from repeating */
+        display: flex;
+        flex-direction: column;
+
+
+      }
+      .btn-goto{
+        background-color:#f04438;
+        color:white;
+      }
+      .btn-goto:hover{
+        background-color:#f04438;
+        color:white;
+      }
+      .signup-form img {
+        display: block;
+        margin: 0 auto 20px;
+      }
+      .signup-form h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1f1f1f;
+        margin-bottom: 10px;
+      }
+      .signup-form p {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 30px;
+      }
+      .signup-form .form-control {
+        height: 45px;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      .signup-form .form-label {
+        font-weight: 500;
+        color: #6c757d;
+        text-align: left;
+        display: block;
+      }
+      .signup-form .forgot-password {
+        font-size: 14px;
+        color: #f04438;
+        text-decoration: none;
+      }
+      .signup-form .btn-primary {
+        background-color: #f04438;
+        border: none;
+        height: 45px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        width: 100%;
+        margin-top: 20px;
+      }
+      .signup-form .signup-link {
+        font-size: 14px;
+        color: #6c757d;
+        margin-top: 20px;
+      }
+      .signup-form .signup-link a {
+        color: #f04438;
+        text-decoration: none;
+      }
+      .signup-image {
+        flex: 1;
+        background: url("{% static 'images/login.png' %}") no-repeat center
+          center;
+        background-size: cover;
+        width: 50%;
+      }
+      .error-message {
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: left;
+      }
+      .form-control.is-valid {
+        border-color: #28a745;
+        background-color: #dff0d8;
+      }
+      .form-control.is-invalid {
+        border-color: #f04438;
+      }
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .signup-container {
+          flex-direction: column;
+          height: auto;
+        }
+        .signup-form,
+        .signup-image {
+          width: 100%;
+          height: 50vh;
+        }
+        .passwordSec {
+          flex-direction: column !important;
+        }
+        .names{
+          display: flex;
+          flex-direction: column;
+        }
+      }
+      .error-message {
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: left;
+      }
+      .validation-list {
+        list-style-position: inside; /* Align list bullets and text */
+        margin-left: 0; /* Remove default left margin */
+        padding-left: 0; /* Remove default padding */
+        text-align: left; /* Ensure text is aligned to the left */
+      }
+
+      .validation-list .requirement {
+        color: #f04438; /* Default red for unfulfilled requirements */
+        font-size: 14px; /* Adjust font size */
+        margin: 5px 0; /* Add spacing between items */
+      }
+
+      .validation-list .requirement.valid {
+        color: #28a745; /* Green for fulfilled requirements */
+      }
+      .form-check {
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Optional: Adds spacing between the checkbox and the label */
+      }
+      .form-check-input {
+        margin-left: 0; /* Removes default margin */
+      }
+      .form-check-label {
+        margin-bottom: 0; /* Ensures no extra spacing below the label */
+      }
+      .spinner-border.custom-spinner {
+        border-top-color: #f04438 !important; /* Ensure the custom color is applied */
+      }
+      .error-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(
+          -50%,
+          -50%
+        ); /* Centers the popup in the middle of the screen */
+        width: 90%; /* Increase width to 90% for a larger container */
+        max-width: 500px; /* Optional: Increase max width */
+        height: auto; /* Allow height to adjust based on content */
+        background: rgba(0, 0, 0, 0.5); /* Background overlay */
+        display: none; /* Hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 1050; /* Ensure it appears above other content */
+      }
+
+      .popup-content {
+        background: white;
+        padding: 30px; /* Increased padding for more space */
+        border-radius: 10px; /* Round corners a bit more */
+        text-align: center;
+        border: 2px solid #ddd; /* Optional: Add border around the popup */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth effect */
+      }
+
+      .popup-content button {
+        margin-top: 10px;
+        padding: 12px 20px; /* Increase button size */
+        background-color: #f04438;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .popup-content button:hover {
+        background-color: #d33e2a; /* Optional: Change color on hover */
+      }
+      .passwordSec {
+        width: 100%;
+        display: flex;
+
+        flex-direction: row;
+      }
+      .password {
+        width: 100% !important;
+        background: transparent;
+      }
+      .password:focus {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+      }
+      .passwithicon {
+        border: 1px solid;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .passwithicon input {
+        border: none;
+      }
+      .eyebtn {
+        border: none;
+        width: 50px;
+        background: transparent;
+      }
+      .passwithicon {
+        border: 1px solid #ddd; /* Optional: You can style the container */
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+      }
+
+      .passwithicon input {
+        flex-grow: 1; /* Ensures input takes full width inside container */
+        border: none; /* Removes input border */
+        outline: none; /* Removes focus outline */
+        background: transparent; /* Makes background consistent */
+      }
+
+      .eyebtn {
+        background: transparent; /* Removes button background */
+        border: none; /* Removes button border */
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="signup-container">
+      <div class="signup-form text-center">
+        <a href="{% url 'home' %}"><img
+          alt="Logo"
+          height="50"
+          src="{% static 'images/bsnk.png' %}"
+          width="50"
+        /></a>
+        <h2>{% trans 'Create New Account' %}</h2>
+        <p>{% trans 'Secure your safety in emergency situation'%}</p>
+        <form id="signupForm">
+          <div class="row mb-3 names">
+            <div class="col">
+              <label for="fullName" class="form-label">{% trans 'Full Name'%}*</label>
+              <input
+                type="text"
+                class="form-control"
+                maxlength="30"
+                id="fullName"
+                placeholder="{% trans 'Enter your name'%}"
+                 oninput="this.value = this.value.replace(/[^a-zA-Z ]/g, '')"
+              />
+              <div id="fullNameError" class="error-message"  style="color: red"></div>
+            </div>
+            <div class="col">
+              <label for="username" class="form-label">{% trans 'Username'%}*</label>
+              <input
+                type="text"
+                class="form-control"
+                maxlength="20"
+                id="username"
+                placeholder="{% trans 'Enter username'%}"
+              />
+              <div
+                id="usernameError"
+                class="error-message"
+                style="color: red"
+              ></div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">{% trans 'Email'%}*</label>
+
+            <input
+              type="email"
+              class="form-control w-100"
+              maxlength="240"
+              id="email"
+              placeholder="{% trans 'Enter your email'%}"
+            />
+            <div id="emailError" class="error-message"  style="color: red"></div>
+          </div>
+          <div class="mb-3">
+            <label for="phoneNumber" class="form-label">{% trans 'Phone Number'%}*</label>
+            <div class="input-group">
+                <!-- Country Code Dropdown -->
+                <select class="form-select" id="countryCode" style="max-width: 150px;">
+                  <option value="+91" selected>🇮🇳 +91 (India)</option>
+                  <option value="+1">🇺🇸 +1 (USA)</option>
+                  <option value="+44">🇬🇧 +44 (UK)</option>
+                  <option value="+61">🇦🇺 +61 (Australia)</option>
+                  <option value="+81">🇯🇵 +81 (Japan)</option>
+                  <option value="+49">🇩🇪 +49 (Germany)</option>
+                  <option value="+33">🇫🇷 +33 (France)</option>
+                  <option value="+86">🇨🇳 +86 (China)</option>
+                  <option value="+39">🇮🇹 +39 (Italy)</option>
+                  <option value="+7">🇷🇺 +7 (Russia)</option>
+                  <option value="+82">🇰🇷 +82 (South Korea)</option>
+                  <option value="+55">🇧🇷 +55 (Brazil)</option>
+                  <option value="+34">🇪🇸 +34 (Spain)</option>
+                  <option value="+62">🇮🇩 +62 (Indonesia)</option>
+                  <option value="+60">🇲🇾 +60 (Malaysia)</option>
+                  <option value="+63">🇵🇭 +63 (Philippines)</option>
+                  <option value="+65">🇸🇬 +65 (Singapore)</option>
+                  <option value="+64">🇳🇿 +64 (New Zealand)</option>
+                  <option value="+47">🇳🇴 +47 (Norway)</option>
+                  <option value="+46">🇸🇪 +46 (Sweden)</option>
+                  <option value="+41">🇨🇭 +41 (Switzerland)</option>
+                  <option value="+31">🇳🇱 +31 (Netherlands)</option>
+                  <option value="+34">🇪🇸 +34 (Spain)</option>
+                  <option value="+92">🇵🇰 +92 (Pakistan)</option>
+                  <option value="+971">🇦🇪 +971 (UAE)</option>
+                  <option value="+20">🇪🇬 +20 (Egypt)</option>
+                  <option value="+27">🇿🇦 +27 (South Africa)</option>
+                  <option value="+256">🇺🇬 +256 (Uganda)</option>
+                  <option value="+254">🇰🇪 +254 (Kenya)</option>
+                  <option value="+212">🇲🇦 +212 (Morocco)</option>
+                  <option value="+213">🇩🇿 +213 (Algeria)</option>
+                  <option value="+251">🇪🇹 +251 (Ethiopia)</option>
+                  <option value="+234">🇳🇬 +234 (Nigeria)</option>
+                  <option value="+1">🇨🇦 +1 (Canada)</option>
+                  <option value="+598">🇺🇾 +598 (Uruguay)</option>
+                  <option value="+591">🇧🇴 +591 (Bolivia)</option>
+                  <option value="+56">🇨🇱 +56 (Chile)</option>
+                  <option value="+51">🇵🇪 +51 (Peru)</option>
+                  <option value="+52">🇲🇽 +52 (Mexico)</option>
+                  <option value="+370">🇱🇹 +370 (Lithuania)</option>
+                  <option value="+48">🇵🇱 +48 (Poland)</option>
+                  <option value="+371">🇱🇻 +371 (Latvia)</option>
+                  <option value="+372">🇪🇪 +372 (Estonia)</option>
+                  <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                  <option value="+421">🇸🇰 +421 (Slovakia)</option>
+                  <option value="+30">🇬🇷 +30 (Greece)</option>
+                  <option value="+351">🇵🇹 +351 (Portugal)</option>
+                  <option value="+43">🇦🇹 +43 (Austria)</option>
+                  <option value="+32">🇧🇪 +32 (Belgium)</option>
+                  <option value="+90">🇹🇷 +90 (Turkey)</option>
+                  <option value="+380">🇺🇦 +380 (Ukraine)</option>
+                  <option value="+386">🇸🇮 +386 (Slovenia)</option>
+                  <option value="+385">🇭🇷 +385 (Croatia)</option>
+                  <option value="+382">🇲🇪 +382 (Montenegro)</option>
+                  <option value="+36">🇭🇺 +36 (Hungary)</option>
+                  <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                  <option value="+82">🇰🇷 +82 (South Korea)</option>
+                </select>
+              <input type="text" class="form-control" maxlength="12" id="phoneNumber" placeholder="{% trans 'Enter phone number '%}"/>
+            </div>
+            <div id="phoneNumberError" class="error-message" style="color: red"></div>
+          </div>
+          <div class="row mb-3 passwordSec">
+            <div class="col position-relative">
+              <label for="password" class="form-label">{% trans 'Password'%}*</label>
+              <div class="passwithicon">
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control password"
+                  maxlength="24"
+                  placeholder="{% trans 'Create a password'%}"
+                />
+                <button
+                  type="button"
+                  class="eyebtn fas fa-eye"
+                  id="togglePassword"
+                ></button>
+              </div>
+              <div id="passwordError" class="error-message"></div>
+              <ul id="passwordRequirements" class="validation-list">
+                <li class="requirement" id="lengthRequirement">
+                  {% trans 'Password must be 8-24 characters'%}
+                </li>
+                <li class="requirement" id="uppercaseRequirement">
+                  {% trans 'Contain at least one uppercase letter'%}
+                </li>
+                <li class="requirement" id="lowercaseRequirement">
+                  {% trans 'Contain at least one lowercase letter'%}
+                </li>
+                <li class="requirement" id="specialCharRequirement">
+                  {% trans 'Contain at least one special character'%}
+                </li>
+                <li class="requirement" id="numberRequirement">
+                  {% trans 'Contain at least one number'%}
+                </li>
+              </ul>
+              <div id="passwordError" class="error-message"></div>
+            </div>
+            <div class="col position-relative">
+              <label for="confirmPassword" class="form-label"
+                >{% trans 'Confirm Password'%}*</label
+              >
+              <div class="passwithicon">
+                <input
+                  type="password"
+                  class="form-control password"
+                  id="confirmPassword"
+                  maxlength="24"
+                  placeholder="{% trans 'Confirm a password'%}"
+                />
+                <button
+                  type="button"
+                  class="eyebtn fas fa-eye"
+                  id="toggleConfirmPassword"  
+                ></button>
+              </div>
+              <div id="confirmPasswordError" class="error-message"></div>
+            </div>
+          </div>
+          <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="terms" required/>
+            <label class="form-check-label" for="terms"
+              >{% trans 'I agree to'%} <a href="/terms-and-conditions/" target="_blank">{% trans 'terms & conditions'%}</a></label
+            >
+            <div id="termsError" class="error-message"></div>
+          </div>
+          <button id="signupButton" type="submit" class="btn btn-primary">
+            <span id="buttonText">{% trans 'Sign Up'%}</span>
+            <div id="buttonSpinner" class="spinner-border text-light" style="display: none" role="status" >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </form>
+        <div class="signup-link">
+          <p>{% trans 'Already have an account?'%} <a href="{% url 'login' %}">&nbsp;{% trans 'Log In'%}</a></p>
+        </div> 
+      </div>
+      <div class="signup-image"></div>
+    </div>
+    <!-- Popup for Email Error -->
+    <div id="emailErrorPopup" class="error-popup" style="display: none">
+      <div class="popup-content">
+        <p id="emailErrorPopupMessage"></p>
+        <button onclick="closePopup('emailErrorPopup')">{% trans 'Close'%}</button>
+      </div>
+    </div>
+
+    <!-- Popup for Username Error -->
+    <div id="usernameErrorPopup" class="error-popup" style="display: none">
+      <div class="popup-content">
+        <p id="usernameErrorPopupMessage"></p>
+        <button onclick="closePopup('usernameErrorPopup')">{% trans 'Close'%}</button>
+      </div>
+    </div>
+
+    <!-- Popup for Phone Number Error -->
+    <div id="phoneNumberErrorPopup" class="error-popup" style="display: none">
+      <div class="popup-content">
+        <p id="phoneNumberErrorPopupMessage"></p>
+        <button onclick="closePopup('phoneNumberErrorPopup')">{% trans 'Close'%}</button>
+      </div>
+    </div>
+
+    <!-- Popup for All Error -->
+    <div id="allErrorPopup" class="error-popup" style="display: none">
+      <div class="popup-content">
+        <p id="allErrorPopupMessage"></p>
+        <button onclick="closePopup('allErrorPopup')">{% trans 'Close'%}</button>
+      </div>
+    </div>
+
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">{% trans 'Success'%}</h5>
+      </div>
+      <div class="modal-body" id="successModalMessage">
+        {% trans 'Account created successfully!'%}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-goto" onclick="redirectToLogin()">{% trans 'Go to Login'%}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="errorModalLabel">{% trans 'Error'%}</h5>
+      </div>
+      <div class="modal-body" id="errorModalMessage">
+        {% trans 'Something went wrong. Please try again.'%}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script
+src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+
+></script>
+
+    <script>
+      function redirectToLogin() {
+        // Redirect to the login page (adjust the URL as needed)
+        window.location.href = '/login';  // Change '/login' to the correct path if needed
+    }
+    
+      document.getElementById("togglePassword").addEventListener("click", function () {
+        const passwordField = document.getElementById("password");
+        togglePasswordVisibility(passwordField, this);
+      });
+
+
+      
+      document.getElementById("toggleConfirmPassword").addEventListener("click", function () {
+        const confirmPasswordField = document.getElementById("confirmPassword");
+        togglePasswordVisibility(confirmPasswordField, this);
+      });
+
+      function togglePasswordVisibility(passwordField, icon) {
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          passwordField.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    
+    const form = document.getElementById("signupForm");
+    const buttonSpinner = document.getElementById("buttonSpinner");
+    const signupButton = document.getElementById("signupButton");
+
+    const errorMessages = {
+      fullName: {
+        empty: "This field is required.",
+        invalidChars: "Full Name must only contain letters and spaces.",
+        tooLong: "Full Name cannot exceed 30 characters.",
+        consecutiveSpaces: "Full Name cannot have consecutive spaces.",
+      },
+      username: {
+        empty: "This field is required.",
+        tooLong: "Username cannot exceed 20 characters.",
+        invalidChars:
+          "Username can only contain letters, numbers, '.', and '_'.",
+        startsWithInvalid:
+          "Username cannot start with a number, period, or underscore.",
+        endsWithInvalid: "Username cannot end with a period or underscore.",
+        consecutivePattern: "Username cannot have invalid patterns.",
+      },
+      email: {
+        empty: "This field is required.",
+        invalidFormat: "Enter a valid email (e.g., example@domain.com).",
+        invalidDomain: "Email domain must be valid.",
+      },
+      phoneNumber: {
+        empty: "This field is required.",
+        nonNumericInput: "Phone number can only contain numeric digits (0-9).",
+        invalidFormat: "Phone Number must be exactly 10 digits.",
+        repetitive: "Phone Number cannot contain all identical digits.",
+        sequential: "Phone Number cannot be sequential like 1234567890.",
+        invalidStart: "Phone Number cannot start with 0 or 1.",
+
+      },
+      password: {
+        empty: "This field is required.",
+        tooShort: "Password must be at least 8 characters.",
+        tooLong: "Password cannot exceed 24 characters.",
+        noUppercase: "Password must include at least one uppercase letter.",
+        noLowercase: "Password must include at least one lowercase letter.",
+        noNumber: "Password must include at least one number.",
+        noSpecialChar: "Password must include at least one special character.",
+        containsName: "Password cannot contain your name.",
+      },
+      confirmPassword: {
+        empty: "This field is required.",
+        mismatch: "Passwords does not match.",
+      },
+      terms: {
+        notAccepted: "You must agree to the terms and conditions.",
+      },
+    };
+
+    const validationRules = {
+      fullName: (value,dependencies="") => {
+        if (!value) return errorMessages.fullName.empty;
+        if (/[^a-zA-Z ]/.test(value)) return errorMessages.fullName.invalidChars;
+        if (value.length > 30) return errorMessages.fullName.tooLong;
+        if (/\s{2,}/.test(value)) return errorMessages.fullName.consecutiveSpaces;
+        return "";
+      },
+      username: (value, dependencies="") => {
+        if (!value) return errorMessages.username.empty;
+        if (value.length > 20) return errorMessages.username.tooLong;
+        if (/[^a-zA-Z0-9._]/.test(value)) return errorMessages.username.invalidChars;
+        if (/^[._]/.test(value) || /^[0-9]/.test(value))
+          return errorMessages.username.startsWithInvalid;
+        if (/[._]$/.test(value)) return errorMessages.username.endsWithInvalid;
+        return "";
+      },
+      email: (value, dependencies = "") => {
+        if (!value) return errorMessages.email.empty;
+      
+        // General email format validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,10}$/i;
+        if (!emailRegex.test(value)) return errorMessages.email.invalidFormat;
+      
+        // Disallow invalid domain extensions
+        if (
+          /\.com\..+/i.test(value) ||          // Prevent `.com.` followed by anything
+          /\.gov\.in\..+/i.test(value) ||      // Prevent `.gov.in.` followed by anything
+          /\.edu\.in\..+/i.test(value) ||      // Prevent `.edu.in.` followed by anything
+          /\.(\w+)\.\1/i.test(value)           // Prevent duplicate domains (e.g., `.com.com`)
+        ) {
+          return "Invalid email format: Ensure no extra dots or duplicate domain extensions.";
+        }
+      
+        // Extended list of allowed domains
+        const allowedDomains = [
+          "com", "org", "gov", "edu", "net", "info", "biz", "me", "pro",
+          "gov.in", "edu.in", "ac.in", "org.in", "com.in", "co.in",
+          "gov.uk", "ac.uk", "org.uk", "co.uk",
+          "gov.au", "edu.au", "com.au", "org.au",
+          "gov.sg", "edu.sg", "com.sg",
+          "gov.ca", "com.ca", "edu.ca",
+          "gov.cn", "edu.cn", "com.cn",
+          "gov.jp", "edu.jp",
+          "gov.za", "edu.za",
+          "gov.br", "gov.ru",
+          "tech", "health", "ai", "io", "cloud", "tv", "news", "bank", "finance",
+          "eu", "uk", "ca", "au", "sg", "jp", "br" // Regional and international domains
+        ];
+      
+        // Create a regex pattern for allowed domains
+        const domainPattern = new RegExp(
+          `(${allowedDomains.map((d) => d.replace(".", "\\.")).join("|")})$`,
+          "i"
+        );
+      
+        // Validate against allowed domains
+        if (!domainPattern.test(value)) {
+          return `Invalid Email Domain.`;
+        }
+        if (/\.\./.test(value)) {
+         // emailError.textContent =
+         return `Invalid email format: Email cannot contain consecutive dots.`;
+        
+        }
+        return "";
+      },
+      countryCode: (value) => {
+        if (!value) return "Country code is required.";
+        return ""; // No error
+      },
+      
+      phoneNumber: (value,dependencies="") => {
+
+        if (!value) return errorMessages.phoneNumber.empty;
+        if (!/^\d+$/.test(value)) {
+          return errorMessages.phoneNumber.nonNumericInput;
+        }else
+        // Check for valid 10-digit numeric format
+        // Disallow repetitive digits like 9999999999, 1111111111, etc.
+        if (/^(\d)\1+$/.test(value)) {
+          return errorMessages.phoneNumber.repetitive;
+        }else
+      
+        // Disallow sequential numbers like 1234567890 or 9876543210
+        if (
+          value === "1234567890" ||
+          value === "9876543210" ||
+          /012345|987654/.test(value)
+        ) {
+          return errorMessages.phoneNumber.sequential;
+        }else
+      
+        // Check for invalid starting digits (e.g., disallow 0 or 1 as the starting digit)
+        if (/^[01]/.test(value)) {
+          return errorMessages.phoneNumber.invalidStart;
+        }else
+      
+        // Check against known valid telecom ranges (e.g., in India: 6-9 as starting digits)
+      
+        return ""; // If all checks pass, return no error
+      },
+      password: (value, dependencies) => {
+        // Ensure fullName is a string, otherwise set it to an empty string
+        const nameParts =dependencies.fullName ? dependencies.fullName.split(" ") : [];
+        const firstName = nameParts[0] || "";
+        var lastName = nameParts[1] || "";
+        if(lastName=="") lastName=null
+        if (!value) return errorMessages.password.empty;
+        if (value.length < 8) return errorMessages.password.tooShort;
+        if (value.length > 24) return errorMessages.password.tooLong;
+        if (!/[A-Z]/.test(value)) return errorMessages.password.noUppercase;
+        if (!/[a-z]/.test(value)) return errorMessages.password.noLowercase;
+        if (!/\d/.test(value)) return errorMessages.password.noNumber;
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return errorMessages.password.noSpecialChar;
+        if (value.includes(firstName) || value.includes(lastName))
+          return errorMessages.password.containsName;
+        return ""; 
+      },
+      confirmPassword: (value, dependencies) => {
+        const password = dependencies.password?.trim() || "";
+        if (!value.trim()) return errorMessages.confirmPassword.empty;
+        if (value.trim() !== password) return errorMessages.confirmPassword.mismatch;
+        return "";
+      },
+      
+      terms: (value) => {
+        if (!value) return errorMessages.terms.notAccepted;
+        return "";
+      },
+    };
+
+    const validateField = (fieldId, value, dependencies = {}) => {
+      // Check if a validation rule exists for the field
+      if (!validationRules[fieldId]) {
+          console.error(`Validation rule for fieldId "${fieldId}" is not defined.`);
+          return false; // Fails gracefully
+      }
+  
+      // Get the corresponding error container
+      const errorField = document.getElementById(`${fieldId}Error`);
+      const errorMessage = validationRules[fieldId](value, dependencies);
+  
+      // Check if the errorField exists
+      if (errorField) {
+          if (errorMessage) {
+              errorField.textContent = errorMessage;
+              errorField.style.color = "#f04438"; // Set error color
+              document.getElementById(fieldId).style.border = "1px solid red";
+          } else {
+              errorField.textContent = ""; // Clear error message
+              errorField.style.color = ""; // Reset color
+              document.getElementById(fieldId).style.border = "1px solid #ddd";
+          }
+      } else {
+          // Log a warning if the error container is not found
+          console.warn(`Error container not found for fieldId: ${fieldId}`);
+      }
+  
+      return !errorMessage; // Return true if no error, false otherwise
+  };
+  
+
+    const fields = {
+      fullName: document.getElementById("fullName"),
+      username: document.getElementById("username"),
+      email: document.getElementById("email"),
+      countryCode: document.getElementById("countryCode"),
+      phoneNumber: document.getElementById("phoneNumber"),
+      password: document.getElementById("password"),
+      confirmPassword: document.getElementById("confirmPassword"),
+      terms: document.getElementById("terms"),
+    };
+
+
+fields.fullName.addEventListener("input", () => {
+  fields.fullName.style.border="1px solid #ddd"
+  const fullNameValue = fields.fullName.value;
+  error=validationRules.fullName(fullNameValue)
+  document.getElementById('fullNameError').innerText=error
+})
+fields.username.addEventListener("input", () => {
+   fields.username.style.border="1px solid #ddd"
+  const usernameValue = fields.username.value;
+  error=validationRules.username(usernameValue)
+  document.getElementById('usernameError').innerText=error
+})
+fields.email.addEventListener("input", () => {
+   fields.email.style.border="1px solid #ddd"
+  const emailValue = fields.email.value;
+  error=validationRules.email(emailValue)
+  document.getElementById('emailError').innerText=error
+})
+fields.phoneNumber.addEventListener("input", () => {
+   fields.phoneNumber.style.border="1px solid #ddd"
+  const phoneNumberValue = fields.phoneNumber.value;
+  error=validationRules.phoneNumber(phoneNumberValue)
+  document.getElementById('phoneNumberError').innerText=error
+})
+
+
+fields.password.addEventListener("input", () => {
+   fields.password.style.border="none"
+   document.getElementById('passwordError').textContent = '';
+    const passwordValue = fields.password.value;
+    const fullNameValue = fields.fullName.value;
+
+    // Check each password requirement
+    document.getElementById("lengthRequirement").classList.toggle(
+      "valid",
+      passwordValue.length >= 8 && passwordValue.length <= 24
+    );
+    document.getElementById("uppercaseRequirement").classList.toggle(
+      "valid",
+      /[A-Z]/.test(passwordValue)
+    );
+    document.getElementById("lowercaseRequirement").classList.toggle(
+      "valid",
+      /[a-z]/.test(passwordValue)
+    );
+    document.getElementById("specialCharRequirement").classList.toggle(
+      "valid",
+      /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue)
+    );
+    document.getElementById("numberRequirement").classList.toggle(
+      "valid",
+      /\d/.test(passwordValue)
+    );
+  });
+
+  fields.confirmPassword.addEventListener("input", () => {
+   fields.confirmPassword.style.border="1px solid #ddd"
+    validateField("confirmPassword", fields.confirmPassword.value, {
+      password: fields.password.value,
+    });
+  });
+  fields.confirmPassword.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const confirmPasswordError = document.getElementById("confirmPasswordError");
+    confirmPasswordError.textContent = "Pasting is not allowed in this field.";
+    confirmPasswordError.style.color = "#f04438";
+});
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    let isValid = true;
+   
+    Object.keys(fields).forEach((fieldId) => {
+      const field = fields[fieldId];
+      const value = field.type === "checkbox" ? field.checked : field.value.trim();
+
+        // Validate the field and check if it's valid
+        const isFieldValid = validateField(fieldId, value, {
+          password: fields.password.value.trim(),
+          fullName: fields.fullName.value.trim(),
+      });
+
+      if (!isFieldValid) {
+          isValid = false; // Mark the form as invalid
+      }
+  });
+
+
+
+     if (isValid) {
+        buttonSpinner.style.display = "inline-block";
+        signupButton.disabled = true;
+
+    // Extract first and last name from fullName
+    const fullName = fields.fullName.value.trim();
+    const nameParts = fullName.split(" ");
+    const firstName = nameParts[0] || ""; // First word is the first name
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+    const selectedCountryCode = fields.countryCode.value;
+        const data = {
+          username: fields.username.value.trim(),
+          first_name: firstName,
+          last_name: lastName,    
+          email: fields.email.value.trim(),
+          country_code: selectedCountryCode, // Use the selected country code
+
+          phone_number: fields.phoneNumber.value.trim(),
+          password: fields.password.value.trim(),
+          confirm_password: fields.confirmPassword.value.trim(),
+        };
+
+        fetch("/api/register/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            buttonSpinner.style.display = "none";
+            signupButton.disabled = false;
+
+            if (data.status === "error") {
+              if (data.errors.email) {
+                showPopup("emailErrorPopup", data.errors.email[0]);
+              }
+              if (data.errors.username) {
+                showPopup("usernameErrorPopup", data.errors.username[0]);
+              }
+              if (data.errors.phone_number) {
+                showPopup(
+                  "phoneNumberErrorPopup",
+                  data.errors.phone_number[0]
+                );
+              }
+              if (data.errors.country_code) {
+                console.error("Country Code Error:", data.errors.country_code[0]);
+            }
+            } else if (data.status === "success") {
+              const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+              document.getElementById("successModalMessage").innerText =
+                "Registration successful! Please check your email to verify your account. Thank you for joining the ICE-Button System."
+;
+              successModal.show();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            buttonSpinner.style.display = "none";
+            signupButton.disabled = false;
+    // Show error modal
+    const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+    document.getElementById("errorModalMessage").innerText =
+      "There was an error with the signup process. Please try again.";
+    errorModal.show();
+          });
+      }
+
+    });
+    function showPopup(popupId, message) {
+      const popup = document.getElementById(popupId);
+      const popupMessage = document.getElementById(popupId + "Message");
+      if (popup && popupMessage) {
+        popupMessage.innerText = message;
+        popup.style.display = "block";
+      }
+    }
+  });
+  function closePopup(popupId) {
+    const popup = document.getElementById(popupId);
+    popup.style.display = "none";
+  }
+</script>
+
+  </body>
+</html>

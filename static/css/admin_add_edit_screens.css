@@ -1,0 +1,430 @@
+
+.white-container{
+    background: white; 
+    border-radius: 23px; 
+    padding: 23px; 
+    
+}
+
+
+
+#cancel-btn {
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    justify-content: center;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    background: #ddd;
+    color: #000;
+    text-decoration:none;
+
+}
+
+
+#save-button{
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    justify-content: center;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    background: #f04438;
+    color: #fff;
+    border: none;
+    display: flex;
+    justify-content: center;
+
+}
+
+
+
+/* Form Input Fields */
+
+.form-control {
+    background-color: #F0EFEF;
+}
+
+
+::placeholder {
+    color: #8c8c8c; 
+    font-size: 14px; 
+}
+
+
+.gender-select {
+    color: #8c8c8c; 
+    font-size: 14px; 
+}
+
+
+.gender-select option {
+    color: #8c8c8c; 
+    font-size: 14px; 
+}
+
+
+.specialization-select {
+    color: #8c8c8c; 
+    font-size: 14px; 
+}
+
+
+.specialization-select,option {
+    color: #8c8c8c; 
+    font-size: 14px; 
+}
+
+
+.dob-label {
+    color: #8c8c8c; 
+    font-size: 14px; 
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    pointer-events: none;
+    transition: 0.2s ease-out;
+}
+
+
+.form-control:focus + .dob-label,
+.form-control:not(:placeholder-shown) + .dob-label {
+    font-size: 10px; 
+    top: -10px;
+}
+
+
+.form-control:focus + .dob-label {
+    color: #f04438; 
+}
+
+
+.form-control input[type="file"] {
+    display: none; 
+}
+
+
+
+/* Profile Picture */
+
+
+
+.profile-picture-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.profile-picture-container label {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+
+.profile-picture-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+.profile-picture-container img.default-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+
+.upload-icon-container {
+    position: absolute;
+    bottom: 10px; 
+    right: 10px; 
+    cursor: pointer;
+    background: transparent; 
+    padding: 5px;
+    border-radius: 50%; 
+    overflow: visible; 
+}
+
+
+.upload-icon {
+    font-size: 24px;
+    color: #8c8c8c;
+    position: relative;
+    z-index: 1; 
+}
+
+
+
+/* Error Messages */
+
+
+
+small {
+    text-align: left;
+    top: 60px;
+    left: 0;
+}
+    
+
+.form-group small {
+
+    display: flex;
+    font-size:14px;
+    color: red;
+        
+    display: inline-block;
+    
+}
+.container .row .col-md-6, .col-md-12 {
+    margin-top:10px;
+}
+
+.error{
+    margin-bottom: 15px;
+    color: red;
+    line-height: 1;
+    margin-top: 5px; 
+    margin-bottom: 0; 
+    display: inline-block;
+
+}
+   
+
+#uploadimageError{
+    display: block;
+    height: 20px;  
+    line-height: 20px;  
+    text-align: center;
+    color: red;
+    font-size: 14px;
+}
+
+
+
+/* Drowdown Fields  */
+
+
+
+.dropdown {
+    position: relative;
+    border: 1px solid #8c8c8c; 
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    background-color: #F0EFEF; 
+    display: block; 
+}
+
+
+.dropdown-select {
+    padding: 10px;
+    background-color: #F0EFEF;
+    color: #8c8c8c; 
+    min-height: 38px;
+    line-height: normal; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dropdown-select::after {
+    content: '\25BC'; /* Unicode for down arrow */
+    font-size: 12px;  /* Adjust size as needed */
+    color: #8c8c8c;   /* Color of the arrow */
+    margin-left: auto; /* Push the arrow to the far right */
+    pointer-events: none; /* Ensure the arrow doesn't interfere with clicks */
+}
+
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #8c8c8c; 
+    border-top: none;
+    z-index: 2;
+    display: none;
+    max-height: 200px; 
+    overflow-y: auto; 
+    border-radius: 0 0 4px 4px; 
+}
+
+
+.dropdown-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center; 
+}
+
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+
+.dropdown-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+
+.dropdown-item:hover {
+    background-color: #f2f2f2; 
+}
+
+
+
+/*  Insurance Extra CSS  */
+
+
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background-color: #f2f2f2; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    padding: 8px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+
+.row {
+    margin-bottom: 10px; 
+}
+
+
+.form-group {
+    margin-bottom: 5px; 
+}
+
+
+.btn {
+    margin-top: 10px; 
+}
+
+
+/* Laboratory  Extra CSS */
+
+.delete-btn {
+    margin-left: 5px;
+    cursor: pointer;
+    color: red;
+}
+
+
+.list-item {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin: 5px;
+}
+
+
+/* Hospital Extra CSS */
+
+
+
+.selected-specializations-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+
+.selected-specialization {
+    background-color: #f04438;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+}
+
+
+.remove-specialization {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+
+#outputContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.responsive-img {
+    width: auto; 
+    height: 150px; 
+    margin: 5px;
+    display: inline-block; 
+}
+
+
+@media screen and (max-width: 768px) {
+    .responsive-img {
+        width: 100%; 
+    }
+}
+
+
+#image-preview-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 200px; 
+    overflow-x: auto; 
+    white-space: nowrap; 
+}
+
+
+.dragBox {
+    width: 50%;
+    height: 200px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    cursor: pointer;
+    background: #F0EFEF;
+}
+
+
+
+/* Subadmin Extra CSS */
+
+
+
+.text-input-container {
+    padding-top: 15px;
+}
+
+
+.text-input-container label {
+    margin-bottom: 5px;
+    display: block;
+
+}
+
+
+.text-input-container input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    margin-bottom : -5px;
+}

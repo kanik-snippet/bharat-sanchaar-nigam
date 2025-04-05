@@ -1,0 +1,322 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Subscriptions{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="{% static 'css/subscriptions.css' %}" />
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<div class="container-fluid mt-3">
+    <div class="d-flex align-items-center mb-4">
+        <img src="https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg" alt="Profile picture"
+            class="rounded-circle me-3 profile-image" width="70" height="70">
+        <div>
+            <h1 class="fw-bold mb-0 fs-4 nameDisplay">Name will be displayed here</h1>
+            <p class="text-muted mb-0 emailDisplay">Email will be displayed here</p>
+        </div>
+    </div>
+
+    <!-- Button Group -->
+    <div class="custom-btn-group mb-4 p-0 rounded" role="group" aria-label="User options">
+        <a href="{% url 'profile' %}" class="btn btn-profile-top" id="profileBtn">{% trans 'Profile'%}</a>
+         <a href="{% url 'changepass' %}" class="btn btn-profile-top" id="changePasswordBtn">{% trans 'Change Password'%}</a>
+         <a href="{% url 'subscription' %}" class="btn btn-profile-top" id="subscriptionBtn">{% trans 'Subscription Plan'%}</a>
+         <a href="{% url 'subscription_txn' %}" class="btn btn-profile-top" id="subscriptiontxnBtn">{% trans 'Subscription Transactions'%}</a>
+     
+     </div>
+
+    <!-- Main Content (Plans) -->
+    <div class="toggle-container">
+        <button id="monthly-btn" class="toggle-button active" onclick="togglePlan('monthly')">{% trans 'Monthly'%}</button>
+        <button id="annual-btn" class="toggle-button" onclick="togglePlan('annual')">{% trans 'Annual'%}</button>
+    </div>
+    <div class="pricing-cards">
+        <!-- Cards will be dynamically populated here -->
+    </div>
+</div>
+<!-- Razorpay Modal -->
+<div id="razorpayModal" class="modal-1">
+    <div class="modal-content modal-content-1">
+        <span class="close">&times;</span>
+        <form action="#" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order.provider_order_id }}">
+        </form>
+    </div>
+</div>
+<!-- Plan Upgraded Modal -->
+<div class="modal fade" id="planUpgradedModal" tabindex="-1" role="dialog" aria-labelledby="planUpgradedLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="planUpgradedLabel">Plan Upgraded</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>{% trans 'Your plan has been successfully upgraded!'%}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color:#f04438; color:white;" data-bs-dismiss="modal">{% trans 'OK'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+const currentPage = window.location.pathname;
+// Define the buttons
+const profileBtn = document.getElementById('profileBtn');
+const changePasswordBtn = document.getElementById('changePasswordBtn');
+const subscriptionBtn = document.getElementById('subscriptionBtn');
+const subscriptiontxnBtn = document.getElementById('subscriptiontxnBtn');
+
+
+// Add active class based on the current page URL
+if (currentPage.includes('change_password')) {
+    changePasswordBtn.classList.add('active');
+} else if (currentPage.includes('profile')) {
+    profileBtn.classList.add('active');
+} else if (currentPage.includes('subscription')) {
+    subscriptionBtn.classList.add('active');
+} else if (currentPage.includes('subscription_txn')) {
+    subscriptiontxnBtn.classList.add('active');
+}
+</script>
+<script>
+    let fetchedPlans = []; // Store fetched plans globally for toggling between monthly and annual
+    let currentUserPlan = null; // Store current user plan (Basic, Standard, Premium)
+    let currentPlanType = null; // Store current user's plan type (monthly or yearly)
+
+    async function fetchProfileDetails() {
+        try {
+            // Fetch the user's profile details (including plan details)
+            const response = await fetch("/news/api/profile/", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("User Profile Payload:", data);
+                
+                const planDetails = data.plan_details; // Assuming 'plan_details' contains the user's current plan info
+                currentUserPlan = planDetails.name; // Example: 'Basic', 'Standard', 'Premium'
+                currentPlanType = planDetails.subscription_type; // Example: 'monthly' or 'yearly'
+
+                // Fetch available plans and render them
+                fetchPlansForPricingPage();
+            } else {
+                console.error("Failed to fetch user profile.");
+            }
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    }
+
+    async function fetchPlansForPricingPage() {
+        try {
+            const response = await fetch("/api/plans/", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("API Response Payload:", data);
+
+                fetchedPlans = data.plans; // Save plans for toggling
+                fetchedPlans.sort((a, b) => parseFloat(a.cost) - parseFloat(b.cost)); // Sort by price
+                renderPricingCards(fetchedPlans, "monthly"); // Render monthly pricing by default
+            } else {
+                console.error("Failed to fetch plans.");
+            }
+        } catch (error) {
+            console.error("Error fetching plans:", error);
+        }
+    }
+
+    function renderPricingCards(plans, billingCycle) {
+        const container = document.querySelector(".pricing-cards");
+        container.innerHTML = ""; // Clear existing cards
+    
+        // Filter plans based on the selected billing cycle
+        const filteredPlans = plans.filter(plan => plan.subscription_type === billingCycle);
+    
+        filteredPlans.forEach((plan, index) => {
+            const cardClass = plan.name === "Standard"
+                ? "basic"
+                : plan.name === "Basic"
+                    ? "Standard"
+                    : "Pro";
+    
+        const liveStreamStatus = plan.stream ? "{% trans 'Live Stream Support' %}" : "{% trans 'No Live Stream Support' %}";
+            const streamClass = plan.stream ? "" : "unavailable";
+    
+            // Calculate cost based on billing cycle
+            const cost = parseFloat(plan.cost); // The cost is the same for both monthly and yearly
+    
+            let buttonHTML = "";
+    
+            // Check if the cost is 0, if so, don't show the subscribe button
+            if (cost === 0) {
+                buttonHTML = "";  // No button if the cost is 0
+            } else if (currentUserPlan === plan.name && currentPlanType === billingCycle) {
+                buttonHTML = `<button class="order-button faded" disabled>Subscribed</button>`;
+            } else {
+                buttonHTML = `<button class="order-button" onclick="handlePlanUpgrade('${plan.name}', ${cost}, '${plan.subscription_type}')">Subscribe</button>`;
+            }
+    
+            const cardHTML = `
+                <div class="card ${cardClass}">
+                    <h3>${plan.name}</h3>
+                    <h2>₹${cost.toFixed(2)}</h2>
+                    <ul>
+                    <li>${plan.max_emails} {% trans 'Emails' %}</li>
+                    <li>${plan.max_phone_numbers} {% trans 'Phone Numbers' %}</li>
+                    <li>{% trans 'Add' %} ${plan.max_button} {% trans 'Ice Button' %}${plan.max_button > 1 ? "{% trans 's' %}" : " {% trans 'Only' %}"}</li>
+                        <li class="${streamClass}">${liveStreamStatus}</li>
+                    </ul>
+                    ${buttonHTML}
+                </div>
+            `;
+    
+            container.innerHTML += cardHTML;
+        });
+    }
+    
+    
+    function checkIfUpgradeAvailable(plan) {
+        if (currentUserPlan === "Basic" && currentPlanType === "monthly") {
+            // Show upgrade button only on monthly card for "Basic" plan
+            return plan.name === "Standard" || plan.name === "Premium";
+        } else if (currentUserPlan === "Standard" && currentPlanType === "monthly") {
+            // Show upgrade button only on monthly card for "Standard" plan
+            return plan.name === "Premium";
+        } else if (currentUserPlan === "Basic" && currentPlanType === "yearly") {
+            // Show upgrade button only on yearly card for "Basic" plan
+            return plan.name === "Standard" || plan.name === "Premium";
+        } else if (currentUserPlan === "Standard" && currentPlanType === "yearly") {
+            // Show upgrade button only on yearly card for "Standard" plan
+            return plan.name === "Premium";
+        }
+        return false; // No upgrade button for other cases (e.g., Premium plan or non-matching cycle)
+    }
+
+    function togglePlan(plan) {
+        const monthlyButton = document.getElementById('monthly-btn');
+        const annualButton = document.getElementById('annual-btn');
+
+        if (plan === "monthly") {
+            monthlyButton.classList.add("active");
+            annualButton.classList.remove("active");
+            renderPricingCards(fetchedPlans, "monthly"); // Render monthly pricing
+        } else {
+            annualButton.classList.add("active");
+            monthlyButton.classList.remove("active");
+            renderPricingCards(fetchedPlans, "yearly"); // Render annual pricing
+        }
+    }
+
+    // Call the fetch function when the page loads
+    document.addEventListener("DOMContentLoaded", fetchProfileDetails);
+
+    async function handlePlanUpgrade(planName, amount, subscriptionType) {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            return;
+        }
+    
+        const requestPayload = {
+            plan_name: planName,
+            amount: amount,
+            subscription_type: subscriptionType // Send the subscription type here
+        };
+    
+        // Log the request payload to the console for debugging
+        console.log("Sending request payload to Razorpay:", requestPayload);
+    
+        try {
+            const response = await fetch("/api/create-order/", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestPayload),
+            });
+    
+            if (response.ok) {
+                const orderData = await response.json();
+                console.log("Received Razorpay order data:", orderData);
+                openRazorpayModal(orderData.razorpay_key, planName, orderData.price, orderData.order_id, subscriptionType); // Pass subscription type to Razorpay modal
+            } else {
+                alert("Failed to create order.");
+            }
+        } catch (error) {
+            console.error("Error creating order:", error);
+            alert("An error occurred while creating the order.");
+        }
+    }
+    
+    
+    
+
+    function openRazorpayModal(key, planName, amount, orderId, subscriptionType) {
+        const options = {
+            key,
+            amount: amount * 100,
+            currency: "INR",
+            name: planName,
+            description: "Subscription Plan Payment",
+            order_id: orderId,
+            handler: (response) => handlePaymentCallback(response, subscriptionType), // Pass subscription_type here
+            theme: { color: "#3399cc" },
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
+    
+
+    async function handlePaymentCallback(paymentResponse, subscriptionType) {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            return;
+        }
+    
+        // Include subscription_type in the payment callback request
+        try {
+            const response = await fetch("/api/payment/callback/", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...paymentResponse,
+                    subscription_type: subscriptionType, // Include subscription type
+                }),
+            });
+    
+            if (response.ok) {
+                const modalElement = document.getElementById("planUpgradedModal");
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+    
+                modalElement.addEventListener("hidden.bs.modal", () => location.reload());
+            } else {
+                alert("Payment failed.");
+            }
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            alert("An error occurred while processing the payment.");
+        }
+    }
+    
+</script>
+{% endblock %}

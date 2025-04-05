@@ -1,0 +1,108 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Create New User{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <a href="javascript:history.back()" style="background-color: #f04438; border-color: #f04438; color:white" class="btn col-md-2">
+        <i class="fa fa-arrow-left" style="color:white"></i> Back
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <!-- Success or Error Messages -->
+            {% if messages %}
+                <div class="mt-4">
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Display form errors -->
+            {% if errors %}
+                <div class="mt-4">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul>
+                            {% for field, error_list in errors.items %}
+                                {% for error in error_list %}
+                                    <li>{{ field|capfirst }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Create New User</h3>
+                    <form id="createUserForm" method="POST" action="{% url 'add_user' %}">
+                        {% csrf_token %}
+
+                        <!-- Username Field -->
+                        <div class="form-group mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" id="username" 
+                                   placeholder="Enter username" required pattern="^\w+$" minlength="3" maxlength="20">
+                            <div class="invalid-feedback">
+                                Username must be at least 3 characters long and can only contain letters, numbers, and underscores.
+                            </div>
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" id="email" 
+                                   placeholder="Enter email" required maxlength="50">
+                            <div class="invalid-feedback">
+                                Please enter a valid email address.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select name="role" class="form-select" id="role" required>
+                                <option value="janta">Janta</option>
+                                <option value="sabhasad">Sabhasad</option>
+                                <option value="chairman">Chairman</option>
+                                <option value="vidhayak">Vidhayak</option>
+                                <option value="sarpanch">Sarpanch</option>
+                                <option value="cm">CM</option>
+                                <option value="pm">PM</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d_grid">                            
+                            <button type="submit" class="btn text-white btn-block" id="createUser"
+                                    style="background-color: #f04438; border-color: #f04438;">
+                                <i class="fas fa-user-plus"></i> Create User
+                                <span id="loader" class="spinner-border spinner-border-sm text-light d-none" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('createUserForm');
+        const createButton = document.getElementById('createButton');
+        const loader = document.getElementById('loader');
+
+        form.addEventListener('submit', function() {
+            createButton.disabled = true;
+            loader.classList.remove('d-none');
+        });
+    });
+</script>
+{% endblock %}

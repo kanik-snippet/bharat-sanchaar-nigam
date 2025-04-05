@@ -1,0 +1,359 @@
+h1 {
+    font-family: 'Calistoga', serif;
+}
+.pagination{
+    margin-top: 20px;
+    margin-top: 20px;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination a {
+    padding: 10px;
+    border-radius: 5px;
+    color: grey;
+    background-color: #fff;
+    border: 1px solid white;
+    text-decoration: none;
+}
+
+.pagination .active a {
+    background-color: #f04438;
+    border: none;
+}
+.actions {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.actions:hover {
+    background-color: #ccc;
+    border: 1px solid #999;
+}
+
+.actions.clicked {
+    background-color: #ddd;
+    border: 1px solid #888;
+    cursor: default; /* Set the cursor to default when in the clicked state */
+}
+
+.table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    margin-bottom: 15px; /* Optional: Add margin to improve appearance */
+}
+.add-button {
+    background: #ddd;
+    color: #000;
+}
+.block-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column; 
+}
+.blocked-icon {
+    border-radius: 5px;
+    border: 1px solid grey;
+    max-width: 32px;
+    max-height: 32px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+#search-bar{
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    border-radius: 50px;
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+}
+#start-date-selector{
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    border-radius: 50px;
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+}
+#end-date-selector{
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    border-radius: 50px;
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+}
+#status-select {
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    border-radius: 50px;
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+}
+#call_type-select {
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    border-radius: 50px;
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+}
+#download-csv-button{
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    justify-content:center;
+    background: white;
+    color: black;
+    align-items: center;
+    margin: 0 auto;
+    display: block;
+    border: 1px solid #b8b8b8;
+}
+#apply-button{
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    justify-content:center;
+    background: #f04438;
+    color: #fff;
+    border: none;
+    align-items: center;
+    margin: 0 auto; 
+    display: block; 
+}
+#apply-button.clear {
+    background: #ddd;
+    color: #000;
+}
+#clear-button{
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    justify-content:center;
+    background: #ddd;
+    color: #000;
+}
+#btn-header {
+    border-radius: 20px;
+    height: 52px;
+    cursor: pointer;
+    border: 1px solid #f04438;
+}
+
+#popupCard {
+    display: none;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+#new-doctor-request-button{
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    background: #f04438;
+    color: #fff;
+    border: none;
+    align-items: center;
+    margin: 5px;
+    padding: 7px 15px; 
+    width: auto; 
+    text-align: center;
+    justify-content: center;
+}
+#add-doctor-button {
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    background: #f04438;
+    color: #ffffff;
+    border: none;
+    align-items: center;
+    margin: 5px;
+    padding: 7px 15px; 
+    width: auto; 
+    text-align: center;
+    justify-content: center;
+}
+#statusblockpopupCard ,#acceptpopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#statusPopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#deletedevicepopupCard {
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#deletevideopopupCard {
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#deletePlanPopupCard {
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#deleteEmailpopupCard {
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#deletePhonepopupCard {
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+  
+#statusblockpopupCard img {
+    max-width: 100px;
+}
+#acceptpopupCard img {
+    max-width: 100px;
+}
+#statusunblockpopupCard ,#rejectpopupCard{
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+  
+#statusunblockpopupCard img {
+    max-width: 100px;
+}
+#rejectpopupCard img {
+    max-width: 100px;
+}
+@media (min-width: 768px) {
+    .button-container {
+      flex-direction: row; 
+    }
+
+   
+}
+#rejectpopupCard{
+    max-width: 100%; 
+    min-width:60%; 
+    margin: 0 auto;
+}
+#reject_reason_error{
+    color: red; 
+    display: block;
+}
+#deleteuserpopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}

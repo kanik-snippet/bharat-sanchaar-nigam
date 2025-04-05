@@ -1,0 +1,418 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Profile Page{% endblock %}
+{% block body %}
+<!-- Include Bootstrap CSS -->
+
+<!-- Include custom styles -->
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+<div class="container-fluid mt-3">
+<div class="d-flex align-items-center mb-4">
+    <img  src="https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg" alt="Profile picture"
+        class="rounded-circle me-3 profile-image" width="70" height="70">
+    <div>
+        <h1 class="fw-bold mb-0 fs-4 nameDisplay">Name will be displayed here</h1>
+        <p class="text-muted mb-0 emailDisplay">Email will be displayed here</p>
+    </div>
+</div>
+
+<!-- Button Group -->
+<div class="custom-btn-group mb-4 p-0 rounded" role="group" aria-label="User options">
+   <a href="{% url 'profile' %}" class="btn btn-profile-top" id="profileBtn">{% trans 'Profile'%}</a>
+    <a href="{% url 'changepass' %}" class="btn btn-profile-top" id="changePasswordBtn">{% trans 'Change Password'%}</a>
+    <a href="{% url 'subscription' %}" class="btn btn-profile-top" id="subscriptionBtn">{% trans 'Subscription Plan'%}</a>
+    <a href="{% url 'subscription_txn' %}" class="btn btn-profile-top" id="subscriptiontxnBtn">{% trans 'Subscription Transactions'%}</a>
+
+</div>
+
+
+<div class="container-fluid main-container overflow-hidden">
+    <div class="d-flex justify-content-center align-items-center my-4 border border-1 rounded">
+        <form id="filterForm" class="row w-100 gx-3 gy-2  p-2">
+
+    
+          <div class="col-sm-12 col-md-6 col-lg-3">
+            <div class="input-container position-relative">
+                <input 
+                    type="text" 
+                    id="startDateTime" 
+                    class="form-control border-0 pe-5"  
+                    placeholder="{% trans 'Start Date & Time'%}"
+                />
+                <i class="fa-solid fa-calendar-days position-absolute top-50 end-0 translate-middle-y pe-3" style="color: grey;"></i>
+            </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-6 col-lg-3">
+            <div class="input-container position-relative">
+                <input 
+                    type="text" 
+                    id="endDateTime" 
+                    class="form-control border-0 pe-5"  
+                    placeholder="{% trans 'End Date & Time'%}"
+                />
+                <i class="fa-solid fa-calendar-days position-absolute top-50 end-0 translate-middle-y pe-3" style="color: grey;"></i>
+            </div>
+        </div>
+<!-- Status Filter with Same Style as Other Fields -->
+<div class="col-sm-12 col-md-6 col-lg-2">
+    <select id="statusFilter" class="form-control border-0" style="background-color: #e9ecef;">
+        <option value="">{% trans 'Status All'%}</option>
+        <option value="succeeded">{% trans 'Success'%}</option>
+        <option value="pending">{% trans 'Pending'%}</option>
+        <option value="failed">{% trans 'Failed'%}</option>
+    </select>
+</div>
+
+          <!-- Buttons -->
+          <div class="col-12 col-md-6 col-lg-3 d-flex align-items-center">
+            <button
+              type="button"
+              id="resetFilterBtn"
+              class="btn btn-outline-secondary flex-grow-1 me-2"
+            >
+              {% trans 'Reset'%}
+            </button>
+            <button
+              type="button"
+              id="applyFilterBtn"
+              class="btn flex-grow-1 me-2" style="background-color:#f04438; color:white"
+            >
+              {% trans 'Apply'%}
+            </button>
+
+            <button
+                type="button"
+                id="downloadBtn"  
+                class="btn flex-grow-1" 
+                style="background-color:#f04438; color:white"
+            >
+                {% trans 'Download'%}
+            </button>
+          </div>
+        </form>
+      </div>
+    <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>{% trans 'Transactions ID'%}</th>
+                    <th>{% trans 'Plan Name'%}</th>
+                    <th>{% trans 'Status'%}</th>
+                    <th>{% trans 'Transaction Amount'%}</th>
+                    <th>{% trans 'Date Time'%}</th>
+                </tr>
+            </thead>
+            <tbody id="podTableBody">
+                <!-- Data will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div id="paginationDiv" class="d-flex justify-content-center mt-4">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <!-- Pagination links will be dynamically inserted here -->
+        </ul>
+    </nav>
+</div>
+
+<script>
+    const currentPage = window.location.pathname;
+    // Define the buttons
+    console.log('Current Page:', currentPage);
+    const profileBtn = document.getElementById('profileBtn');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const subscriptiontxnBtn = document.getElementById('subscriptiontxnBtn');
+    const subscriptionBtn = document.getElementById('subscriptionBtn');
+    
+    // Add active class based on the current page URL
+if (currentPage.includes('changepass')) {
+    changePasswordBtn.classList.add('active');
+} else if (currentPage.includes('profile')) {
+    profileBtn.classList.add('active');
+} else if (currentPage.includes('subscription_txn')) {
+    subscriptiontxnBtn.classList.add('active'); // Ensure this matches the 'subscription_txn' URL pattern
+} else if (currentPage.includes('subscription')) {
+    subscriptionBtn.classList.add('active');
+}
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const tableBody = document.getElementById('podTableBody');
+        const token = localStorage.getItem('access_token');
+        const paginationDiv = document.getElementById('paginationDiv');
+        let currentDisplayTransactions = []; // This will store currently displayed transactions, filtered or all
+        let allTransactions = []; // This will store all fetched transactions
+
+
+        if (!token) {
+            return;
+        }
+    
+        // Define the API base URL
+        const baseUrl = "/api/transactions/";
+    
+        function fetchData(url = baseUrl) {
+            console.log('Fetching data with token:', token);
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                console.log('API Response Status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Full API Response:', data);  // Log the full response to verify its structure
+                if (!Array.isArray(data)) {
+                    console.error('Expected an array but got:', data);
+                    allTransactions = [];  // Handle case where data is not an array as expected
+                } else {
+                    allTransactions = data;  // Directly use data if it is an array
+                }
+                currentDisplayTransactions = [...allTransactions];
+                renderTransactions(allTransactions);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Failed to fetch data from API');
+            });
+        }
+        
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        
+            // Render transactions in the table
+    function renderTransactions(transactions) {
+        tableBody.innerHTML = '';
+
+        if (transactions.length === 0) {
+            const row = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 6;
+            td.classList.add("text-center");
+            const img = document.createElement('img');
+            img.src = '{% static "images/no_data.jpg" %}';
+            img.alt = 'No Data Found';
+            img.style.width = '30%';
+            td.appendChild(img);
+            row.appendChild(td);
+            tableBody.appendChild(row);
+            return;
+        }
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        const pageTransactions = transactions.slice(startIndex, endIndex);
+
+        pageTransactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            let statusStyle = '';
+            if (transaction.status === 'pending') {
+                statusStyle = 'color: #ffc107;';
+            } else if (transaction.status === 'failed') {
+                statusStyle = 'color: #f04438;';
+            } else if (transaction.status === 'succeeded') {
+                statusStyle = 'color: #28a745;';
+            }
+            row.innerHTML = `
+                <td>${transaction.transaction_id}</td>
+                <td>${transaction.plan_name}</td>
+                <td style="${statusStyle}">${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</td>
+                <td><i class="bi bi-currency-rupee"></i>${transaction.transaction_amount}</td>
+                <td>${transaction.date} ${transaction.time}</td>
+                <td>
+                    <button 
+                        class="btn btn-sm download-invoice-btn" 
+                        data-transaction-id="${transaction.id}" 
+                        style="background-color: transparent; border: none;"
+                    >
+                        <i class="fas fa-eye" style="font-size: 24px; color: #f04438;"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Add event listeners for invoice download
+        document.querySelectorAll('.download-invoice-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const transactionId = this.getAttribute('data-transaction-id');
+                fetch(`/api/transactions/${transactionId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw new Error("Failed to fetch transaction data");
+                        }
+                    })
+                    .then(data => {
+                        console.log("Transaction data fetched:", data);
+
+                        // Store transaction data in sessionStorage
+                        sessionStorage.setItem('transactionData', JSON.stringify(data));
+
+                        // Redirect to user_invoice page
+                        window.location.href = `/user_invoice/${transactionId}/`;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching transaction details:", error);
+                        alert("An error occurred while fetching transaction details.");
+                    });
+            });
+        });
+
+        renderPaginationControls(transactions.length);
+    }
+        
+        
+function renderPaginationControls(totalRows) {
+    const paginationDiv = document.getElementById('paginationDiv');
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+    // Clear existing pagination controls
+    paginationDiv.innerHTML = '';
+
+    if (totalPages <= 1) {
+        return; // No pagination needed for a single page
+    }
+
+    // Create Previous button
+    const prevButton = document.createElement('button');
+    prevButton.className = 'btn me-2';
+    prevButton.textContent = 'Previous';
+    prevButton.style.backgroundColor = 'white';
+    prevButton.style.color = '#f04438';
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener('click', () => {
+        currentPage--;
+        renderTransactions(currentDisplayTransactions);
+    });
+    paginationDiv.appendChild(prevButton);
+
+    // Create page number buttons
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.className = 'btn me-2';
+        pageButton.textContent = i;
+        if (i === currentPage) {
+            pageButton.style.backgroundColor = '#f04438';
+            pageButton.style.color = 'white';
+        } else {
+            pageButton.style.backgroundColor = 'white';
+            pageButton.style.color = '#f04438';
+        }
+        pageButton.addEventListener('click', () => {
+            currentPage = i;
+            renderTransactions(currentDisplayTransactions);
+        });
+        paginationDiv.appendChild(pageButton);
+    }
+
+    // Create Next button
+    const nextButton = document.createElement('button');
+    nextButton.className = 'btn';
+    nextButton.textContent = 'Next';
+    nextButton.style.backgroundColor = 'white';
+    nextButton.style.color = '#f04438';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener('click', () => {
+        currentPage++;
+        renderTransactions(currentDisplayTransactions);
+    });
+    paginationDiv.appendChild(nextButton);
+}
+
+    
+        // Initialize flatpickr
+        const startDateTimePicker = flatpickr("#startDateTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minuteIncrement: 1,
+            maxDate: "today",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    endDateTimePicker.set("minDate", selectedDates[0]);
+                }
+            }
+        });
+    
+        const endDateTimePicker = flatpickr("#endDateTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minuteIncrement: 1,
+            maxDate: "today",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    startDateTimePicker.set("maxDate", selectedDates[0]);
+                }
+            }
+        });
+        function downloadCSV(transactions) {
+            let csvContent = "data:text/csv;charset=utf-8,Transaction ID,Plan Name,Status,Transaction Amount,Date,Time\n";
+            transactions.forEach(transaction => {
+                let row = `${transaction.transaction_id},${transaction.plan_name},${transaction.status},${transaction.transaction_amount},${transaction.date},${transaction.time}`;
+                csvContent += row + "\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            const dateTime = new Date().toISOString().replace(/[\W_]+/g, "");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `TransactionHistory_${dateTime}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        // Filter transactions based on date/time input
+        function filterTransactions(start, end, status) {
+            const filteredTransactions = allTransactions.filter(transaction => {
+                const transactionDate = new Date(transaction.date + ' ' + transaction.time);
+                const startDate = start ? new Date(start) : null;
+                const endDate = end ? new Date(end) : null;
+                return (!startDate || transactionDate >= startDate) &&
+                       (!endDate || transactionDate <= endDate) &&
+                       (!status || transaction.status.toLowerCase() === status.toLowerCase());
+            });
+            currentDisplayTransactions = filteredTransactions; // Update displayed data
+
+            renderTransactions(filteredTransactions);
+        }
+    
+        // Event listeners for Apply and Reset buttons
+        document.getElementById('applyFilterBtn').addEventListener('click', function() {
+            const start = startDateTimePicker.input.value;
+            const end = endDateTimePicker.input.value;
+            const status = document.getElementById('statusFilter').value;
+            filterTransactions(start, end, status);
+        });
+    
+        document.getElementById('resetFilterBtn').addEventListener('click', function() {
+            startDateTimePicker.clear();
+            endDateTimePicker.clear();
+            document.getElementById('statusFilter').value = '';
+            currentDisplayTransactions = [...allTransactions]; // Reset displayed data
+            renderTransactions(allTransactions);// Reset to show all transactions
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            downloadCSV(currentDisplayTransactions);
+        });
+
+        fetchData();  // Initial fetch call
+    });
+
+    </script>
+
+{% endblock %}

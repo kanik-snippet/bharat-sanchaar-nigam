@@ -1,0 +1,102 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}User Profile{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h2 class="text-center mb-4" style="color: #f04438;">User Profile</h2>
+                    <form id="userProfileForm" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                            <div id="first_name_error" class="text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                            <div id="last_name_error" class="text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                            <div id="email_error" class="text-danger"></div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            <div id="username_error" class="text-danger"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="background-color: #f04438; border-color: #f04438;">
+                            <i class="fa-solid fa-upload"></i> Update
+                        </button>
+                    </form>
+
+                    {% if messages %}
+                        <div class="mt-3">
+                            {% for message in messages %}
+                                <div class="alert alert-success">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script> {% endcomment %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('userProfileForm');
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validateUsername = (username) => {
+        return username.length <= 150;
+    };
+
+    const clearErrorMessages = () => {
+        document.querySelectorAll('.text-danger').forEach(span => span.innerText = '');
+    };
+
+    form.addEventListener('input', function (event) {
+        clearErrorMessages();
+
+        const field = event.target;
+        const value = field.value;
+        let errorMessage = '';
+
+        switch (field.name) {
+            case 'email':
+                if (!validateEmail(value)) {
+                    errorMessage = 'Invalid email address format.';
+                    document.getElementById('email_error').innerText = errorMessage;
+                }
+                break;
+            case 'username':
+                if (!validateUsername(value)) {
+                    errorMessage = 'Username must be 150 characters or fewer.';
+                    document.getElementById('username_error').innerText = errorMessage;
+                }
+                break;
+            default:
+                break;
+        }
+    });
+});
+</script>
+{% endblock %}

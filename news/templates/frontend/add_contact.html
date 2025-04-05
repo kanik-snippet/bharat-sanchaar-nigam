@@ -1,0 +1,1372 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %}New Contact{% endblock %}
+{% block body %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/add_contact.css' %}" />
+
+<div class="container h-100 mt-4">
+    <div class="row h-100">
+        <!-- Left Section -->
+        <div class="col-lg-12 d-flex flex-column p-0">
+            <h2>{% trans 'Welcome'%}, <span class="fw-bold nameDisplay">Name will be displayed here</span></h2>
+            <p class="text-muted emailDisplay">Email will be displayed here</p>
+          <div class="row">
+            <div class="col-lg-8">
+            <h5 class="mt-4">{% trans 'Add New Contact'%}</h5>
+            <form id="contactForm" action="#" method="post" class="mt-4">
+              {% csrf_token %}
+              <!-- Name Field -->
+              <div class="mb-3 contact-form-group">
+                <label for="name" class="col-sm-2 col-md-3 col-form-label">{% trans 'Name'%}</label>
+    
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  placeholder="Enter name"
+                  oninput="validateName()"
+                  required
+                />
+                <small
+                  id="nameError"
+                  class="error-message text-danger"
+                  style="display: none"
+                  >{% trans 'This name is not allowed. Please enter a valid name (only
+                  alphabets and spaces are allowed).'%}</small
+                >
+              </div>
+              <!-- Relation Field -->
+              <div class="mb-3 contact-form-group">
+                <label for="relation" class="col-sm-2 col-md-3 col-form-label"
+                  >{% trans 'Relation'%}</label
+                >
+                <select class="form-control" id="relation" name="relation" required>
+                  <option value="" disabled selected>{% trans 'Select relation'%}</option>
+                  <option value="Parent">{% trans 'Parent'%}</option>
+                  <option value="Spouse">{% trans 'Spouse'%}</option>
+                  <option value="Sibling">{% trans 'Sibling'%}</option>
+                  <option value="Child">{% trans 'Child'%}</option>
+                  <option value="Guardian">{% trans 'Guardian'%}</option>
+                  <option value="Relative">{% trans 'Relative'%}</option>
+                  <option value="Friend">{% trans 'Friend'%}</option>
+                  <option value="Neighbor">{% trans 'Neighbor'%}</option>
+                  <option value="Colleague">{% trans 'Colleague'%}</option>
+                  <option value="Employer">{% trans 'Employer'%}</option>
+                  <option value="Emergency">{% trans 'Emergency Contact'%} </option>
+                  <option value="Beat_officer">{% trans 'Beat Officer'%} </option>
+                  <option value="Doctor">{% trans 'Doctor'%}</option>
+                  <option value="Teacher">{% trans 'Teacher'%}</option>
+                  <option value="Partner">{% trans 'Partner'%}</option>
+                  <option value="Other">{% trans 'Other'%}</option>
+                </select>
+              </div>
+              <input type="hidden" id="contact_reference" name="contact_reference" />
+
+              <!-- Email Field -->
+              <div class="row contact-form-group">
+                <div class="col-sm-6 d-flex align-items-center justify-content-between">
+                  <label for="email" class="col-form-label">{% trans 'Email'%}</label>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-email"
+                      onchange="toggleEmailInput()"
+                    /> 
+                  </div>
+                </div>
+                <div id="email-input" class="col-sm-6 contact-input" style="display: none">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    placeholder="Enter email"
+                    oninput="validateEmail()"
+                  />
+                  <div id="emailError" class="error-message text-danger"></div>
+                </div>
+              </div>
+              <!-- Phone Field -->
+              <div class="row contact-form-group">
+                <div class="d-flex col-sm-6 align-items-center justify-content-between">
+                  <label for="phone" class="col-form-label">{% trans 'Add Phone Number'%}</label>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-phone"
+                    />
+                  </div>
+                </div>
+                <div id="phone-input" class="contact-input col-sm-6" style="display: none">
+                  <div class="input-group">
+                    <select
+                      class="form-select"
+                      id="country-code"
+                      name="country_code"
+                      style="max-width: 100px"
+                    >
+                      <option value="+91" selected>🇮🇳 +91 (India)</option>
+                      <option value="+1">🇺🇸 +1 (USA)</option>
+                      <option value="+44">🇬🇧 +44 (UK)</option>
+                      <option value="+61">🇦🇺 +61 (Australia)</option>
+                      <option value="+81">🇯🇵 +81 (Japan)</option>
+                      <option value="+49">🇩🇪 +49 (Germany)</option>
+                      <option value="+33">🇫🇷 +33 (France)</option>
+                      <option value="+86">🇨🇳 +86 (China)</option>
+                      <option value="+39">🇮🇹 +39 (Italy)</option>
+                      <option value="+7">🇷🇺 +7 (Russia)</option>
+                      <option value="+82">🇰🇷 +82 (South Korea)</option>
+                      <option value="+55">🇧🇷 +55 (Brazil)</option>
+                      <option value="+34">🇪🇸 +34 (Spain)</option>
+                      <option value="+62">🇮🇩 +62 (Indonesia)</option>
+                      <option value="+60">🇲🇾 +60 (Malaysia)</option>
+                      <option value="+63">🇵🇭 +63 (Philippines)</option>
+                      <option value="+65">🇸🇬 +65 (Singapore)</option>
+                      <option value="+64">🇳🇿 +64 (New Zealand)</option>
+                      <option value="+47">🇳🇴 +47 (Norway)</option>
+                      <option value="+46">🇸🇪 +46 (Sweden)</option>
+                      <option value="+41">🇨🇭 +41 (Switzerland)</option>
+                      <option value="+31">🇳🇱 +31 (Netherlands)</option>
+                      <option value="+34">🇪🇸 +34 (Spain)</option>
+                      <option value="+92">🇵🇰 +92 (Pakistan)</option>
+                      <option value="+971">🇦🇪 +971 (UAE)</option>
+                      <option value="+20">🇪🇬 +20 (Egypt)</option>
+                      <option value="+27">🇿🇦 +27 (South Africa)</option>
+                      <option value="+256">🇺🇬 +256 (Uganda)</option>
+                      <option value="+254">🇰🇪 +254 (Kenya)</option>
+                      <option value="+212">🇲🇦 +212 (Morocco)</option>
+                      <option value="+213">🇩🇿 +213 (Algeria)</option>
+                      <option value="+251">🇪🇹 +251 (Ethiopia)</option>
+                      <option value="+234">🇳🇬 +234 (Nigeria)</option>
+                      <option value="+1">🇨🇦 +1 (Canada)</option>
+                      <option value="+598">🇺🇾 +598 (Uruguay)</option>
+                      <option value="+591">🇧🇴 +591 (Bolivia)</option>
+                      <option value="+56">🇨🇱 +56 (Chile)</option>
+                      <option value="+51">🇵🇪 +51 (Peru)</option>
+                      <option value="+52">🇲🇽 +52 (Mexico)</option>
+                      <option value="+370">🇱🇹 +370 (Lithuania)</option>
+                      <option value="+48">🇵🇱 +48 (Poland)</option>
+                      <option value="+371">🇱🇻 +371 (Latvia)</option>
+                      <option value="+372">🇪🇪 +372 (Estonia)</option>
+                      <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                      <option value="+421">🇸🇰 +421 (Slovakia)</option>
+                      <option value="+30">🇬🇷 +30 (Greece)</option>
+                      <option value="+351">🇵🇹 +351 (Portugal)</option>
+                      <option value="+43">🇦🇹 +43 (Austria)</option>
+                      <option value="+32">🇧🇪 +32 (Belgium)</option>
+                      <option value="+90">🇹🇷 +90 (Turkey)</option>
+                      <option value="+380">🇺🇦 +380 (Ukraine)</option>
+                      <option value="+386">🇸🇮 +386 (Slovenia)</option>
+                      <option value="+385">🇭🇷 +385 (Croatia)</option>
+                      <option value="+382">🇲🇪 +382 (Montenegro)</option>
+                      <option value="+36">🇭🇺 +36 (Hungary)</option>
+                      <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                      <option value="+82">🇰🇷 +82 (South Korea)</option>
+                    </select>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="phone"
+                      name="phone"
+                      placeholder="Enter phone number"
+                      maxlength="15"
+                      oninput="validatePhoneNumber()"
+                    />
+                  </div>
+                  <div id="phoneError" class="error-message text-danger" style="font-size: 0.875rem; margin-top: 5px;"></div>
+                </div>
+              </div>
+              <!-- Communication Preferences -->
+              <div class="row contact-form-group">
+                <div class="col-sm-6 d-flex align-items-center justify-content-between">
+                  <label for="whatsapp" class="col-form-label"
+                    >{% trans 'Allow WhatsApp'%}</label
+                  >
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="allow-whatsapp"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row contact-form-group">
+                <div class="col-sm-6 d-flex align-items-center justify-content-between">
+                  <label for="sms" class="col-form-label">{% trans 'Allow SMS'%}</label>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="allow-sms"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row contact-form-group">
+                <div class="col-sm-6 d-flex align-items-center justify-content-between">
+                  <label for="call" class="col-form-label">{% trans 'Allow Call'%}</label>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="allow-call"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="contact-form-group mt-0">
+                <div class="d-flex align-items-start">
+                  <input
+                    type="checkbox"
+                    id="additional-checkbox"
+                    style="margin-right: 10px;"
+                    required
+                  />
+                  <label for="additional-checkbox" class="form-check-label mb-0">
+    {% trans "I confirm that I have the consent of the person whose contact details are being added and that they approve being added as an emergency contact" %}
+</label>
+
+                </div>
+              </div>
+              
+              <!-- Submit Buttons -->
+              <div class="row mt-5">
+                <div class="col-6">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="width: 100%"
+                    onclick="window.history.back();"
+                  >
+                    {% trans 'Cancel'%}
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button
+                    type="submit"
+                    class="btn btn-add d-flex align-items-center justify-content-center"
+                    style="width: 100%; background-color:#f04438; color:white;"
+                    id="addContactBtn"
+                  >
+                    <span id="addContactBtnText">{% trans 'Add Contact'%}</span>
+                    <div
+                      class="spinner-border spinner-border-sm text-light ms-2"
+                      id="addContactSpinner"
+                      style="display: none"
+                    ></div>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        <!-- Right Sidebar -->
+        <div class="col-lg-4">
+            <div class="bg-white p-3 rounded shadow-sm">
+              <h5 id="contactHeader" class="fw-bold">{% trans 'Contacts'%} <span id="contactCount">(0)</span></h5>
+              <div id="contact-list" class="overflow-auto" style="max-height: 500px;">
+                    <!-- Dynamic contact list -->
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="modal fade" id="linkNewPodModal" tabindex="-1" aria-labelledby="linkNewPodModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content p-4">
+        <div class="modal-header border-0 text-center flex-column">
+          <h5 class="modal-title fw-bold" id="linkNewPodModalLabel">Link New Pod</h5>
+          <p class="modal-subtitle text-muted mb-0">Add pod details</p>
+          <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="linkNewPodForm">
+            <div class="mb-3">
+              <label for="pod-name" class="form-label">Pod Name</label>
+              <input type="text" class="form-control" id="pod-name" placeholder="Enter name" required />
+            </div>
+            <div class="mb-3">
+              <label for="mac-address" class="form-label">MAC Address</label>
+              <input type="text" class="form-control" id="mac-address" placeholder="Ex: 03515514" required />
+            </div>
+            <div class="mb-3">
+              <label for="alert-message" class="form-label">Alert Message</label>
+              <input type="text" class="form-control" id="alert-message" placeholder="Ex: Help, please report to police" required />
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" placeholder="Enter additional details or description here" rows="3" required></textarea>
+            </div>
+            
+            <div class="mb-3 d-flex align-items-center justify-content-start">
+              <label class="form-label mb-0 me-3" for="button-status">Button Status</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="button-status" checked>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-secondary btn-lg px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" id="submit-button" class="btn btn-danger btn-lg px-4">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-add" id="successModalLabel">{% trans 'Success'%}</h5>
+        </div>
+        <div class="modal-body text-center" id="successModalBody">
+          <!-- Success message will go here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-close-add" style="background-color:#f04438; color:white;" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Error Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger" id="errorModalLabel">{% trans 'Error'%}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="errorModalBody">
+          <!-- Error message will go here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="statusModalLabel"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="statusModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn" style="background-color:#f04438; color:white;" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="updateContactModal" tabindex="-1" aria-labelledby="updateContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateContactModalLabel">{% trans 'Update Contact'%}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateContactForm">
+            <input type="hidden" id="contact_reference_update" name="contact_reference" />
+  
+            <!-- Name Field -->
+            <div class="mb-3">
+              <label for="update_name" class="form-label">{% trans 'Name'%}</label>
+              <input type="text" class="form-control" id="update_name" name="name" required />
+            </div>
+  
+            <!-- Relation Field -->
+            <div class="mb-3">
+              <label for="update_relation" class="form-label">{% trans 'Relation'%}</label>
+              <select class="form-select" id="update_relation" name="relation" required>
+                <option value="" disabled selected>{% trans 'Select relation'%}</option>
+                  <option value="Parent">{% trans 'Parent'%}</option>
+                  <option value="Spouse">{% trans 'Spouse'%}</option>
+                  <option value="Sibling">{% trans 'Sibling'%}</option>
+                  <option value="Child">{% trans 'Child'%}</option>
+                  <option value="Guardian">{% trans 'Guardian'%}</option>
+                  <option value="Relative">{% trans 'Relative'%}</option>
+                  <option value="Friend">{% trans 'Friend'%}</option>
+                  <option value="Neighbor">{% trans 'Neighbor'%}</option>
+                  <option value="Colleague">{% trans 'Colleague'%}</option>
+                  <option value="Employer">{% trans 'Employer'%}</option>
+                  <option value="Emergency">{% trans 'Emergency Contact'%} </option>
+                  <option value="Beat_officer">{% trans 'Beat Officer'%} </option>
+                  <option value="Doctor">{% trans 'Doctor'%}</option>
+                  <option value="Teacher">{% trans 'Teacher'%}</option>
+                  <option value="Partner">{% trans 'Partner'%}</option>
+                  <option value="Other">{% trans 'Other'%}</option>
+                
+              </select>
+            </div>
+  
+            <!-- Email Field -->
+            <div class="mb-3">
+  <label for="update_email" class="form-label">{% trans 'Email'%}</label>
+  <input type="email" class="form-control" id="update_email" name="email" readonly />
+</div>
+
+<!-- Phone Field -->
+<div class="mb-3">
+  <label for="update_phone" class="form-label">{% trans 'Phone'%}</label>
+  <div class="input-group">
+    <select class="form-select" id="update_country_code" name="country_code" style="max-width: 100px" disabled>
+      <option value="+91" selected>🇮🇳 +91 (India)</option>
+      <option value="+1">🇺🇸 +1 (USA)</option>
+      <!-- Add more options as needed -->
+    </select>
+    <input type="number" class="form-control" id="update_phone" name="phone" maxlength="15" readonly />
+  </div>
+</div>
+
+  
+            <!-- Permissions -->
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="update_allow_whatsapp" name="allow_whatsapp" />
+              <label class="form-check-label" for="update_allow_whatsapp">{% trans 'Allow Whatsapp'%}</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="update_allow_sms" name="allow_sms" />
+              <label class="form-check-label" for="update_allow_sms">{% trans 'Allow SMS'%}</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="update_allow_call" name="allow_call" />
+              <label class="form-check-label" for="update_allow_call">{% trans 'Allow Call'%}</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel'%}</button>
+          <button type="button" class="btn" style="background-color:#f04438; color:white;" id="updateContactButton">{% trans 'Update Contact'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchContacts(); // Fetch contacts when the page loads
+  });
+  
+  async function fetchContacts() {
+    const contactList = document.getElementById("contact-list");
+    const contactHeader = document.getElementById("contactHeader"); // Get the header element
+    contactList.innerHTML = "<p>Loading...</p>"; // Show a loading message
+  
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) {
+      contactList.innerHTML = "<p>Error: Missing access token.</p>";
+      contactHeader.textContent = "Contacts (0)"; // Set to 0 if there's an error
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/sos-contacts/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log(data)
+  
+      // Update the header with the total number of SOS contacts
+      contactHeader.textContent = `Contacts (${data.total_soscontacts || 0})`;
+  
+      if (!data.sos_contacts || data.sos_contacts.length === 0) {
+        contactList.innerHTML = "<p>{% trans 'No contacts available.'%}</p>";
+        return;
+      }
+  
+      // Group contacts by contact_reference and render them
+      const groupedContacts = data.sos_contacts.reduce((acc, contact) => {
+        const reference = contact.contact_reference;
+  
+        if (!acc[reference]) {
+          acc[reference] = {
+            name: contact.name,
+            emails: [],
+            phone_numbers: [],
+            relation: contact.relation,
+            contact_reference: reference, // Add contact_reference
+            allow_call: false, // Initialize allow_call
+            allow_sms: false, // Initialize allow_sms
+            allow_whatsapp: false, // Initialize allow_whatsapp
+            email_verified: false,
+            phone_verified: false,
+            email_id: null, // Initialize email_id as null
+            phone_id: null, // Initialize phone_id as null
+          };
+        }
+  
+        if (contact.contact_type === "email") {
+          acc[reference].emails.push(contact.emails);
+          acc[reference].email_verified = contact.email_verified;
+          acc[reference].email_id = contact.email_id; // Set email_id when contact_type is email
+        } else if (contact.contact_type === "phone") {
+          acc[reference].phone_numbers.push(contact.phone_numbers);
+          acc[reference].phone_verified = contact.phone_verified;
+          acc[reference].phone_id = contact.phone_id; // Set phone_id when contact_type is phone
+        }
+  
+        // Update allow_call, allow_sms, allow_whatsapp
+        acc[reference].allow_call = contact.allow_call || acc[reference].allow_call;
+        acc[reference].allow_sms = contact.allow_sms || acc[reference].allow_sms;
+        acc[reference].allow_whatsapp =
+          contact.allow_whatsapp || acc[reference].allow_whatsapp;
+  
+        return acc;
+      }, {});
+  
+      renderContacts(Object.values(groupedContacts));
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      contactList.innerHTML = "<p>Error fetching contacts. Please try again.</p>";
+      contactHeader.textContent = "Contacts (0)"; // Set to 0 if there's an error
+    }
+  }
+  
+function showModal(title, message, isSuccess = true) {
+  const modalTitle = document.getElementById("statusModalLabel");
+  const modalBody = document.getElementById("statusModalBody");
+  const modal = new bootstrap.Modal(document.getElementById("statusModal"));
+
+  modalTitle.textContent = title;
+  modalBody.textContent = message;
+
+  if (isSuccess) {
+    modalTitle.classList.remove("text-danger");
+    modalTitle.classList.add("text-success");
+  } else {
+    modalTitle.classList.remove("text-success");
+    modalTitle.classList.add("text-danger");
+  }
+
+  modal.show();
+}
+function renderContacts(contacts) {
+  const contactList = document.getElementById("contact-list");
+  contactList.innerHTML = ""; // Clear previous content
+
+  contacts.forEach((contact) => {
+    console.log("Contact Rendering:", contact);
+
+    // Create the contact container
+    const contactDiv = document.createElement("div");
+    contactDiv.className = "contact-item d-flex align-items-start p-2 border-bottom position-relative";
+    contactDiv.style.width = "100%"; // Ensure full-width for the container
+
+    // Wrapper for initials and contact info
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.className = "d-flex flex-grow-1";
+
+    // Contact initials
+    const initials = document.createElement("div");
+    initials.className = "contact-initials rounded-circle text-white d-flex align-items-center justify-content-center me-3";
+    initials.style.backgroundColor = getFixedColor(contact.name || "N/A");
+    initials.style.width = "50px";
+    initials.style.height = "50px";
+    initials.textContent = (contact.name || "N/A")[0].toUpperCase();
+
+    // Contact info
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "contact-info";
+    const nameHeading = document.createElement("h6");
+    nameHeading.className = "mb-1 text-truncate";
+    nameHeading.textContent = contact.name || "Unknown";
+    infoDiv.appendChild(nameHeading);
+
+    const detailSmall = document.createElement("small");
+    detailSmall.className = "text-muted d-block";
+    if (contact.emails && contact.emails.length > 0) {
+      detailSmall.innerHTML += `<strong>Email:</strong> ${contact.emails[0]}<br>`;
+    }
+    if (contact.phone_numbers && contact.phone_numbers.length > 0) {
+      detailSmall.innerHTML += `<strong>Phone:</strong> ${contact.phone_numbers[0]}<br>`;
+    }
+    detailSmall.innerHTML += `<strong>Relation:</strong> ${contact.relation || "Not Provided"}`;
+    infoDiv.appendChild(detailSmall);
+
+    // Append initials and info to wrapper
+    wrapperDiv.appendChild(initials);
+    wrapperDiv.appendChild(infoDiv);
+
+    // Action buttons and trash icon container
+    const actionDiv = document.createElement("div");
+    actionDiv.className = "contact-actions d-flex align-items-center";
+
+    // Email verification button or label
+    if (contact.emails && contact.emails.length > 0) {
+      if (contact.email_verified) {
+        const emailVerifiedLabel = document.createElement("span");
+        emailVerifiedLabel.className = "badge bg-success me-2";
+        emailVerifiedLabel.textContent = "Email Verified";
+        actionDiv.appendChild(emailVerifiedLabel);
+      } else {
+        const emailVerifyButton = document.createElement("button");
+        emailVerifyButton.className = "btn btn-outline-success btn-sm me-2";
+        emailVerifyButton.textContent = "Verify Email";
+        emailVerifyButton.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent triggering contact update modal
+          verifyEmail(contact);
+        });
+        actionDiv.appendChild(emailVerifyButton);
+      }
+    }
+
+    // Phone verification button or label
+    if (contact.phone_numbers && contact.phone_numbers.length > 0) {
+      if (contact.phone_verified) {
+        const phoneVerifiedLabel = document.createElement("span");
+        phoneVerifiedLabel.className = "badge bg-success me-2";
+        phoneVerifiedLabel.textContent = "Phone Verified";
+        actionDiv.appendChild(phoneVerifiedLabel);
+      } else {
+        const phoneVerifyButton = document.createElement("button");
+        phoneVerifyButton.className = "btn btn-outline-primary btn-sm me-2";
+        phoneVerifyButton.textContent = "Verify Phone";
+        phoneVerifyButton.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent triggering contact update modal
+          verifyPhone(contact);
+        });
+        actionDiv.appendChild(phoneVerifyButton);
+      }
+    }
+
+    // Trash icon
+    const trashIcon = document.createElement("i");
+    trashIcon.className = "bi bi-trash text-danger fs-5"; // Adjust font size for better visibility
+    trashIcon.style.cursor = "pointer";
+    trashIcon.addEventListener("click", (event) => {
+      event.stopPropagation(); // Prevent the click event from propagating to the parent
+      openDeleteModal(contact);
+    });
+
+    actionDiv.appendChild(trashIcon); // Add trash icon last in the action row
+
+    // Append wrapper and actions to the contact container
+    contactDiv.appendChild(wrapperDiv);
+    contactDiv.appendChild(actionDiv);
+
+    // Add click event to open the edit modal
+    contactDiv.addEventListener("click", () => {
+      openUpdateModal(contact); // Function to open the modal and populate it with contact details
+    });
+
+    // Append the contact item to the list
+    contactList.appendChild(contactDiv);
+  });
+}
+
+async function verifyEmail(contact) {
+  const accessToken = localStorage.getItem("access_token");
+  if (!accessToken) {
+    showModal("Error", "Missing access token. Please log in.", false);
+    return;
+  }
+
+  const requestData = {
+    email_id: contact.email_id
+  };
+
+  try {
+    const response = await fetch("/api/resend-verification-email/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    showModal("Success", "{% trans 'Email verification request sent successfully!'%}");
+    console.log("Email Verification Response:", data);
+  } catch (error) {
+    console.error("Error during email verification:", error);
+    showModal("Error", "{% trans 'Error during email verification. Please try again.'%}", false);
+  }
+}
+
+
+async function verifyPhone(contact) {
+  const accessToken = localStorage.getItem("access_token");
+  if (!accessToken) {
+    showModal("Error", "Missing access token. Please log in.", false);
+    return;
+  }
+
+  const phoneId = contact.phone_id;
+
+  if (!phoneId) {
+    showModal("Error", "Phone ID is undefined or missing.", false);
+    return;
+  }
+
+  const requestData = {
+    phone_id: phoneId
+  };
+
+  try {
+    const response = await fetch("/api/resend-verification-sms/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    showModal("Success", "{% trans 'Phone verification request sent successfully!'%}");
+    console.log("Phone Verification Response:", data);
+  } catch (error) {
+    console.error("Error during phone verification:", error);
+    showModal("Error", "{% trans 'Error during phone verification. Please try again.'%}", false);
+  }
+}
+
+//update contact
+
+function openUpdateModal(contact) {
+  // Populate modal fields
+  document.getElementById("contact_reference_update").value = contact.contact_reference;
+  document.getElementById("update_name").value = contact.name || "";
+  document.getElementById("update_relation").value = contact.relation || "";
+  document.getElementById("update_email").value = contact.emails ? contact.emails[0] : "";
+  document.getElementById("update_phone").value = contact.phone_numbers ? contact.phone_numbers[0] : "";
+  document.getElementById("update_country_code").value = contact.country_code || "+91";
+  document.getElementById("update_allow_whatsapp").checked = contact.allow_whatsapp || false;
+  document.getElementById("update_allow_sms").checked = contact.allow_sms || false;
+  document.getElementById("update_allow_call").checked = contact.allow_call || false;
+
+  console.log("Opening modal for contact update:", contact);
+
+  // Show modal
+  const updateModal = new bootstrap.Modal(document.getElementById("updateContactModal"));
+  updateModal.show();
+}
+document.getElementById("updateContactButton").addEventListener("click", async function () {
+  const contactReference = document.getElementById("contact_reference_update").value;
+
+  // Construct payload
+  const payload = {
+    name: document.getElementById("update_name").value,
+    relation: document.getElementById("update_relation").value,
+    emails: document.getElementById("update_email").value,
+    phone_numbers: document.getElementById("update_phone").value,
+    country_code: document.getElementById("update_country_code").value,
+    allow_whatsapp: document.getElementById("update_allow_whatsapp").checked,
+    allow_sms: document.getElementById("update_allow_sms").checked,
+    allow_call: document.getElementById("update_allow_call").checked,
+  };
+
+  console.log("Sending to Update Contact API:", payload);
+
+  try {
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) {
+      showErrorModal("Authentication token is missing. Please log in again.");
+      return;
+    }
+
+    const response = await fetch(`/api/sos-contacts/${contactReference}/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      console.log("Update Contact API Response:", await response.json());
+
+      // Hide the update modal after a successful update
+      const updateModal = bootstrap.Modal.getInstance(document.getElementById("updateContactModal"));
+      if (updateModal) {
+        updateModal.hide();
+      }
+
+      showSuccessModal("{% trans 'Contact updated successfully!'%}");
+      fetchContacts(); // Refresh the contact list
+    } else {
+      const errorData = await response.json();
+      console.error("Update Contact API Error:", errorData);
+      showErrorModal(errorData.message || "Failed to update contact.");
+    }
+  } catch (error) {
+    console.error("Error during Update Contact API call:", error);
+    showErrorModal("{% trans 'An error occurred while updating the contact.'%}");
+  }
+});
+
+  // Helper functions for modals
+  function showSuccessModal(message) {
+    const successModalBody = document.getElementById("successModalBody");
+    successModalBody.innerHTML = message;
+  
+    const successModal = new bootstrap.Modal(
+      document.getElementById("successModal")
+    );
+    successModal.show();
+  
+    document.getElementById("successModal").addEventListener("hidden.bs.modal", () => {
+      window.location.reload(); // Reload the page after modal close
+    });
+  }
+  
+  function showErrorModal(message) {
+    const errorModalBody = document.getElementById("errorModalBody");
+    errorModalBody.innerHTML = message;
+  
+    const errorModal = new bootstrap.Modal(
+      document.getElementById("errorModal")
+    );
+    errorModal.show();
+  
+    document.getElementById("errorModal").addEventListener("hidden.bs.modal", () => {
+      // Optionally reload if needed
+    });
+  }
+  
+  // Helper function to determine color for initials
+  function getFixedColor(contactName) {
+    const colors = ["#F04438", "#F06D48", "#F04255", "#F05A3D"];
+    const hash = contactName
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  }
+  
+
+// Function to handle the delete action
+function openDeleteModal(contact) {
+  const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
+  const deleteMessage = document.getElementById("deleteMessage");
+
+  // Set a message based on contact's data
+  let requestBody = {};
+  let deleteText = "{% trans 'Are you sure you want to delete this contact?'%}";
+
+  if (contact.email_id && contact.phone_id) {
+    // If both email_id and phone_id exist, send both IDs to the API
+    requestBody = {
+      email_id: contact.email_id,
+      phone_id: contact.phone_id,
+    };
+    deleteText = `{% trans 'Are you sure you want to delete both the email and the phone contact?'%}`;
+  } else if (contact.email_id) {
+    // If only email_id exists, send only the email_id
+    requestBody = { email_id: contact.email_id };
+    deleteText = `{% trans 'Are you sure you want to delete this email contact?'%}`;
+  } else if (contact.phone_id) {
+    // If only phone_id exists, send only the phone_id
+    requestBody = { phone_id: contact.phone_id };
+    deleteText = `{% trans 'Are you sure you want to delete this phone contact?'%}`;
+  }
+
+  // Log the request body that will be sent to the API
+  console.log('Sending to API:', requestBody);
+
+  // Set the delete confirmation message
+  deleteMessage.textContent = deleteText;
+
+  // Show the delete confirmation modal
+  deleteModal.show();
+
+  // Attach click event to the delete button to trigger the delete function
+  const deleteButton = document.getElementById("confirmDeleteButton");
+  deleteButton.onclick = () => {
+    deleteContact(requestBody); // Pass the request body
+    deleteModal.hide();
+  };
+}
+
+
+// Function to delete the contact (email/phone) via API
+async function deleteContact(requestBody) {
+  const accessToken = localStorage.getItem("access_token");
+
+  if (!accessToken) {
+    return;
+  }
+
+  try {
+    // Sending the DELETE request to the API
+    const response = await fetch(`/api/delete-sos-contact/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      console.log("Successfully deleted contact");
+      showSuccessModal(`{% trans 'Successfully deleted the contact'%}`);
+      fetchContacts(); // Reload the contacts after deletion
+    } else {
+      const errorData = await response.json();
+      console.error("Failed to delete contact:", errorData);
+      showErrorModal(errorData.message || "{% trans 'Failed to delete the contact.'%}");
+    }
+  } catch (error) {
+    console.error("Error during delete request:", error);
+    showErrorModal("Error occurred while deleting the contact.");
+  }
+}
+
+
+
+// Modal to confirm deletion
+const deleteModalHtml = `
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"> <!-- Centered Modal -->
+      <div class="modal-content">
+        <div class="modal-header fw-bold">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Contact</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p id="deleteMessage">{% trans 'Are you sure you want to delete this contact?'%}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel'%}</button>
+          <button type="button" style="background-color:#f04438; color:white;" class="btn" id="confirmDeleteButton">{% trans 'Delete'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
+// Add modal to the body
+document.body.insertAdjacentHTML("beforeend", deleteModalHtml);
+
+// Modal to display status after deletion (success or error)
+const statusModalHtml = `
+  <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"> <!-- Centered Modal -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="statusModalLabel">{% trans 'Status'%}</h5>
+        </div>
+        <div class="modal-body">
+          <p id="statusMessage">Status message will appear here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" style="background-color:#f04438; color:white;" class="btn" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
+
+// Add status modal to the body
+
+
+  // Update contact on form submission
+
+
+  // Email Validation
+  function validateEmail(email) {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  }
+  
+    // Phone Number Validation
+    function validatePhoneNumber(phoneNumber) {
+      const phonePattern = /^[0-9]{10,12}$/;
+      return phonePattern.test(phoneNumber);
+    }
+  </script>
+
+<script>
+  function validateName() {
+    const nameField = document.getElementById("name");
+    const nameError = document.getElementById("nameError");
+    const submitButton = document.getElementById("addContactBtnText");
+
+    // Regex to allow only letters (a-zA-Z) and spaces (no numbers or special characters)
+    const nameRegex = /^[a-zA-Z\s]*$/;
+
+    // If the input matches the regex (only letters and spaces)
+    if (nameRegex.test(nameField.value)) {
+      nameError.style.display = "none"; // Hide error message
+      submitButton.disabled = false; // Enable the submit button
+    } else {
+      nameError.style.display = "block"; // Show error message
+      submitButton.disabled = true; // Disable the submit button
+    }
+  }
+  
+
+  function getFixedColor(contactName) {
+    const colors = ["#F04438", "#F06D48", "#F04255", "#F05A3D"];
+    const hash = contactName
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  }
+  {% comment %} document.addEventListener("DOMContentLoaded", fetchContacts); {% endcomment %}
+
+
+  // emails validtions 
+document
+  .getElementById("contactForm")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Extract form data
+    const name = document.getElementById("name").value;
+    const relation = document.getElementById("relation").value;
+    const email = document.getElementById("toggle-email").checked
+      ? document.getElementById("email").value
+      : null;
+    const countryCode = document.getElementById("toggle-phone").checked
+      ? document.getElementById("country-code").value
+      : null;
+    const phone = document.getElementById("toggle-phone").checked
+      ? document.getElementById("phone").value
+      : null;
+
+    // Build API Payload dynamically
+    const payload = { name, relation };
+    if (email) payload.emails = email;
+    if (phone && countryCode) {
+      payload.country_code = countryCode;
+      payload.phone_numbers = phone;
+      payload.allow_whatsapp = document.getElementById("allow-whatsapp").checked;
+      payload.allow_sms = document.getElementById("allow-sms").checked;
+      payload.allow_call = document.getElementById("allow-call").checked;
+    }
+
+    console.log("Payload being sent to Add Contact API:", payload); // Log the payload
+
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) {
+      showErrorModal("Authentication token is missing. Please log in again.");
+      return;
+    }
+
+    // Check if at least one contact method is provided
+    if (!email && !phone) {
+      showErrorModal("{% trans 'Please provide at least an email or a phone number.'%}");
+      return;
+    }
+
+    const addContactBtn = document.getElementById("addContactBtn");
+    const addContactBtnText = document.getElementById("addContactBtnText");
+    const addContactSpinner = document.getElementById("addContactSpinner");
+
+    addContactBtnText.style.display = "none";
+    addContactSpinner.style.display = "inline-block";
+    addContactBtn.disabled = true;
+
+    try {
+  const response = await fetch("/api/add-sos-contacts/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  console.log("API Response Status:", response.status); // Log the response status
+
+  const result = await response.json();
+  console.log("API Response Data:", result); // Log the response data
+
+  if (response.ok) {
+    // Handle success response
+    if (result.success && result.success.length > 0) {
+      const successMessages = result.success.join("<br>");
+      showSuccessModal(successMessages || "{% trans 'Contact added successfully!'%}");
+    } else {
+      showSuccessModal("{% trans 'Contact added successfully!'%}");
+    }
+  } else {
+    // Handle error responses
+    if (result.errors && result.errors.length > 0) {
+      const errorMessages = result.errors.join("<br>");
+      console.error("API Error Messages:", errorMessages); // Log error messages
+      showErrorModal(errorMessages); // Show error messages
+    } else {
+      console.error("Unexpected API Error:", result.message); // Log unexpected errors
+      showErrorModal(result.message || "An unknown error occurred. Please try again.");
+    }
+  }
+} catch (err) {
+  console.error("Error during API call:", err); // Log any network or runtime errors
+  showErrorModal("An error occurred while adding the contact. Please try again.");
+}
+  });
+
+// Show/hide email and phone input fields based on toggle switches
+document
+  .getElementById("toggle-email")
+  .addEventListener("change", function () {
+    document.getElementById("email-input").style.display = this.checked
+      ? "block"
+      : "none";
+  });
+
+document
+  .getElementById("toggle-phone")
+  .addEventListener("change", function () {
+    const phoneInput = document.getElementById("phone-input");
+    const isChecked = this.checked;
+
+    // Show/hide phone input
+    phoneInput.style.display = isChecked ? "block" : "none";
+
+    // Enable/disable WhatsApp, SMS, and Call toggles
+    document.getElementById("allow-whatsapp").disabled = !isChecked;
+    document.getElementById("allow-sms").disabled = !isChecked;
+    document.getElementById("allow-call").disabled = !isChecked;
+
+    // Uncheck toggles if phone is disabled
+    if (!isChecked) {
+      document.getElementById("allow-whatsapp").checked = false;
+      document.getElementById("allow-sms").checked = false;
+      document.getElementById("allow-call").checked = false;
+    }
+  });
+// Initialize by disabling WhatsApp, SMS, and Call toggles
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("allow-whatsapp").disabled = true;
+  document.getElementById("allow-sms").disabled = true;
+  document.getElementById("allow-call").disabled = true;
+});
+
+// Helper functions for modals
+function showSuccessModal(message) {
+  const successModalBody = document.getElementById("successModalBody");
+  successModalBody.textContent = message;
+
+  const successModal = new bootstrap.Modal(
+    document.getElementById("successModal")
+  );
+  successModal.show();
+// Reload the page when the modal is closed
+document.getElementById("successModal").addEventListener("hidden.bs.modal", () => {
+  window.location.reload();
+});
+}
+
+function showErrorModal(message) {
+  const errorModalBody = document.getElementById("errorModalBody");
+  
+  errorModalBody.textContent = message;
+
+  const errorModal = new bootstrap.Modal(
+    document.getElementById("errorModal")
+  );
+  errorModal.show();
+  document.getElementById("errorModal").addEventListener("hidden.bs.modal", () => {
+    window.location.reload();
+  });
+}
+
+
+  // Toggle visibility of email input based on checkbox status
+  function toggleEmailInput() {
+    const emailInputDiv = document.getElementById("email-input");
+    const emailCheckbox = document.getElementById("toggle-email");
+    emailInputDiv.style.display = emailCheckbox.checked ? "block" : "none";
+  }
+  // Email validation function
+  function validateEmail() {
+    const emailField = document.getElementById("email");
+    const emailError = document.getElementById("emailError");
+    const emailValue = emailField.value;
+
+    // General email format validation regex
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/i;
+    if (!emailValue) {
+      emailError.textContent = "Email is required.";
+      return;
+    }
+
+    if (!emailRegex.test(emailValue)) {
+      emailError.textContent =
+        "Invalid email format. Please use a valid email.";
+      return;
+    }
+
+    // Disallow invalid domain extensions
+    if (
+      /\.com\..+/i.test(emailValue) ||
+      /\.gov\.in\..+/i.test(emailValue) ||
+      /\.edu\.in\..+/i.test(emailValue) ||
+      /\.(\w+)\.\1/i.test(emailValue)
+    ) {
+      emailError.textContent =
+        "Invalid email format: Ensure no extra dots or duplicate domain extensions.";
+      return;
+    }
+
+    // Allowed domains regex pattern
+    const allowedDomains = [
+      "com",
+      "org",
+      "gov",
+      "edu",
+      "net",
+      "info",
+      "biz",
+      "me",
+      "pro",
+      "gov.in",
+      "edu.in",
+      "ac.in",
+      "org.in",
+      "com.in",
+      "co.in",
+      "gov.uk",
+      "ac.uk",
+      "org.uk",
+      "co.uk",
+      "gov.au",
+      "edu.au",
+      "com.au",
+      "org.au",
+      "gov.sg",
+      "edu.sg",
+      "com.sg",
+      "gov.ca",
+      "com.ca",
+      "edu.ca",
+      "gov.cn",
+      "edu.cn",
+      "com.cn",
+      "gov.jp",
+      "edu.jp",
+      "gov.za",
+      "edu.za",
+      "gov.br",
+      "gov.ru",
+      "tech",
+      "health",
+      "ai",
+      "io",
+      "cloud",
+      "tv",
+      "news",
+      "bank",
+      "finance",
+      "eu",
+      "uk",
+      "ca",
+      "au",
+      "sg",
+      "jp",
+      "br",
+    ];
+
+    const domainPattern = new RegExp(
+      `(${allowedDomains.map((d) => d.replace(".", "\\.")).join("|")})$`,
+      "i"
+    );
+
+    if (!domainPattern.test(emailValue)) {
+      emailError.textContent =
+        "Invalid email domain. Only specific domains are allowed.";
+      return;
+    }
+
+    // If no errors, clear the error message
+    emailError.textContent = "";
+  }
+
+
+
+  
+  // number validations 
+  function validatePhoneNumber() {
+    const phoneField = document.getElementById("phone");
+    const phoneValue = phoneField.value;
+    const phoneError = document.getElementById("phoneError");
+
+    // Remove any non-digit characters (including 'e', '+', etc.)
+    const sanitizedPhoneValue = phoneValue.replace(/\D/g, "");
+
+    // If the sanitized phone value exceeds 15 characters, set it back to the first 15 characters
+    if (sanitizedPhoneValue.length > 15) {
+      phoneField.value = sanitizedPhoneValue.slice(0, 15); // Restrict to first 15 digits
+      phoneError.textContent = "{% trans 'Phone number cannot be more than 15 digits.'%}";
+    } else {
+      phoneField.value = sanitizedPhoneValue; // Set the cleaned value back
+      phoneError.textContent = ""; // Clear any error message
+    }
+  }
+
+  // Helper functions for modals
+  function showSuccessModal(message) {
+    const successModalBody = document.getElementById("successModalBody");
+    successModalBody.innerHTML = message; // Support HTML for multi-line messages
+
+
+    const successModal = new bootstrap.Modal(
+      document.getElementById("successModal")
+    );
+    successModal.show();
+  // Reload the page when the modal is closed
+  document.getElementById("successModal").addEventListener("hidden.bs.modal", () => {
+    window.location.reload();
+  });
+}
+
+  function showErrorModal(message) {
+    const errorModalBody = document.getElementById("errorModalBody");
+    
+    errorModalBody.innerHTML = message; // Support HTML for multi-line messages
+
+    const errorModal = new bootstrap.Modal(
+      document.getElementById("errorModal")
+    );
+    errorModal.show();
+    document.getElementById("errorModal").addEventListener("hidden.bs.modal", () => {
+      window.location.reload();
+    });
+  }
+
+  
+</script>
+
+
+{% endblock %}

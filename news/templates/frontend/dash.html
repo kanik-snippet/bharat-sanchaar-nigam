@@ -1,0 +1,706 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}User Dashboard{% endblock %}
+{% block body %}
+<link href="{% static 'css/dashStyle.css' %}" rel="stylesheet" />
+
+
+
+<div class="container-fluid px-4 mt-4" id="dashboard-container">
+  <!-- Header Section -->
+  <div class="row align-items-center justify-content-between mb-4">
+    <div class="col-md-8 mb-3">
+        <h3 class="name" style="margin-top: 12px;">{% trans 'Welcome'%}, <span class="nameDisplay">Name will be displayed here</span></h3>
+        <p class="emailDisplay">Email will be displayed here</p>
+    </div>
+    <div class="col-md-4 d-flex align-items-left justify-content-end">
+        <button class="btn" id="addNewPodButton" data-bs-toggle="modal" data-bs-target="#linkNewPodModal">
+            <i class="fa fa-plus"></i> {% trans 'Add News' %}
+        </button>
+        
+        <div class="dropdown">
+            <button class="btn position-relative" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="far fa-bell"></i>
+                <span id="notificationCount" class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                    0
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end p-2" id="notificationList" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                <li class="text-center text-muted" id="noNotifications">
+                    <img src="{% static 'images/no_data.jpg' %}" alt="No Notifications" width="100">
+                </li>
+                <li class="dropdown-item" id="markAllReadBtn" style="display: none;">
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="markAllAsRead()">
+                        {% trans 'Mark all as read' %}
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Store the last notification count to detect changes
+  let lastNotificationCount = 0;
+  let notificationDropdownOpen = false;
+  
+  // Track dropdown state
+  document.getElementById('notificationDropdown').addEventListener('show.bs.dropdown', function () {
+      notificationDropdownOpen = true;
+  });
+  
+  document.getElementById('notificationDropdown').addEventListener('hide.bs.dropdown', function () {
+      notificationDropdownOpen = false;
+  });
+
+  function fetchNotifications() {
+      const accessToken = localStorage.getItem('access_token');
+
+      if (!accessToken) {
+          console.error("No access token found");
+          return;
+      }
+
+      fetch('/news/api/notifications/', {
+          method: 'GET',
+          headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+          },
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`API Error: ${response.status}`);
+          }
+          return response.json();
+      })
+      .then(data => {
+          const notificationList = document.getElementById("notificationList");
+          const notificationCount = document.getElementById("notificationCount");
+          const noNotifications = document.getElementById("noNotifications");
+          const markAllReadBtn = document.getElementById("markAllReadBtn");
+
+          // Filter only unread notifications
+          const unreadNotifications = data.filter(notification => !notification.is_read);
+          
+          // Only update if count changed or dropdown is open
+          if (unreadNotifications.length !== lastNotificationCount || notificationDropdownOpen) {
+              notificationList.innerHTML = "";
+              
+              if (unreadNotifications.length > 0) {
+                  notificationCount.textContent = unreadNotifications.length;
+                  noNotifications.style.display = "none";
+                  markAllReadBtn.style.display = "block";
+
+                  unreadNotifications.forEach(notification => {
+                      const li = document.createElement("li");
+                      li.className = "dropdown-item d-flex justify-content-between align-items-center";
+                      li.innerHTML = `
+                          <span>${notification.message}</span>
+                          <button class="btn btn-sm btn-outline-secondary" onclick="markAsRead(${notification.id}, event)">
+                              <i class="fas fa-check"></i>
+                          </button>
+                      `;
+                      notificationList.appendChild(li);
+                  });
+                  
+                  // Add Mark All button at the end
+                  notificationList.appendChild(markAllReadBtn);
+              } else {
+                  notificationCount.textContent = "0";
+                  noNotifications.style.display = "block";
+                  markAllReadBtn.style.display = "none";
+              }
+              
+              lastNotificationCount = unreadNotifications.length;
+              
+              // Show visual indicator if new notifications arrived while dropdown was closed
+              if (!notificationDropdownOpen && unreadNotifications.length > 0) {
+                  showNewNotificationIndicator();
+              }
+          }
+      })
+      .catch(error => console.error("Error fetching notifications:", error));
+  }
+
+  function showNewNotificationIndicator() {
+      const bellIcon = document.querySelector('.notification-bell');
+      if (bellIcon) {
+          // Add animation class
+          bellIcon.classList.add('notification-pulse');
+          
+          // Remove after animation completes
+          setTimeout(() => {
+              bellIcon.classList.remove('notification-pulse');
+          }, 3000);
+      }
+  }
+
+  // Make these functions global so they can be called from HTML
+  window.markAsRead = function(notificationId, event) {
+      if (event) event.stopPropagation();
+      
+      const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) return;
+
+      fetch(`/news/api/notifications/${notificationId}/read/`, {
+          method: "PATCH",
+          headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              fetchNotifications(); // Refresh the list
+          }
+      })
+      .catch(error => console.error("Error marking notification as read:", error));
+  };
+
+  window.markAllAsRead = function() {
+      const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) return;
+
+      fetch('/news/api/notifications/mark_all_read/', {  // You'll need to create this endpoint
+          method: "PATCH",
+          headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              fetchNotifications();
+          }
+      })
+      .catch(error => console.error("Error marking all as read:", error));
+  };
+
+  // Initialize
+  fetchNotifications();
+  
+  // Refresh notifications every 30 seconds
+  setInterval(fetchNotifications, 30000);
+});
+</script>
+
+  </div>
+
+  
+  <!-- Main Content -->
+  <div class="row">
+    <!-- Left Section -->
+    <div class="col-lg-9">
+      <!-- Cards -->
+      <div class="row mb-4 g-3">
+        <div class="col-lg-4">
+          <div class="card custom-card">
+            <a href="{% url 'khabhar' %}" style="text-decoration: none; color: inherit;">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title">{% trans 'Total News'%}</h5>
+                <div class="icon1">
+                  <img src="{% static 'images/bsnk.png' %}" alt="" class="img-fluid" />
+                </div>
+              </div>
+              <h1 id="news-count" class="counts">Loading...</h1>
+              <h6 id="last-news-update" class="updates">Loading...</h6>
+
+            </div>
+          </a>
+          </div>
+        </div>
+        <!-- <div class="col-lg-4">
+          <div class="card custom-card">
+            <a href="{% url 'add_contact' %}" style="text-decoration: none; color: inherit;">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title">{% trans 'SOS Contacts'%}</h5>
+                <div class="icon2">
+                  <i class="bi bi-people"></i>
+                </div>
+              </div>
+              <h6 id="total-sos-contacts" class="counts">Loading...</h6>
+                  <h6 id="sos-updated" class="updates">Loading...</h6>
+            </div>
+          </a>
+          </div>
+        </div> -->
+        <div class="col-lg-4">
+          <div class="card custom-card">
+            <a href="{% url 'log' %}" style="text-decoration: none; color: inherit;">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title">{% trans 'Total Notifications'%}</h5>
+                <div class="icon3">
+                  <i class="far fa-bell"></i>
+                </div>
+              </div>
+              <h1 id="notification-count" class="counts">Loading...</h1>
+              <h6 id="last-notification-update" class="updates">Loading...</h6>
+            </div>
+          </a>
+          </div>
+        </div>
+      </div>
+<script>
+  // In your frontend JavaScript (e.g., when loading the dashboard)
+async function fetchDashboardCounts() {
+  const token = localStorage.getItem('access_token');
+  
+  if (!token) {
+    // Redirect to login if no token found
+    window.location.href = '/login';
+    return;
+  }
+
+  try {
+    const response = await fetch('/news/api/dashboard/counts/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch counts');
+    }
+
+    const data = await response.json();
+    
+    // Update your UI with the counts
+    document.getElementById('news-count').textContent = data.news_count;
+    document.getElementById('notification-count').textContent = data.notification_count;
+
+    // Update last updated timestamps
+    const newsUpdateElement = document.getElementById('last-news-update');
+if (data.last_news_update) {
+    const newsDate = new Date(data.last_news_update);
+    newsUpdateElement.textContent = `Update on ${newsDate.toLocaleString()}`;
+} else {
+    newsUpdateElement.textContent = 'Last Updated: Never';
+}
+
+// Format notification last updated
+const notificationUpdateElement = document.getElementById('last-notification-update');
+if (data.last_notification_update) {
+    const notificationDate = new Date(data.last_notification_update);
+    notificationUpdateElement.textContent = `Update on ${notificationDate.toLocaleString()}`;
+} else {
+    notificationUpdateElement.textContent = 'Last Updated: Never';
+}
+    
+  } catch (error) {
+    console.error('Error:', error);
+    // Handle error (e.g., show error message)
+  }
+}
+
+// Call this when your dashboard loads
+document.addEventListener('DOMContentLoaded', fetchDashboardCounts);
+</script>
+
+     
+          <!-- Table Section
+          <div class='datatable'>
+            <table class="table custom-table" > 
+                <thead>
+                    <tr>
+                        <th>{% trans 'Button Name'%}</th>
+                        <th>{% trans 'Contacts'%}</th>
+                        <th>{% trans 'Status'%}</th>
+                        <th>{% trans 'MAC Address'%}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="device-tbody">
+                    Dynamic rows will be inserted here
+                </tbody>
+            </table>
+        </div> -->
+
+
+    </div>
+
+    <!-- Right Section -->
+    <div class="col-lg-3 h-100 contectsec">
+      <div class="contacts-sidebar">
+        <h5>{% trans 'Recent News' %} (<span id="news-count">0</span>)</h5>
+        <div class="contacts" id="news-list">
+          <!-- Dynamic news will be inserted here -->
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <!-- Modal -->
+<div class="modal fade" id="linkNewPodModal" tabindex="-1" aria-labelledby="linkNewPodModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0 text-center flex-column">
+        <h5 class="modal-title fw-bold" id="linkNewPodModalLabel">{% trans 'Create New News' %}</h5>
+        <p class="modal-subtitle text-muted mb-0">{% trans 'Add Post Details' %}</p>
+      </div>
+      <div class="modal-body">
+        <form id="linkNewPodForm">
+          <!-- Expandable Content Field -->
+          <div class="mb-3">
+            <label for="content-field" class="form-label">{% trans 'Content' %}</label>
+            <textarea id="content-field" class="form-control" rows="3" placeholder="Enter content here..." maxlength="200" required></textarea>
+          </div>
+
+          <!-- Upload Field -->
+          <div class="mb-3">
+            <label for="file-upload" class="form-label">{% trans 'Upload File' %}</label>
+            <input type="file" id="file-upload" class="form-control" />
+          </div>
+
+          <!-- Public Toggle -->
+          <div class="mb-3 d-flex align-items-center justify-content-start">
+            <label class="form-label mb-0 me-3" for="public-toggle">{% trans 'Public' %}</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="public-toggle" />
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-secondary btn-lg px-4" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
+            <button type="submit" id="submit-button" class="btn btn-danger btn-lg px-4" disabled>{% trans 'Submit' %}</button>          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// In your existing script section, modify the fetchDashboardCounts function:
+async function fetchDashboardCounts() {
+  const token = localStorage.getItem('access_token');
+  
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+
+  try {
+    const response = await fetch('/news/api/dashboard/counts/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch counts');
+    }
+
+    const data = await response.json();
+    
+    // Update counts
+    document.getElementById('news-count').textContent = data.news_count;
+    document.getElementById('notification-count').textContent = data.notification_count;
+
+    // Update last updated timestamps
+    const newsUpdateElement = document.getElementById('last-news-update');
+    if (data.last_news_update) {
+        const newsDate = new Date(data.last_news_update);
+        newsUpdateElement.textContent = `Update on ${newsDate.toLocaleString()}`;
+    } else {
+        newsUpdateElement.textContent = 'Last Updated: Never';
+    }
+
+    const notificationUpdateElement = document.getElementById('last-notification-update');
+    if (data.last_notification_update) {
+        const notificationDate = new Date(data.last_notification_update);
+        notificationUpdateElement.textContent = `Update on ${notificationDate.toLocaleString()}`;
+    } else {
+        notificationUpdateElement.textContent = 'Last Updated: Never';
+    }
+    
+    // Render recent news if available
+    if (data.recent_news) {
+        renderRecentNews(data.recent_news);
+    }
+    
+  } catch (error) {
+    console.error('Error:', error);
+    document.getElementById('news-list').innerHTML = `
+        <div class="text-center py-3">
+            <p class="text-danger">{% trans 'Failed to load news' %}</p>
+            <button onclick="fetchDashboardCounts()" class="btn btn-sm btn-outline-primary mt-2">
+                {% trans 'Retry' %}
+            </button>
+        </div>
+    `;
+  }
+}
+
+// Keep your existing renderRecentNews function but make sure it matches your API response structure:
+function renderRecentNews(newsList) {
+    const newsListContainer = document.getElementById('news-list');
+    const sidebarNewsCount = document.querySelector('.contectsec #news-count');
+    
+    // Update news count in sidebar
+    sidebarNewsCount.textContent = newsList.length;
+    
+    // Clear existing content
+    newsListContainer.innerHTML = '';
+
+    if (newsList.length === 0) {
+        newsListContainer.innerHTML = `
+            <div class="text-center py-3">
+                <p class="text-muted">{% trans 'No recent news available' %}</p>
+                <a href="/khabhar" class="btn btn-sm btn-primary mt-2">{% trans 'View All News' %}</a>
+            </div>
+        `;
+        return;
+    }
+
+    newsList.forEach(news => {
+        const newsItem = document.createElement('div');
+        newsItem.classList.add('contact-item', 'd-flex', 'flex-wrap', 'align-items-center', 'mb-3', 'p-2');
+        newsItem.style.cursor = 'pointer';
+        
+        newsItem.addEventListener('click', () => {
+            window.location.href = `/news/khabhar/`;
+        });
+
+        // Use whatever field contains your news title - adjust based on your API
+        const title = news.created_by || news.heading || 'Untitled News';
+        
+        // Trim content to 15 words max
+        const content = news.content || '';
+        const contentWords = content.split(' ');
+        const trimmedContent = contentWords.slice(0, 15).join(' ') + 
+                             (contentWords.length > 15 ? '...' : '');
+
+        // Use news image if available
+        const imageHtml = news.image_url 
+            ? `<img src="${news.image_url}" alt="${title}" 
+                style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">`
+            : `<div class="contact-initials" style="background-color: #f0f0f0; width: 40px; height: 40px;">
+                  <i class="bi bi-newspaper text-dark"></i>
+               </div>`;
+
+        newsItem.innerHTML = `
+            <div class="d-flex w-100">
+                ${imageHtml}
+                
+                <div class="ms-3 flex-grow-1" style="min-width: 0;">
+                    <div class="d-flex flex-column">
+                        <h6 class="h6-responsive mb-1 text-truncate">${title}</h6>
+                        <small class="text-muted">
+                            ${news.created_by || 'Admin'} • 
+                            ${new Date(news.created_at).toLocaleDateString()}
+                        </small>
+                        
+                        <p class="mt-1 mb-0 text-muted" style="font-size: 0.8rem; line-height: 1.3;">
+                            ${trimmedContent}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        newsListContainer.appendChild(newsItem);
+    });
+}
+
+// Initialize everything when DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetchDashboardCounts();
+    // Your other initialization code...
+});
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const accessToken = localStorage.getItem('access_token');
+      const form = document.getElementById('linkNewPodForm');
+      const contentField = document.getElementById('content-field');
+      const fileUpload = document.getElementById('file-upload');
+      const publicToggle = document.getElementById('public-toggle');
+      const submitButton = document.getElementById('submit-button');
+      const modal = document.getElementById('linkNewPodModal');
+  
+      if (!accessToken) {
+          console.error('No access token found');
+          // Redirect to login or show error
+          return;
+      }
+  
+      // Enable submit button only when content is entered
+      contentField.addEventListener('input', function() {
+          submitButton.disabled = !this.value.trim();
+      });
+  
+      // Optional: Change public toggle behavior to not control submit button
+      // publicToggle.addEventListener('change', function() {
+      //     // Just update UI if needed
+      // });
+  
+      form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          try {
+              submitButton.disabled = true;
+              submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Posting...';
+              
+              const formData = new FormData();
+              formData.append('content', contentField.value);
+              formData.append('is_public', publicToggle.checked);
+              
+              if (fileUpload.files[0]) {
+                  // Determine if it's photo or video based on file type
+                  const file = fileUpload.files[0];
+                  if (file.type.startsWith('image/')) {
+                      formData.append('photo', file);
+                  } else if (file.type.startsWith('video/')) {
+                      formData.append('video', file);
+                  }
+              }
+  
+              const response = await fetch('/news/api/news-create/', {  // Update with your actual endpoint
+                  method: 'POST',
+                  headers: {
+                      'Authorization': `Bearer ${accessToken}`,
+                      // Don't set Content-Type for FormData - let browser set it with boundary
+                  },
+                  body: formData
+              });
+  
+              if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(errorData.detail || 'Failed to create news');
+              }
+  
+              const result = await response.json();
+              console.log('News created:', result);
+              
+              // Close modal and reset form
+              const bootstrapModal = bootstrap.Modal.getInstance(modal);
+              bootstrapModal.hide();
+              form.reset();
+              showToast('News created successfully!');
+              // Refresh news feed or add the new item to UI
+              location.reload(); // Simple approach
+              // Or better: addNewsToUI(result); // Custom function to update UI
+              
+              // Show success message
+              // showToast('News created successfully!');
+              
+          } catch (error) {
+              console.error('Error:', error);
+              alert(error.message || 'An error occurred while creating news');
+          } finally {
+              submitButton.disabled = false;
+              submitButton.textContent = 'Submit';
+          }
+      });
+  
+      // Reset form when modal is closed
+      modal.addEventListener('hidden.bs.modal', function() {
+          form.reset();
+          submitButton.disabled = true;
+      });
+  });
+  
+  // Helper function to show toast messages
+  function showToast(message) {
+      // Implement your toast notification system or use this simple version:
+      const toast = document.createElement('div');
+      toast.className = 'position-fixed bottom-0 end-0 p-3';
+      toast.innerHTML = `
+          <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                  <strong class="me-auto">Notification</strong>
+                  <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                  ${message}
+              </div>
+          </div>
+      `;
+      document.body.appendChild(toast);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+          toast.remove();
+      }, 5000);
+  }
+  </script>
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0 text-center flex-column">
+        <h5 class="modal-title fw-bold" id="successModalLabel">{% trans 'Device Added'%}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p>{% trans 'Your device has been successfully added.'%}</p>
+        <button type="button" class="btn btn-danger btn-lg px-4" id="closeModalBtn" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Invalid MAC Address Format Error -->
+<div class="modal fade" id="macAddressFormatErrorModal" tabindex="-1" aria-labelledby="macAddressFormatErrorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0 text-center flex-column">
+        <h5 class="modal-title fw-bold" id="macAddressFormatErrorModalLabel">{% trans 'Invalid MAC Address Format'%}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p id="macAddressFormatErrorMessage">{% trans 'Please use the correct format: xx:xx:xx:xx:xx:xx'%}</p>
+        <button type="button" class="btn btn-danger btn-lg px-4" id="macAddressFormatErrorCloseBtn" data-bs-dismiss="modal">{% trans 'OK'%}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for MAC Address Already Exists Error -->
+<div class="modal fade" id="macAddressExistErrorModal" tabindex="-1" aria-labelledby="macAddressExistErrorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0 text-center flex-column">
+        <h5 class="modal-title fw-bold" id="macAddressExistErrorModalLabel">{% trans 'Device Already Registered'%}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p id="macAddressExistErrorMessage">{% trans 'This MAC address is already registered.'%}</p>
+        <button type="button" class="btn btn-danger btn-lg px-4" id="macAddressExistErrorCloseBtn" data-bs-dismiss="modal">{% trans 'OK'%}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal for Button Limit Exceeded Error -->
+<div class="modal fade" id="buttonLimitExceededErrorModal" tabindex="-1" aria-labelledby="buttonLimitExceededErrorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0 text-center flex-column">
+        <h5 class="modal-title fw-bold" id="buttonLimitExceededErrorModalLabel">{% trans 'Button Limit Exceeded'%}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p id="buttonLimitExceededErrorMessage">{% trans 'You cannot register more buttons. The limit has been reached.'%}</p>
+        <button type="button" class="btn btn-danger btn-lg px-4" id="buttonLimitExceededErrorCloseBtn" data-bs-dismiss="modal">{% trans 'OK'%}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRgfz54V4H1oXKv2v3hx6rjGz7l5Rz82H+5Q1P+SYy" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-kerOj+QvKL7UrRlWXxRe7Y5U4xCUwNCgshw6NjAdBvgFjhK8jd4mn6zt6u9a8zVp" crossorigin="anonymous"></script>
+<script src="{% static 'djangojs.js' %}"></script>
+
+
+
+{% endblock %}

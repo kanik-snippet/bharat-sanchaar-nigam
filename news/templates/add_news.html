@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Add News{% endblock %}
+
+{% block content %}
+<h2>Add News</h2>
+<form id="newsForm">
+    <label>Title:</label>
+    <input type="text" id="title" required><br>
+
+    <label>Content:</label>
+    <textarea id="content" required></textarea><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+document.getElementById("newsForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let title = document.getElementById("title").value;
+    let content = document.getElementById("content").value;
+
+    fetch('/api/news-create/', {  // Your API Endpoint
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{ request.user.auth_token }}"  // Assuming token auth
+        },
+        body: JSON.stringify({
+            title: title,
+            content: content
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("News Added Successfully!");
+        window.location.href = "/";  // Redirect to home
+    })
+    .catch(error => console.error("Error adding news:", error));
+});
+</script>
+{% endblock %}

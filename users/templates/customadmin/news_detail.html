@@ -1,0 +1,100 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}News Detail{% endblock %}
+{% block body %}
+
+<!-- Header Section -->
+<div class="my-5 d-flex flex-column col-sm-10 flex-md-row justify-content-between" id="header">
+    <h1>News Details</h1>
+    <a href="{% url 'news_management' %}" class="btn d-flex col-sm-5 col-md-4 col-xl-2 col-lg-2 align-items-center" style="background-color: #f04438; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+        <span style="margin-right: 5px;">&laquo;</span>
+        <span>Back to List</span>
+    </a>
+</div>
+
+<!-- Contact Us Details Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-light">
+                <!-- Card Header -->
+                <div class="card-header text-white" style="background-color: #f04438;">
+                    <h4 class="mb-0">News Information</h4>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Full Name:</strong></div>
+                        <div class="col-md-8">{{ news.created_by.get_full_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Email Address:</strong></div>
+                        <div class="col-md-8">{{ news.created_by.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>News Type:</strong></div>
+                        <div class="col-md-8">
+                            {% if news.created_by.role == 'pm' %}
+                                Country Wide
+                            {% elif news.created_by.role == 'cm' %}
+                                State Wide
+                            {% elif news.created_by.role == 'vidhayak' %}
+                                District Wide
+                            {% elif news.created_by.role == 'chairman' %}
+                                City Wide
+                            {% elif news.created_by.role == 'sabhasad' %}
+                                Ward Wide
+                            {% else %}
+                                General News
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Date Submmitted:</strong></div>
+                        <div class="col-md-8">{{ news.created_at|date:"F j, Y H:i" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="border-top pt-3 mt-3">
+                                <h5 class="mb-3"><strong>News Content:</strong></h5>
+                                <div class="p-3 bg-light rounded">
+                                    {{ news.content }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                        <!-- Media Section -->
+                                        {% if news.photo or news.video %}
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="border-top pt-3 mt-3">
+                                                    <h5 class="mb-3"><strong>Media Attachments:</strong></h5>
+                                                    {% if news.photo %}
+                                                    <div class="mb-4">
+                                                        <h6>Photo:</h6>
+                                                        <img src="{{ news.photo.url }}" class="img-fluid rounded" style="max-height: 400px;">
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if news.video %}
+                                                    <div class="mb-4">
+                                                        <h6>Video:</h6>
+                                                        <video controls class="w-100 rounded" style="max-height: 400px;">
+                                                            <source src="{{ news.video.url }}" type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

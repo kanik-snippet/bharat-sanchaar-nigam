@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <title>Panic Pod</title>
+<style>
+    /* General Reset */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+}
+
+header {
+    background: #f9f9f9;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff4d4d;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    color: #333;
+}
+
+.signup-btn {
+    background: #ff4d4d;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #f5f5f5;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+}
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+/* Features */
+.features {
+    background: #fff;
+    padding: 2rem;
+    text-align: center;
+}
+
+.features-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+
+</style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">PanicPod</div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#faqs">FAQs</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#login">Log in</a></li>
+                <li><a href="#signup" class="signup-btn">Sign up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Secure your safety with Panic Pod</h1>
+            <p>Your ultimate safety companion designed to provide peace of mind in any situation.</p>
+            <div class="cta-buttons">
+                <a href="#demo" class="btn">Demo</a>
+                <a href="#get-started" class="btn primary">Get Started</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="dashboard-placeholder.png" alt="Dashboard">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <h2>Innovative Aspects of Panic Pod</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <h3>Instant SOS Alerts</h3>
+                <p>Notify your loved ones in emergencies with SOS alerts. Stay connected and ensure help is just a tap away!</p>
+            </div>
+            <div class="feature-item">
+                <h3>Emergency Call</h3>
+                <p>Get immediate assistance with our Emergency Call feature, ensuring help is just a button away.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Live Video Streaming</h3>
+                <p>Instantly connect to emergency services whenever you need assistance with real-time monitoring.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Secure Panic Button</h3>
+                <p>Your trusted partner for immediate assistance at the push of a button.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section id="faqs" class="faqs">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <h3>What are the Instant SOS Alerts?</h3>
+            <p>Panic Pod offers a range of Instant SOS Alerts to keep you safe in emergencies. These alerts notify your emergency contacts, local authorities, and nearby users.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Can I use Panic Pod for live video streaming during emergencies?</h3>
+            <p>Yes, live video streaming is supported for real-time assistance during emergencies.</p>
+        </div>
+        <div class="faq-item">
+            <h3>What makes the Panic Button System secure and reliable?</h3>
+            <p>Our Panic Button System uses advanced encryption and redundancy to ensure help is always accessible.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">PanicPod</div>
+            <ul class="footer-links">
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#careers">Careers</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+        </div>
+        <p>© 2024 Mobilotite Technologies</p>
+    </footer>
+</body>
+</html>
