@@ -1,0 +1,29 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+
+{% block title %}View Video{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex py-1 justify-content-between align-items-center">
+            <a href="javascript:history.back()" style="color:  #f04438; text-decoration: none;">
+                <i class="fa-solid fa-left-long mx-1" style="color:  #f04438;"></i>Back
+            </a>
+            <div class="text-end d-flex  align-items-center">
+                <p class="mb-0 mx-2"><strong>Uploaded by:</strong> {{ video.user.username }}</p>
+                <p class="mb-0 mx-2"><strong>Uploaded on:</strong> {{ video.uploaded_at|date:"F j, Y, g:i a" }}</p>
+                <p class="mb-0 mx-2"><strong>Button:</strong> {{ video.device.device_name }}</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="embed-responsive embed-responsive-16by9">
+                <video controls class="embed-responsive-item" style="width: 100%; height: auto;">
+                    <source src="{{ video.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,498 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+   Dashboard
+{% endblock %}
+{% block additional_link %}
+    <link rel="stylesheet" href="{% static 'css/dashboard_Admin.css' %}" />
+    
+    <link rel="stylesheet" href="{% static 'css/nav_bar.css' %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid position-relative w-100">
+    <button class="btn px-3 py-2 open-btn d-md-none position-fixed top-0 end-0 z-5 me-2 mt-4" 
+        style="background: #CE2F26; z-index: 1000; color:#fff">
+        <i class="fas fa-stream"></i>
+    </button>
+</div>
+
+
+
+
+    <!-- Main Container with Sidebar and Content -->
+    <div class="main-container d-flex" style="height:100vh" >
+        <!-- Sidebar -->
+        <div class="sidebar mt-3 d-flex justify-content-between flex-column" id="side_nav" style="
+        background-color: white;
+        padding:0 12px ;">
+            <!-- Sidebar Header -->
+             <!-- Sidebar Options -->
+             <div class="sidenav-options">
+                <div class="logotext relative w-100 mb-3 p-0 d-flex justify-content-left align-items-center">
+                    <a href="{% url 'home' %}" class="d-flex justify-content-left align-items-center">
+                        {% if request.COOKIES.django_language == 'en' %}
+                            <img src="{% static 'images/newlogo.png' %}" alt="English Logo" class="rounded logo">
+                        {% elif request.COOKIES.django_language == 'hi' %}
+                            <img src="{% static 'images/hindi_bsnk.png' %}" alt="Hindi Logo" class="rounded logo">
+                        {% else %}
+                            <img src="{% static 'images/newlogo.png' %}" alt="Default Logo" class="rounded logo">
+                        {% endif %}
+                    </a>
+                </div>
+                
+                  
+               <a id="dashboard-link" class="nav-link {% if request.path == '/news/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <div class="icon-text">
+                        <i class="bi bi-house fw-bolder icon text-muted"></i>
+                        <span>{% trans 'Dashboard' %}</span>
+                    </div>
+                </a>
+                <a id="user-management-link" class="nav-link {% if request.path == '/news/khabhar/' %}active{% endif %}" href="{% url 'khabhar' %}">
+                    <div class="icon-text">
+                        <i class="bi bi-camera-video fw-bolder icon text-muted"></i>
+                        <span>{% trans 'Khabhar Monitoring' %}</span>
+                    </div>
+                 </a>
+<!--                  
+                <a id="banners-link" class="nav-link {% if request.path == '/news/ice/' %}active{% endif %}" href="{% url 'pod' %}">
+                    <div class="icon-text">
+                        <i class="bi bi-phone-vibrate fw-bolder icon text-muted"></i>
+                        <span>{% trans 'Button Management'%}</span>
+                    </div>
+                </a> -->
+                <a id="banners-link" class="nav-link {% if request.path == '/news/log/' %}active{% endif %}" href="{% url 'log' %}">
+                    <div class="icon-text">
+                        <i class="bi bi-list-task fw-bolder icon text-muted"></i>
+                        <span>{% trans 'Emergency Connections'%}</span>
+                    </div>
+                </a>
+                <a id="banners-link" class="nav-link {% if request.path == '/news/notifications/' %}active{% endif %}" href="{% url 'notifications' %}">
+                    <div class="icon-text">
+                        <i class="bi bi-bell fw-bolder icon text-muted"></i>
+                        <span>{% trans 'Notifications Logs'%}</span>
+                    </div>
+                </a>
+                <a id="banners-link" class="nav-link {% if request.path == '/news/stream/' %}active{% endif %}" href="{% url 'stream' %}">
+                    <div class="icon-text">
+                        <i class="bi bi-broadcast fw-bolder icon text-muted"></i>
+                        <span>{% trans 'Live Stream'%}</span>
+                    </div>
+                </a>
+                <a id="logout" class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    <div class="icon-text">
+                        <i class="bi bi-box-arrow-right fw-bolde icon text-muted"></i>
+                        <span>{% trans 'Logout'%}</span>
+                    </div>
+                </a> 
+            </div>
+           
+            <div class="header-box px-2 pt-3 pb-4 d-flex justify-content-between flex-column">
+                <div style="width:270px">
+                <!-- Existing Upgrade Card -->
+                <div id="btn-upgrade" class="btn-upgrade hidden loading-state">
+                    <p id="plan-name">{% trans 'Base Plan'%}</p>
+                    <p>{% trans 'Upgrade to Pro and enjoy more customization and better features to ensure utmost satisfaction.'%}</p>
+                  <div class="text-left d-block">
+                        <a class="text-white text-decoration-none hover-effect" 
+                        href="/subscription/" 
+                        style="display: inline-block; padding: 10px 20px; border: 1px solid white; border-radius: 5px; background-color: transparent; text-align: center; transition: all 0.3s ease;">
+                            {% trans 'Upgrade Plan' %}
+                        </a>
+                    </div>
+
+                </div>
+                
+                <div id="btn-pro-plan" class="btn-upgrade hidden loading-state">
+                    <p><strong>{% trans 'Pro Plan'%}</strong></p>
+                    <p>{% trans 'You are on a Pro Plan. You have access to all the Features!'%}</p>
+                </div>
+                
+            </div>
+                
+
+                <div class="user-info my-4 d-flex align-items-center justify-content-between">
+                    <!-- Profile Section -->
+                    <div class="d-flex my-2 align-items-center">
+                        <a href="{% url 'profile' %}">
+                        <img 
+                          alt="User profile picture" 
+                          height="50" 
+                          width="50" 
+                          src="https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg" 
+                          class="rounded-circle profile-image loading-state" 
+                        />
+                      </a>
+                      <div class="ms-3">
+                        <p class="nameDisplay m-0 fw-bold h6"></p>
+                        <p class="emailDisplay text-muted h6 m-0 " data-trim="true"></p> <!-- Trim this -->
+                      </div>
+                    </div>
+                    
+                    <!-- Logout Icon -->
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal" style="color: #333; margin-right:8px;margin-bottom:15px;">
+                      <i class="bi bi-box-arrow-right fw-bolder fs-4 icon text-dark"></i>
+                    </a>
+                  </div>
+            </div>
+        </div>
+        <!-- Content Area -->
+        <div class="content">
+            {% block body %} {% endblock %}
+        </div>
+
+        <!-- Logout Confirmation Modal -->
+    <div  class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"> 
+        <div class="modal-dialog modal-dialog-centered"> 
+          <div class="modal-content">
+            <div class="modal-header text-center">
+              <h5 class="modal-title " id="logoutModalLabel">{% trans 'Confirm Logout'%}</h5>
+            </div>
+            <div class="modal-body p-3">
+                {% trans 'Are you sure you want to log out? See you again soon!'%}
+            </div>
+            <div class="modal-footer">
+              <div class="d-flex justify-content-between w-100 gap-3">
+                <button type="button" class=" btn-logout-cancel" data-bs-dismiss="modal">{% trans 'Cancel'%}</button>
+                <button type="button" class=" btn-logout-yes" id="confirmLogout">{% trans 'Confirm'%}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+  
+      <!-- Hamburger Menu -->
+
+    </div>
+    <script>
+        // Initialize the logout modal using Bootstrap's JS API
+        var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+    
+        // Open the modal when clicking the log-out button
+        document.getElementById('logout').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default action (which might not trigger the modal)
+            logoutModal.show(); // Open the logout confirmation modal
+        });
+    
+        // Handle logout confirmation
+        document.getElementById('confirmLogout').addEventListener('click', function() {
+            // Clear session storage or localStorage if you're using it to store tokens
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+    
+            // Redirect to the login page after logout
+            window.location.href = "{% url 'login' %}";
+        });
+    
+        // Optionally, handle closing of the modal if needed:
+        document.querySelector('.btn-secondary').addEventListener('click', function() {
+            logoutModal.hide();
+        });
+    
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+            $(".sidebar ul li").on('click', function () {
+                $(".sidebar ul li.active").removeClass('active');
+                $(this).addClass('active');
+            });
+            $('.open-btn').on('click', function () {
+                $('.sidebar').toggleClass('active');
+            });
+            var links = document.querySelectorAll('.sidenav-options a');
+            links.forEach(function (link) {
+                link.addEventListener('click', function () {
+                    links.forEach(function (innerLink) {
+                        innerLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // If the modal still doesn't open, try this to force it open using JS
+        var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+        
+        // Open the modal when clicking the log-out button
+        document.querySelector('.nav-link[href="#"]').addEventListener('click', function() {
+          logoutModal.show();
+        });
+  
+        // Handle logout confirmation
+        document.getElementById('confirmLogout').addEventListener('click', function() {
+          window.location.href = "{% url 'login' %}";
+        });
+  
+      </script>
+      <script>
+   document.addEventListener("DOMContentLoaded", function () {
+        // Initialize loading states
+        const profileImage = document.querySelector('.profile-image');
+        const upgradeDiv = document.getElementById("btn-upgrade");
+        const proPlanDiv = document.getElementById("btn-pro-plan");
+        
+        // Set initial states before fetching data
+        profileImage.classList.add('loading-state');
+        [upgradeDiv, proPlanDiv].forEach(el => {
+            el.classList.add('loading-state', 'hidden');
+        });
+
+        fetchProfileData();
+    });
+
+    let profileData = null;
+
+    function fetchProfileData() {
+        const bearerToken = localStorage.getItem('access_token');
+        if (!bearerToken) {
+            window.location.href = '/news/login';
+            console.error('No access token found in localStorage.');
+            return;
+        }
+
+        console.log("Fetching profile data from:/api/profile/");
+
+        fetch("/news/api/profile/", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${bearerToken}`,
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => {
+            console.log("API Response Status:", response.status);
+            if (response.ok) {
+                return response.json();
+            } else {
+                if (response.status === 401) {
+                    console.error("Unauthorized: Invalid or expired token.");
+                    showLoginModal();
+                } else if (response.status === 500) {
+                    console.error("Server error occurred.");
+                    showServerModal();
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        })
+        .then(data => {
+            console.log("Fetched profile data:", data);
+            profileData = data;
+            updateProfileDisplays();
+            handlePlanDetails();
+        })
+        .catch(error => {
+            console.error("Error fetching profile data:", error);
+        });
+    }
+
+    function updateProfileDisplays() {
+        if (!profileData) return;
+
+        // Update text content immediately
+        const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || 'No name available';
+        const email = profileData.email || 'No email available';
+
+        document.querySelectorAll(".nameDisplay").forEach(element => {
+            element.textContent = fullName;
+        });
+
+        document.querySelectorAll(".emailDisplay").forEach(element => {
+            const shouldTrim = element.getAttribute("data-trim") === "true";
+            element.textContent = shouldTrim ? trimText(email, 20) : email;
+            element.title = email;
+        });
+
+        // Handle profile image with preload
+        const profileImageUrl = profileData.profile_image || 'https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg';
+        const img = new Image();
+        img.src = profileImageUrl;
+        img.onload = () => {
+            document.querySelectorAll('.profile-image').forEach(element => {
+                element.src = profileImageUrl;
+                element.classList.remove('loading-state');
+                element.classList.add('loaded-state');
+            });
+        };
+    }
+
+    function handlePlanDetails() {
+        if (!profileData || !profileData.plan_details) {
+            console.error("No plan details available");
+            return;
+        }
+
+        const planName = profileData.plan_details.name;
+        const upgradeDiv = document.getElementById("btn-upgrade");
+        const proPlanDiv = document.getElementById("btn-pro-plan");
+        const planNameElement = document.getElementById("plan-name");
+        
+        upgradeDiv.classList.add('plan-card-preloader');
+        proPlanDiv.classList.add('plan-card-preloader');
+        if (planNameElement) {
+            planNameElement.textContent = planName;
+        }
+
+        if (planName !== "Pro") {
+            upgradeDiv.classList.remove("hidden");
+            setTimeout(() => {
+            upgradeDiv.classList.add('plan-card-loaded');
+            planNameElement.textContent = planName;
+            proPlanDiv.classList.add("hidden");
+            }, 50);
+        } else {
+            proPlanDiv.classList.remove("hidden");
+        setTimeout(() => {
+            proPlanDiv.classList.add('plan-card-loaded');
+            upgradeDiv.classList.add("hidden");
+        }, 50);
+        }
+    }
+
+function showLoginModal() {
+    // Create a blur overlay and modal hidden initially
+    const blurOverlay = document.createElement('div');
+    blurOverlay.id = "blur-overlay";
+    blurOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(15px); /* Increased blur intensity */
+        z-index: 1040; /* Below modal but above content */
+        display: none; /* Initially hidden */
+    `;
+    document.body.appendChild(blurOverlay);
+
+    const modalHtml = `
+        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" style="display: none;"> <!-- Initially hidden -->
+            <div class="modal-dialog modal-dialog-centered"> <!-- Centered modal -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLabel">Unauthorized Access</h5>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p>You are not authorized to view this page. Please log in again.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <a href="/login" class="btn w-100" style="background-color: #f04438; color: #fff;">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    // Append modal to the body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Show the blur overlay and modal together
+    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'), {
+        backdrop: 'static', // Prevent closing modal by clicking on the backdrop
+        keyboard: false     // Disable closing modal using Esc key
+    });
+
+    // Add blur when modal is shown
+    const modalElement = document.getElementById('loginModal');
+    modalElement.addEventListener('show.bs.modal', () => {
+        blurOverlay.style.display = "block"; // Show blur overlay
+    });
+
+    // Remove blur when modal is hidden
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        blurOverlay.remove(); // Remove the blur overlay
+        modalElement.remove(); // Clean up the modal from the DOM
+    });
+
+    // Show the modal and ensure it's visible immediately
+    blurOverlay.style.display = "block"; // Show blur overlay
+    modalElement.style.display = "block"; // Make modal visible
+    loginModal.show();
+}
+function showServerModal() {
+    // Create a blur overlay and modal hidden initially
+    const blurOverlay = document.createElement('div');
+    blurOverlay.id = "blur-overlay";
+    blurOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(15px); /* Increased blur intensity */
+        z-index: 1040; /* Below modal but above content */
+        display: none; /* Initially hidden */
+    `;
+    document.body.appendChild(blurOverlay);
+
+    const modalHtml = `
+        <div class="modal fade" id="serverModal" tabindex="-1" aria-labelledby="serverModalLabel" aria-hidden="true" style="display: none;"> <!-- Initially hidden -->
+            <div class="modal-dialog modal-dialog-centered"> <!-- Centered modal -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="serverModalLabel">Server Issues</h5>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p>Server is not Responding Please Comeback later or Contact the Support at support@ice-button.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    // Append modal to the body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Show the blur overlay and modal together
+    const serverModal = new bootstrap.Modal(document.getElementById('serverModal'), {
+        backdrop: 'static', // Prevent closing modal by clicking on the backdrop
+        keyboard: false     // Disable closing modal using Esc key
+    });
+
+    // Add blur when modal is shown
+    const modalElement = document.getElementById('serverModal');
+    modalElement.addEventListener('show.bs.modal', () => {
+        blurOverlay.style.display = "block"; // Show blur overlay
+    });
+
+    // Remove blur when modal is hidden
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        blurOverlay.remove(); // Remove the blur overlay
+        modalElement.remove(); // Clean up the modal from the DOM
+    });
+
+    // Show the modal and ensure it's visible immediately
+    blurOverlay.style.display = "block"; // Show blur overlay
+    modalElement.style.display = "block"; // Make modal visible
+    serverModal.show();
+}
+
+
+      
+       
+
+        function trimText(text, maxLength = 20) {
+            if (text && text.length > maxLength) {
+                return text.slice(0, maxLength) + "...";
+            }
+            return text;
+        }
+      
+        
+        
+        
+        
+      </script>
+
+{% endblock %}

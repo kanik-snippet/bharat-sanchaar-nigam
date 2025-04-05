@@ -1,0 +1,338 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Change Pass{% endblock %}
+{% block body %}
+
+<link rel="stylesheet" href="{% static 'css/change_pass.css' %}" />
+
+<div class="container-fluid mt-3">
+    
+
+    <div class="d-flex align-items-center mb-4">
+        <img src="https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg" alt="Profile picture"
+            class="rounded-circle me-3 profile-image" width="70" height="70">
+        <div>
+            <h1 class="fw-bold mb-0 fs-4 nameDisplay">Name will be displayed here</h1>
+            <p class="text-muted mb-0 emailDisplay">Email will be displayed here</p>
+        </div>
+    </div>
+    
+    <!-- Button Group -->
+    <div class="custom-btn-group mb-4 p-0 rounded" role="group" aria-label="User options">
+        <a href="{% url 'profile' %}" class="btn btn-profile-top" id="profileBtn">{% trans 'Profile'%}</a>
+         <a href="{% url 'changepass' %}" class="btn btn-profile-top" id="changePasswordBtn">{% trans 'Change Password'%}</a>
+         <!-- <a href="{% url 'subscription' %}" class="btn btn-profile-top" id="subscriptionBtn">{% trans 'Subscription Plan'%}</a>
+         <a href="{% url 'subscription_txn' %}" class="btn btn-profile-top" id="subscriptiontxnBtn">{% trans 'Subscription Transactions'%}</a> -->
+     
+     </div>
+
+<p class="h-main">{% trans 'Change Password'%}</p>
+<p class="p-main text-muted">{% trans 'Update your password here'%}</p>
+
+<div class="line"></div>
+
+<div class="profile-form">
+    <form method="post" id="changePasswordForm">
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="old_password" class="form-label">{% trans 'Old Password'%}</label>
+            </div>
+            <div class="col-md-6 position-relative">
+                <input type="password" class="form-control" name="old_password" id="old_password" placeholder="{% trans 'Old Password'%}" required>
+                <i onclick="togglePassword('old_password')" class="fas fa-eye position-absolute" style="top: 50%; right: 25px; transform: translateY(-50%); color: black; cursor: pointer;"></i>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="new_password1" class="form-label">{% trans 'New Password'%}</label>
+            </div>
+            <div class="col-md-6">
+                <div class="position-relative">
+                    <input type="password" class="form-control" name="new_password1" id="new_password1" placeholder="{% trans 'New Password'%}" required>
+                    <i onclick="togglePassword('new_password1')" class="fas fa-eye position-absolute" style="top: 50%; right: 13px; transform: translateY(-50%); color: black; cursor: pointer;"></i>
+                </div>
+                <div id="samePasswordError" class="text-danger mt-1" style="display: none;">{% trans 'New password cannot be the same as the old password.'%}</div>
+                <ul id="passwordError" class="text-danger mt-1" style="display: none; font-size: 0.875rem; list-style-type: none; padding-left: 0;">
+                    <li id="lengthCheck">{% trans 'Password must be between 8-24 characters.'%}</li>
+                    <li id="uppercaseCheck">{% trans 'Must include at least one uppercase letter.'%}</li>
+                    <li id="lowercaseCheck">{% trans 'Must include at least one lowercase letter.'%}</li>
+                    <li id="numberCheck">{% trans 'Must include at least one number.'%}</li>
+                    <li id="specialCharCheck">{% trans 'Must include at least one special character (@, $, !, %, *, ?, &, #).'%}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="new_password2" class="form-label">{% trans 'Confirm New Password'%}</label>
+            </div>
+            <div class="col-md-6">
+                <div class="position-relative">
+                    <input type="password" class="form-control" name="new_password2" id="new_password2" placeholder="{% trans 'Confirm New Password'%}" required>
+                    <i onclick="togglePassword('new_password2')" class="fas fa-eye position-absolute" style="top: 50%; right: 13px; transform: translateY(-50%); color: black; cursor: pointer;"></i>
+                </div>
+                <div id="confirmPasswordError" class="text-danger mt-1" style="display: none;">{% trans 'Passwords do not match.'%}</div>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div>
+            <button type="submit" class="btn btn-danger" style="background-color:#f04438;color:#fff;">{% trans 'Update Password'%}</button>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">{% trans 'Password Changed'%}</h5>
+            </div>
+            <div class="modal-body">
+                {% trans 'Your password has been successfully updated.'%}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<script>
+    function togglePassword(inputId) {
+        var inputField = document.getElementById(inputId);
+        var icon = inputField.nextElementSibling;
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            inputField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+
+<script>
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const icon = field.nextElementSibling;
+        if (field.type === "password") {
+            field.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            field.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+    }
+    // Get the current URL path
+    const currentPage = window.location.pathname;
+
+    // Define the buttons
+    const profileBtn = document.getElementById('profileBtn');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const subscriptionBtn = document.getElementById('subscriptionBtn');
+    const subscriptiontxnBtn = document.getElementById('subscriptiontxnBtn');
+
+    // Add active class based on the current page URL
+    if (currentPage.includes('change_password')) {
+        changePasswordBtn.classList.add('active');
+    } else if (currentPage.includes('profile')) {
+        profileBtn.classList.add('active');
+    } else if (currentPage.includes('subscription')) {
+        subscriptionBtn.classList.add('active');
+    } else if (currentPage.includes('subscription_txn')) {
+        subscriptiontxnBtn.classList.add('active');
+    }
+</script>
+<script>
+    document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent form from submitting the default way
+    
+        // Get form field values
+        var oldPassword = document.getElementById('old_password').value;
+        var newPassword1 = document.getElementById('new_password1').value;
+        var newPassword2 = document.getElementById('new_password2').value;
+    
+        // Retrieve access token from localStorage
+        var accessToken = localStorage.getItem('access_token');
+    
+        // Check if the token exists
+        if (!accessToken) {
+            return;  // Stop further execution if no access token is found
+        }
+    
+        // Create the request data object
+        var data = {
+            "old_password": oldPassword,
+            "new_password1": newPassword1,
+            "new_password2": newPassword2
+        };
+    
+        // Send the POST request to the API
+
+        fetch('/api/change-password/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken,  // Attach the token in the Authorization header
+                'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token (Django-specific)
+            },
+            body: JSON.stringify(data)  // Send form data as JSON
+        })
+        .then(response => {
+            // Log the entire response object for debugging
+            console.log("Response status:", response.status);
+            console.log("Response headers:", response.headers);
+    
+            // Check if the response is okay (status 2xx)
+            if (!response.ok) {
+                return response.text().then(errorHtml => {
+                    console.error('Error Response (HTML):', errorHtml);  // Log raw HTML for debugging
+                    throw new Error('An error occurred on the server. Please try again later.');
+                });
+            }
+    
+            // Log the raw response body (before parsing as JSON)
+            return response.json();  // Parse response as JSON
+        })
+        .then(data => {
+            // Log the parsed JSON response
+            console.log("Parsed JSON response:", data);
+    
+            // Check for the 'detail' key and show the appropriate message
+        // Set the modal content with a success message
+        const modalMessage = data.detail || 'Your password has been successfully updated!';
+        document.querySelector('#changePasswordModal .modal-body').innerText = modalMessage;
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+        modal.show();
+
+        // Reset the form
+        document.getElementById('changePasswordForm').reset();
+        })
+        .catch((error) => {
+            // Catch any errors and log them
+            console.error('Error:', error);
+            alert('An error occurred while changing your password.');
+        });
+    });
+
+    document.getElementById('new_password1').addEventListener('input', function () {
+        const password = this.value;
+        const errorList = document.getElementById('passwordError');
+        const lengthCheck = document.getElementById('lengthCheck');
+        const uppercaseCheck = document.getElementById('uppercaseCheck');
+        const lowercaseCheck = document.getElementById('lowercaseCheck');
+        const numberCheck = document.getElementById('numberCheck');
+        const specialCharCheck = document.getElementById('specialCharCheck');
+        const oldPassword = document.getElementById('old_password').value.trim();
+    
+        // Regular expressions for each validation
+        const lengthRegex = /^.{8,24}$/;
+        const uppercaseRegex = /[A-Z]/;
+        const lowercaseRegex = /[a-z]/;
+        const numberRegex = /[0-9]/;
+        const specialCharRegex = /[@$!%*?&#]/;
+    
+        // Validate rules
+        let allValid = true;
+    
+        // Check length
+        if (!lengthRegex.test(password)) {
+            lengthCheck.style.color = 'red';
+            allValid = false;
+        } else {
+            lengthCheck.style.color = 'green';
+        }
+    
+        // Check uppercase
+        if (!uppercaseRegex.test(password)) {
+            uppercaseCheck.style.color = 'red';
+            allValid = false;
+        } else {
+            uppercaseCheck.style.color = 'green';
+        }
+    
+        // Check lowercase
+        if (!lowercaseRegex.test(password)) {
+            lowercaseCheck.style.color = 'red';
+            allValid = false;
+        } else {
+            lowercaseCheck.style.color = 'green';
+        }
+    
+        // Check number
+        if (!numberRegex.test(password)) {
+            numberCheck.style.color = 'red';
+            allValid = false;
+        } else {
+            numberCheck.style.color = 'green';
+        }
+    
+        // Check special character
+        if (!specialCharRegex.test(password)) {
+            specialCharCheck.style.color = 'red';
+            allValid = false;
+        } else {
+            specialCharCheck.style.color = 'green';
+        }
+    
+        // Check if old and new passwords are the same
+        if (password === oldPassword) {
+            document.getElementById('samePasswordError').style.display = 'block';
+            allValid = false;
+        } else {
+            document.getElementById('samePasswordError').style.display = 'none';
+        }
+    
+        // Show or hide the error list
+        if (allValid) {
+            errorList.style.display = 'none';
+        } else {
+            errorList.style.display = 'block';
+        }
+    });
+    
+    // Old password input listener
+    document.getElementById('old_password').addEventListener('input', function () {
+        const newPassword = document.getElementById('new_password1').value.trim();
+        const oldPassword = this.value.trim();
+    
+        // Check if old and new passwords are the same
+        if (newPassword === oldPassword) {
+            document.getElementById('samePasswordError').style.display = 'block';
+        } else {
+            document.getElementById('samePasswordError').style.display = 'none';
+        }
+    });
+    
+    document.getElementById('new_password2').addEventListener('input', function () {
+        const newPassword = document.getElementById('new_password1').value.trim();
+        const confirmPassword = this.value.trim();
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+    
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            confirmPasswordError.style.display = 'block'; // Show error
+        } else {
+            confirmPasswordError.style.display = 'none'; // Hide error
+        }
+    });
+    
+    
+    
+</script>
+
+{% endblock %}

@@ -1,0 +1,135 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.content > div{
+    border-radius: 8px;
+}
+.btn.active{
+    background-color: #f04438;
+    color:#fff;
+}
+.custom-btn-group {
+    display: inline-flex;    
+    /* flex-wrap: nowrap; */    
+    border: 1px solid #ced4da;
+    border-radius: 8px ¡important;
+    /* overflow: hidden; */
+    /* margin-bottom: 20px; */
+}
+
+.custom-btn-group  {
+    flex: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    background-color: #ffffff;
+    border: none;
+    border-right: 1px solid #ced4da;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin-top: 0;
+}
+
+    /* .custom-btn-group .btn:last-child {
+        border-right: none;
+    } */
+
+.custom-btn-group {
+    background-color: #dee5fc;
+    color: #000000;
+    font-weight: bold;
+}
+
+.custom-btn-group {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+@media (max-width: 768px) {
+    .custom-btn-group {
+        flex-direction: column;
+        width: 90%;
+    }
+
+    .custom-btn-group .btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .custom-btn-group .btn:not(:last-child) {
+        border-right: none;
+        border-bottom: 1px solid #ced4da;
+    }
+}
+
+.h-main {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.p-main {
+    font-size: 18px;
+    margin-top: -10px;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    background-color: #dee2e6;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.profile-form {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.profile-form .form-control {
+    border-radius: 8px;
+    border-color: #ced4da;
+}
+
+.profile-form .position-relative {
+    display: flex;
+    align-items: center;
+}
+
+.profile-form .form-control:focus {
+    border-color: #495057;
+    box-shadow: none;
+}
+
+.profile-form .eye-icon {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #495057;
+}
+
+.profile-form .btn-update {
+    background-color: #f04438;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 4px;
+    display: block;
+}
+
+.btn-pod:hover {
+    background-color: #f04438;
+    color: white;
+}

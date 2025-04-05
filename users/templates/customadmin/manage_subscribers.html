@@ -1,0 +1,215 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Subscriber List{% endblock %}
+{% block body %}
+
+<!-- Header Section -->
+<div class="mt-5 d-flex flex-column col-sm-10 flex-md-row justify-content-between" id="header">
+    <h1>Subscriber List</h1>
+</div>
+
+<!-- Filter Form -->
+<div class="col-md-12 my-5 new-class">
+  <form method="get" class="row g-3">
+    <div class="form-row ml-3">
+      <!-- Search Filter -->
+      <div class="form-group col-md-6 col-lg-4 col-xl-3">
+        <label for="search-bar" class="mr-2">Search:</label>
+        <input type="text" class="form-control" id="search-bar" name="search" maxlength="30" 
+               value="{{ search_filter }}" placeholder="Search By Name or Email" onkeyup="applyFiltersWithDelay()">
+      </div>
+
+      <!-- Date Filters -->
+      <div class="form-group col-md-6 col-lg-3 col-xl-3">
+        <label for="start-date-selector" class="mr-2">From:</label>
+        <input type="datetime-local" class="form-control" id="start-date-selector" name="date_from" value="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-3">
+        <label for="end-date-selector" class="mr-2">To:</label>
+        <input type="datetime-local" class="form-control" id="end-date-selector" name="date_to" value="{{ date_to_filter }}" min="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <!-- Status Filter -->
+      <div class="form-group col-md-6 col-lg-3 col-xl-1">
+        <label for="status" class="mr-2">Status:</label>
+        <select class="form-control" id="status-select" name="status" onchange="applyFiltersWithDelay()">
+            <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All</option>
+            <option value="subscribed" {% if status_filter == 'subscribed' %}selected{% endif %}>Subscribed</option>
+            <option value="unsubscribed" {% if status_filter == 'unsubscribed' %}selected{% endif %}>Unsubscribed</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        </select>
+      </div>
+
+      <!-- Clear and Search Buttons -->
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="button" class="btn btn-secondary btn-block mb-2 mt-md-0" id="clear-button"
+          onclick="clearFilters()" {% if not search_filter and not date_from_filter and not date_to_filter and status_filter == 'All' %}disabled{% endif %}>Clear</button>
+      </div>
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="submit" style="background-color: #f04438; color: white; text-decoration: none;" class="btn  btn-block mb-2 mt-md-0" id="clear-button">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Subscribers Table -->
+  <div class="table-container mt-4 text-left">
+    {% if subscribers %}
+    <table class="table">
+      <thead style="background-color: #f04438; color: white;">
+          <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Date Subscribed</th>
+              <th>Unsubscribed At</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for subscriber in subscribers %}
+          <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ subscriber.name }}</td>
+              <td>{{ subscriber.email }}</td>
+              <td>{{ subscriber.status|capfirst }}</td>
+              <td>{{ subscriber.subscribed_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                {% if subscriber.unsubscribed_at %}
+                    {{ subscriber.unsubscribed_at|date:"Y-m-d H:i" }}
+                {% else %}
+                    N/A
+                {% endif %}
+              </td>
+              <td>
+                {% if subscriber.status == 'subscribed' %}
+                    <!-- Unsubscribe Icon -->
+                    <a href="javascript:void(0);" onclick="showStatusBlockPopup('{% url 'customadmin:toggle_subscription' subscriber.id %}', '{{ subscriber.id }}', 'unsubscribe')" title="Unsubscribe">
+                        <i class="fas fa-bell-slash" style="font-size: 24px; color: #a7364b;"></i>
+                    </a>
+                {% else %}
+                    <!-- Subscribe Icon -->
+                    <a href="javascript:void(0);" onclick="showStatusBlockPopup('{% url 'customadmin:toggle_subscription' subscriber.id %}', '{{ subscriber.id }}', 'subscribe')" title="Subscribe">
+                        <i class="fas fa-bell" style="font-size: 24px; color: #41b241;"></i>
+                    </a>
+                {% endif %}
+              </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <div class="no-data">
+        <img src="{% static 'images/no_data.jpg' %}" alt="No data available" style="max-width: 40%; height: auto;">
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Pagination -->
+  {% if subscribers.has_other_pages %}
+    <nav class="d-flex justify-content-center">
+      <ul class="pagination">
+        {% if subscribers.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo;&laquo;</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ subscribers.previous_page_number }}">&laquo;</a>
+          </li>
+        {% endif %}
+        {% for i in subscribers.paginator.page_range %}
+          {% if i >= subscribers.number|add:"-2" and i <= subscribers.number|add:"2" %}
+            <li class="page-item {% if i == subscribers.number %}active{% endif %}">
+              <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ i }}">{{ i }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        {% if subscribers.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ subscribers.next_page_number }}">&raquo;</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ subscribers.paginator.num_pages }}">&raquo;&raquo;</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+
+
+<!-- Status Block Popup (Subscribe / Unsubscribe) -->
+<div class="overlay" id="statusblockOverlay" style="display: none;">
+  <div id="statusblockpopupCard" class="text-center mt-3">
+      <h5 class="mb-3" id="popupTitle">Change Subscription Status</h5>
+      <p class="mb-3" id="popupMessage">Are you sure you want to change the subscription status?</p>
+      <form id="statusblockForm" method="POST" action="">
+          {% csrf_token %}
+          <input type="hidden" name="action" id="action" value="">
+          <input type="hidden" name="subscriber_id" id="subscriber_id" value="">
+
+          <div class="row">
+              <div class="col">
+                  <button type="button" class="btn btn-secondary btn-block btn-sm" onclick="hideStatusBlockPopup()" id="block-cancel"
+                          style="background: #ddd; color: #000; border-radius: 19px; padding: 10px;">Cancel</button>
+              </div>
+              <div class="col">
+                  <button type="submit" class="btn btn-block btn-sm" id="block-button"
+                          style="background: #f04438; color: white; border-radius: 19px; padding: 10px;">
+                          <span id="blockLoader" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>Confirm
+                  </button>
+              </div>
+          </div>
+      </form>
+  </div>
+</div>
+
+
+<!-- Filter and Download Scripts -->
+<script>
+  function applyFiltersWithDelay() {
+    clearTimeout(window.filterTimeout);
+    window.filterTimeout = setTimeout(function() {
+        document.querySelector('form').submit();
+    }, 500);
+}
+
+  function downloadCSV() {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'inline-block';
+    setTimeout(function() {
+        loader.style.display = 'none';
+        window.location.href = url;
+    }, 1000);
+}
+</script>
+
+<script>
+  // Show the popup and set the action based on the subscriber's current status
+  function showStatusBlockPopup(url, subscriberId, actionType) {
+    // Set the form action dynamically
+    document.getElementById('statusblockForm').action = url;
+    document.getElementById('subscriber_id').value = subscriberId;
+    document.getElementById('action').value = actionType;
+
+    // Update the popup message and title based on the action
+    if (actionType === 'subscribe') {
+      document.getElementById('popupTitle').textContent = 'Subscribe User';
+      document.getElementById('popupMessage').textContent = 'Are you sure you want to subscribe this user?';
+    } else if (actionType === 'unsubscribe') {
+      document.getElementById('popupTitle').textContent = 'Unsubscribe User';
+      document.getElementById('popupMessage').textContent = 'Are you sure you want to unsubscribe this user?';
+    }
+
+    // Show the popup
+    document.getElementById('statusblockOverlay').style.display = 'block';
+  }
+
+  // Hide the popup
+  function hideStatusBlockPopup() {
+    document.getElementById('statusblockOverlay').style.display = 'none';
+  }
+</script>
+
+{% endblock %}

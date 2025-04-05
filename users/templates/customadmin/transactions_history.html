@@ -1,0 +1,151 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Transaction List{% endblock %}
+{% block body %}
+
+<!-- Header Section -->
+<div class="mt-5 d-flex flex-column col-sm-10 flex-md-row justify-content-between" id="header">
+    <h1>Transaction History</h1>
+</div>
+
+<!-- Filter Form -->
+<div class="col-md-12 my-5 new-class">
+  <form method="get" class="row g-3">
+    <div class="form-row ml-3">
+      <!-- Transaction ID Filter -->
+      <div class="form-group col-md-6 col-lg-4 col-xl-3">
+        <label for="transaction_id" class="mr-2">Search:</label>
+        <input type="text" class="form-control" id="search-bar" name="transaction_id" maxlength="30" 
+               value="{{ transaction_id_filter }}" placeholder="Search By Transaction ID" onkeyup="applyFiltersWithDelay()">
+      </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-3">
+        <label for="start-date-selector" class="mr-2">From:</label>
+        <input type="datetime-local" class="form-control" id="start-date-selector" name="date_from" value="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-3">
+        <label for="end-date-selector" class="mr-2">To:</label>
+        <input type="datetime-local" class="form-control" id="end-date-selector" name="date_to" value="{{ date_to_filter }}" min="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <!-- Status Filter -->
+      <div class="form-group col-md-6 col-lg-3 col-xl-1">
+        <label for="status" class="mr-2">Status:</label>
+        <select class="form-control" id="status-select" name="status" onchange="applyFiltersWithDelay()">
+            <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All</option>
+            <option value="succeeded" {% if status_filter == 'Succeeded' %}selected{% endif %}>Succeeded</option>
+            <option value="pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+        </select>
+      </div>
+
+      <!-- Clear and Search Buttons -->
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="button" class="btn btn-secondary btn-block mb-2 mt-md-0" id="clear-button"
+          onclick="clearFilters()" {% if not transaction_id_filter and not date_from_filter and not date_to_filter and status_filter == 'All' %}disabled{% endif %}>Clear</button>
+      </div>
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="submit" style="background-color: #f04438; color: white; text-decoration: none;" class="btn  btn-block mb-2 mt-md-0" id="clear-button">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Transactions Table -->
+  <div class="table-container mt-4 text-left">
+    {% if page_obj %}
+      <table class="table table-hover" style="width: 100%; border-collapse: collapse;">
+        <thead style="background-color: #f04438; color: white;">
+          <tr>
+            <th>Transaction ID</th>
+            <th>Date & Time</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>User</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transaction in page_obj %}
+            <tr>
+              <td>{{ transaction.payment_id }}</td>
+              <td>{{ transaction.processed_at }}</td>
+              <td>&#8377; {{ transaction.amount }}</td>
+              <td>
+                <p class="{% if transaction.payment_status == 'succeeded' %}text-success
+                          {% elif transaction.payment_status == 'failed' or transaction.payment_status == 'cancelled' %}text-danger
+                          {% elif transaction.payment_status == 'pending' %}text-warning
+                          {% else %}text-info{% endif %}">
+                    {{ transaction.get_payment_status_display }}
+                </p>
+              </td>
+              <td>{{ transaction.user.username }}</td>
+              <td>
+                <a href="{% url 'customadmin:transaction_detail' transaction.id %}" target="_blank" title="View Invoice">
+                  <i class="fas fa-eye" style="font-size: 24px; color: #f04438;"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="no-data">
+        <img src="{% static 'images/no_data.jpg' %}" alt="No data available" style="max-width: 40%; height: auto;">
+      </div>
+    {% endif %}
+  </div>
+
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+    <nav class="d-flex justify-content-center">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo;&laquo;</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">&laquo;</a>
+          </li>
+        {% endif %}
+        {% for i in page_obj.paginator.page_range %}
+          {% if i >= page_obj.number|add:"-2" and i <= page_obj.number|add:"2" %}
+            <li class="page-item {% if i == page_obj.number %}active{% endif %}">
+              <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ i }}">{{ i }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">&raquo;</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}">&raquo;&raquo;</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+<script>
+
+  function applyFiltersWithDelay() {
+    clearTimeout(window.filterTimeout);
+    window.filterTimeout = setTimeout(function() {
+        document.querySelector('form').submit();
+    }, 500);
+}
+
+
+function downloadCSV() {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'inline-block';
+    setTimeout(function() {
+        loader.style.display = 'none';
+        window.location.href = url;
+    }, 1000);
+}
+</script>
+
+{% endblock %}
+

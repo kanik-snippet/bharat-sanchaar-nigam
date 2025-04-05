@@ -1,0 +1,150 @@
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .form-control{
+        background: #e9ecef !important;
+    }
+
+    .pod-heading {
+        font-weight: bold;
+    }
+
+    table.custom-table {
+        border-left: 1px solid rgb(233, 231, 231);
+        border-right: 1px solid rgb(233, 231, 231);
+        border-collapse: separate;
+        border-radius: 10px;
+        overflow: hidden;
+        border-spacing: 0;
+    }
+
+    table.custom-table th {
+        background-color: #F04438;
+        color: white;
+        padding: 15px;
+    }
+
+    table.custom-table tbody {
+        vertical-align: middle;
+        /* Vertically align table rows in the center */
+    }
+
+    .status-active {
+        color: green;
+        border: 1px solid rgb(199, 195, 195);
+        padding: 2px;
+        border-radius: 5px;
+    }
+
+    .status-inactive {
+        color: #F04438;
+        border: 1px solid rgb(233, 231, 231);
+        padding: 2px;
+        border-radius: 5px;
+    }
+
+    .contacts img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: -10px;
+        border: 2px solid white;
+    }
+
+    .contacts span {
+        margin-left: 10px;
+    }
+
+    .icon-remot{
+        font-size: 18px !important;
+        color: grey;
+        font-weight: normal;
+    }
+
+    .bi-toggle-on {
+        font-size: 30px;
+        color: rgba(17, 117, 30, 0.966);
+    }
+
+    .bi-toggle-off {
+        font-size: 30px;
+        color: #F04438;
+    }
+
+    .delete-btn {
+        color: grey;
+    }
+
+
+    .input-group-text {
+        background-color: transparent;
+        border: none;
+    }
+
+    /* Optional: Add styling for calendar icon */
+    .input-group .input-group-text i {
+        font-size: 18px;
+    }
+
+    .input-group input {
+        pointer-events: none;
+    }
+
+    .btn-secondary {
+        background-color: white;
+        color: #6c757d;
+        border: 1px solid rgb(216, 213, 213);
+        width: 80px;
+    }
+
+    .btn-secondary:hover {
+        background-color: white;
+        color: #6c757d;
+        border: 1px solid rgb(216, 213, 213);
+    }
+
+    .btn-primary {
+        background-color: #F04438;
+        color: white;
+        border: none;
+        width: 100px;
+    }
+
+    .btn-primary:hover {
+        background-color: #F04438;
+        color: white;
+    }
+
+    .btn-del-device{
+        background-color: #F04438;
+        color: white;
+    }
+
+    .btn-del-device:hover{
+        background-color: #F04438;
+        color: white;
+    }
+
+    .btn-success-close{
+        background-color: #F04438;
+        color: white;
+    }
+
+    .btn-success-close:hover{
+        background-color: #F04438;
+        color: white;
+    }
+
+
+    /* Optional: Highlight active or inactive status with a small padding and border radius */
+    .status-active,
+    .status-inactive {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 5px;
+    }
+
+    

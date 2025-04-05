@@ -1,0 +1,323 @@
+.pod_name {
+    font-weight: bold;
+    color: #343a40;
+}
+
+.info {
+    color: #475467;
+    margin-bottom: 0;
+    font-size: 16px;
+    font-weight: bolder;
+}
+.verified {
+    color: green;
+    font-weight: bold;
+}
+
+.unverified {
+    color: red;
+    font-weight: bold;
+}
+.actionIcon{
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.top-right-actions i {
+    font-size: 1.5rem; /* Adjust the size of the icons */
+    padding: 10px;
+    border-radius: 8px; /* Creates rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition on hover */
+}
+
+.top-right-actions i:nth-child(1) {
+    background-color: #E8F0FE; /* Light blue background for the edit icon */
+    color: #1E5BFA; /* Blue icon color */
+}
+
+.top-right-actions i:nth-child(2) {
+    background-color: #FEE2E2; /* Light red background for the trash icon */
+    color: #F87171; /* Red icon color */
+}
+
+/* Hover effect */
+.top-right-actions i:hover {
+    background-color: #D1E7FE; /* Light hover effect for edit icon */
+}
+
+.top-right-actions i:nth-child(2):hover {
+    background-color: #FECACA; /* Light hover effect for trash icon */
+}
+.bi-trash{
+    font-size: 20px;
+}
+.load {
+    font-size: 16px;
+    color: #475467;
+}
+.topComtainer{
+    border-bottom: 1px dotted #0001;
+}
+
+
+
+.table-responsive{
+    border: 1px solid #0001;
+}
+.table{
+    border: none;
+    overflow-y: scroll;
+}
+.table th, .table td{
+    border: none;
+    font-size: 14px;
+    color: #0009;
+}
+#sos-contacts {
+    border: none;
+}
+
+
+#sos-contacts tr {
+    border: 1px solid #EAECF0;
+    border-radius: 8px; /* Rounded corners for rows */
+    margin-bottom: 10px; /* Adds space between rows */
+    display: block; /* Ensure rows are block-level elements to allow proper border rounding */
+}
+
+#sos-contacts tr:not(:last-child) {
+    margin-bottom: 10px; /* Add spacing between rows */
+}
+
+#sos-contacts td:first-child {
+    border-radius: 8px 0 0 8px; /* Rounded left corners for the first cell */
+}
+
+#sos-contacts td:last-child {
+    border-radius: 0 8px 8px 0; /* Rounded right corners for the last cell */
+}
+.emer{
+    border:1px solid #0002;
+    border-radius: 10px;
+}
+/* Optional: Styling for images inside the table */
+#sos-contacts img {
+    width: 32px; /* Set the width to 32px */
+    height: 32px; /* Set the height to 32px */
+    border-radius: 50%; /* Make the image round */
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+}
+
+/* Optional: Styling for the trash icon */
+#sos-contacts i {
+    cursor: pointer;
+    color: rgb(151, 151, 151);
+}
+
+/* Styling for the 'Verified' column */
+#sos-contacts td h6 {
+    margin: 5px 0;
+    font-size: 14px;
+}
+.deviceData{
+    background: #fff;
+    justify-content: space-between;
+   }
+.email{
+    color: purple;
+}
+.phone{
+    color: blue;
+}
+
+@media (max-width: 768px) {
+    /* Stack columns vertically on smaller screens */
+    .container .row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Make each table take full width and stack on top of each other */
+    .container .row .col-6 {
+        width: 100%; /* Make tables take full width on smaller screens */
+        margin-bottom: 20px; /* Add spacing between the tables */
+    }
+
+    /* Adjust table layout for smaller screens */
+    #event-log, #sos-contacts {
+        width: 100%; /* Ensure the tables are 100% width */
+    }
+
+    /* Adjust table headers and cells to ensure they fit on smaller screens */
+    #event-log th, #event-log td, #sos-contacts td {
+        padding: 10px; /* Reduce padding for better spacing */
+        font-size: 12px; /* Smaller font size for readability */
+    }
+
+    /* For the SOS Contacts table, display rows vertically (stacked) */
+    #sos-contacts tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px; /* Space between rows */
+    }
+
+    #sos-contacts td {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        text-align: left;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    #sos-contacts td:first-child {
+        border-radius: 8px 8px 0 0; /* Rounded corners for first cell in stacked rows */
+    }
+
+    #sos-contacts td:last-child {
+        border-radius: 0 0 8px 8px; /* Rounded corners for last cell in stacked rows */
+    }
+
+    /* Adjust modal size for smaller screens */
+    .modal-lg {
+        max-width: 90%; /* Allow modal to be smaller on mobile */
+    }
+
+    /* Adjust breadcrumb styling for small screens */
+    .breadcrumb {
+        font-size: 14px; /* Smaller font size for breadcrumbs */
+    }
+    .deviceData{
+        background: #fff;
+        flex-direction: column;
+        justify-content: space-between;
+       }
+    .actionsbtn{
+        flex-direction: row !important;
+        border-top: 1px solid #0001 !important;
+    }
+}
+.table-containers {
+    max-height: 500px; /* Adjust the height as needed */
+    overflow-y: auto; /* Enables vertical scrollbar */
+    overflow-x: hidden; /* Hides horizontal scrollbar */
+}
+
+/* Scrollbar track */
+.table-containers::-webkit-scrollbar {
+    width: 6px; /* Set the width of the scrollbar */
+  }
+  
+  .table-containers::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded scrollbar edges */
+  }
+  
+  .table-containers::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa; /* Color on hover */
+  }
+  
+  .table-containers::-webkit-scrollbar-track {
+    background-color: #f8f9fa; /* Background of the scrollbar track */
+  }
+
+  .modal-sm {
+    max-width: 400px;
+}
+
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+}
+
+.modal-header {
+    justify-content: center;
+    position: relative;
+    padding-bottom: 0;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn-close {
+    margin: 0;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.form-control {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.d-flex.align-items-center.justify-content-between {
+    gap: 0.5rem; /* Adjust gap between label and toggle */
+}
+
+.btn-secondary, .btn-primary {
+    width: 45%;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background-color: #D92D20;
+    border-color: #D92D20;;
+}
+
+.btn-primary:hover {
+    background-color: #D92D20;;
+    border-color: #D92D20;;
+}
+.btn-update-no{
+    background-color:#828a96;
+    color: white;
+    width: 100%;
+  }
+  .btn-update-no:hover{
+    background-color:#828a96;
+    color: white;
+  }
+  .btn-update-yes{
+    background-color: #f04438;
+    color: white;
+    width: 100%;
+   }
+   .btn-update-yes:hover{
+    background-color: #f04438;
+    color: white;
+    width: 100%;
+   }
+
+   .btn-del-yes{
+    background-color: #f04438;
+    color: white;
+    width: 100%;
+   }
+   .btn-del-yes:hover{
+    background-color: #f04438;
+    color: white;
+    width: 100%;
+   }
+   .btn-del-no{
+    background-color:#828a96;
+    color: white;
+    width: 100%;
+  }
+  .btn-del-no:hover{
+    background-color:#828a96;
+    color: white;
+  }

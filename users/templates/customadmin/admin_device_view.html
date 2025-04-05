@@ -1,0 +1,166 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Button Details{% endblock %}
+{% block body %}
+<div class="container mt-4">
+    <h1>Button Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ device.device_name }}</h5>
+            <p class="card-text"><strong>MAC Address:</strong> {{ device.mac_address }}</p>
+            <p class="card-text"><strong>Message:</strong> {{ device.message }}</p>
+            <!-- Device Status -->
+            <p class="card-text"><strong>Button Status:</strong> {{ device.device_status }}</p>
+
+
+            <a href="javascript:history.back()" style="background-color: #f04438; border-color: #f04438;"class="btn btn-primary"> <i class="fa fa-arrow-left" style="color:white"></i> Back</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5 d-flex flex-column flex-md-row justify-content-between" id="header">
+    <h1>Notification Logs</h1>
+</div>
+
+<div class="col-md-12 my-5 new-class">
+  <form method="get" class="row g-3">
+    <div class="form-row ml-3">
+      <div class="form-group col-md-6 col-lg-3 col-xl-2">
+        <label for="date_from" class="mr-2">From:</label>
+        <input type="datetime-local" class="form-control" id="start-date-selector" name="date_from" value="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-2">
+        <label for="date_to" class="mr-2">To:</label>
+        <input type="datetime-local" class="form-control" id="end-date-selector" name="date_to" value="{{ date_to_filter }}" min="{{ date_from_filter }}" onchange="applyFiltersWithDelay()">
+      </div>
+      <div class="form-group col-md-6 col-lg-3 col-xl-1">
+        <label for="call_type" class="mr-2">Type:</label>
+        <select class="form-control" id="call_type-select" name="call_type" onchange="applyFiltersWithDelay()">
+            <option value="All" {% if call_type_filter == 'All' %}selected{% endif %}>All</option>
+            <option value="SMS" {% if call_type_filter == 'SMS' %}selected{% endif %}>SMS</option>
+            <option value="Whatsapp" {% if call_type_filter == 'Whatsapp' %}selected{% endif %}>Whatsapp</option>
+            <option value="Email" {% if call_type_filter == 'Email' %}selected{% endif %}>Email</option>
+        </select>
+      </div>
+      <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+        <button type="button" class="btn btn-secondary btn-block mb-2 mt-md-0" id="clear-button"
+          onclick="clearFilters()" {% if not device_name_filter and not date_from_filter and not date_to_filter and status_filter == 'All' %}disabled{% endif %}>Clear</button>
+      </div>
+  <div class="form-group col-md-6 col-lg-3 col-xl-1 clear-div">
+          <button type="submit" style="background-color: #f04438; color: white; text-decoration: none;" class="btn  btn-block mb-2 mt-md-0" id="clear-button">Search</button>
+        </div>
+
+      <div class="form-group col-md-6 col-lg-3 col-xl-2 download-csv">
+        <a href="{% url 'customadmin:download_log_csv' %}?date_from={{ date_from_filter }}&date_to={{ date_to_filter }}&call_type={{ call_type_filter }}" class="btn btn-primary btn-block mb-2 mt-md-0" id="download-csv-button">
+            <span id="loader" style="display:none;"><i class="fa fa-spinner fa-spin"></i></span>
+            Download CSV
+        </a>
+      </div>
+    </div>
+  </form>
+
+  <!-- Logs Table -->
+  <div class="table-container mt-4 text-left">
+    {% if logs %}
+    <table class="table table-hover" style="width: 100%; border-collapse: collapse;">
+      <thead style="background-color: #f04438; color: white;">
+        <tr>
+            <th>Button Name</th>
+            <th>MAC Address</th>
+            <th>Sent To</th>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+            <tr>
+                <td>{{ log.device.device_name }}</td>
+                <td>{{ log.mac_address }}</td>
+                <td>{{ log.sent_to }}</td>
+                <td>{{ log.status }}</td>
+                <td>{{ log.call_type }}</td>
+                <td>{{ log.created_at }}</td>
+            </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center">No logs available.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="no-data">
+        <img src="{% static 'images/no_data.jpg' %}" alt="No data available" style="max-width: 40%; height: auto;">
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Pagination -->
+  {% if logs.paginator.num_pages > 1 %}
+<nav aria-label="Page navigation" class="d-flex justify-content-center">
+    <ul class="pagination">
+        {% if logs.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?device_name={{ device_name }}&date_from={{ date_from_filter }}&date_to={{ date_to_filter }}&call_type={{ call_type_filter }}&page=1" aria-label="First" style="background-color: #f04438; color: white; padding: 10px; border-radius: 5px; text-decoration: none;">
+                    &laquo;&laquo;
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?device_name={{ device_name }}&date_from={{ date_from_filter }}&date_to={{ date_to_filter }}&call_type={{ call_type_filter }}&page={{ logs.previous_page_number }}" aria-label="Previous" style="background-color: #f04438; color: white; padding: 10px; border-radius: 5px; text-decoration: none;">
+                    &laquo;
+                </a>
+            </li>
+        {% endif %}
+
+        {% for i in logs.paginator.page_range %}
+            {% if i >= logs.number|add:"-2" and i <= logs.number|add:"2" %}
+                <li class="page-item {% if logs.number == i %}active{% endif %}">
+                    <a class="page-link" href="?device_name={{ device_name }}&date_from={{ date_from_filter }}&date_to={{ date_to_filter }}&call_type={{ call_type_filter }}&page={{ i }}" style="{% if logs.number == i %}background-color: #f04438; color: white;{% endif %} padding: 10px; border-radius: 5px; text-decoration: none;">
+                        {{ i }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if logs.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?device_name={{ device_name }}&date_from={{ date_from_filter }}&date_to={{ date_to_filter }}&call_type={{ call_type_filter }}&page={{ logs.next_page_number }}" aria-label="Next" style="background-color: #f04438; color: white; padding: 10px; border-radius: 5px; text-decoration: none;">
+                    &raquo;
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?device_name={{ device_name }}&date_from={{ date_from_filter }}&date_to={{ date_to_filter }}&call_type={{ call_type_filter }}&page={{ logs.paginator.num_pages }}" aria-label="Last" style="background-color: #f04438; color: white; padding: 10px; border-radius: 5px; text-decoration: none;">
+                    &raquo;&raquo;
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+</div>
+
+
+<script>
+function applyFiltersWithDelay() {
+    clearTimeout(window.filterTimeout);
+    window.filterTimeout = setTimeout(function() {
+        document.querySelector('form').submit();
+    }, 300);
+}
+
+function clearFilters() {
+    document.getElementById('search-bar').value = '';
+    document.getElementById('start-date-selector').value = '';
+    document.getElementById('end-date-selector').value = '';
+    document.getElementById('notification-type').value = '';
+    document.querySelector('form').submit();
+}
+
+   
+
+</script>
+{% endblock %}

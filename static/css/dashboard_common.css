@@ -1,0 +1,90 @@
+
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.dashboard-container .card {
+    flex: 0 0 calc(33.33% - 20px); 
+    margin-bottom: 20px;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.dashboard-container .card .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+.numbers {
+    margin-top: 5px;
+    font-size:30px
+}
+
+.dashboard-container .card:hover  {
+    background-color: #f04438 !important; 
+    color: white !important; 
+    box-shadow: 0 8px 16px #ec5145;
+    transform: scale(1.05); 
+}
+
+/* Change icon color to white on card hover */
+.dashboard-container .card:hover .fa-solid {
+    color: white !important;
+}
+
+
+@media (max-width: 992px) {
+    .dashboard-container .card {
+        flex: 0 0 calc(50% - 20px); 
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-container .card {
+        flex: 0 0 calc(100% - 20px); 
+    }
+}
+
+.card-body .heading {
+    font-size: 20px;
+    margin-top:10px;
+}
+.dashboard-icons{
+    height:40px;
+    width:40px;
+    }
+
+.outer-div{
+    padding-top: 5px;
+}
+
+.outer-div div h1{
+    font-family: 'Calistoga', 'serif';
+}
+
+.inner-div a{
+  color: inherit; 
+  text-decoration: none;
+
+}
+
+.garbage {
+    flex: 0 0 calc(33.33% - 20px); 
+    margin-bottom: 20px;
+}
+
+
+
+.fa-spin{
+    color:black;
+}
+
+
+
+

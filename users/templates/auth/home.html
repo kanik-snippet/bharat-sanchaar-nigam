@@ -1,0 +1,1760 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="google6592f66432678f8c.html" />
+    <meta name="description" content="ICE BUTTON: Your essential In Case of Emergency solution. Quick access to emergency contacts and vital information when it matters most. Stay safe, stay prepared.">
+    <meta name="keywords" content="ICE Button, In Case of Emergency, Emergency Contacts, Safety App, Emergency Solution">
+    <meta name="author" content="Mobiloitte Technologies">
+    <meta property="og:title" content="ICE BUTTON: In Case of Emergency">
+    <meta property="og:description" content="Quick access to emergency contacts and vital information when it matters most. Stay safe, stay prepared.">
+    <meta property="og:url" content="https://www.ICE-Button.com">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://www.ICE-Button.com/images/share-image.png">
+    <meta property="og:image:alt" content="ICE Button logo">
+    <meta property="og:site_name" content="ICE Button">
+    <meta property="og:locale" content="en_US">
+    <title>ICE BUTTON: In Case of Emergency</title>
+
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Mobiloitte Technologies",
+        "url": "https://www.ICE-Button.com",
+        "logo": "https://www.ICE-Button.com/images/logo.png"
+        }
+        </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://chatbot.ice-button.com/chatbot.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+
+    <style>
+        .nav-link {
+            color: #6b7280; /* Default color (Tailwind's gray-600) */
+            border-bottom: 2px solid transparent;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        
+        .nav-link.active {
+            color: #f04438; /* Tailwind's red-500 */
+            border-bottom: 2px solid #f04438;
+        }
+        
+        .validation-error {
+            color: #f87171; /* Tailwind red-500 */
+            font-size: 0.75rem; /* Tailwind text-xs */
+            margin-top: 0.25rem; /* Tailwind mt-1 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .clip-path-diagonal {
+            clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+
+        }
+        .custom-icon {
+            transform: rotate(-55deg); /* Icon ko 90 degree rotate karna */
+        }
+        footer button {
+            margin-top: 40px; /* Adjusted to match the white button's spacing in the design */
+        }
+        /* Custom Ease-In Animation */
+        @keyframes easeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ease-in {
+            animation: easeIn 1s ease-in-out;
+        }
+
+        /* Hover Animation for Buttons */
+        .btn-hover:hover {
+            transform: scale(1.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Scaling Animation */
+        @keyframes scaleUp {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .scale-up {
+            animation: scaleUp 1s ease-in-out;
+        }
+
+        /* Rotation Animation */
+        @keyframes rotateIn {
+            0% {
+                transform: rotate(0deg);
+                opacity: 0;
+            }
+            100% {
+                transform: rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        .rotate-in {
+            animation: rotateIn 1.5s ease-in-out;
+        }
+
+        /* Slide Up Animation */
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-up {
+            animation: slideUp 1s ease-out;
+        }
+        /* Media query for screens smaller than 350px */
+    @media (max-width: 384px) {
+        .custom-responsive-layout {
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+
+        .custom-responsive-layout .flex {
+            justify-content: center;
+        }
+
+        .custom-responsive-layout .space-x-4 {
+            margin-top: 12px !important;
+        }
+
+        .custom-responsive-layout .mt-4 {
+            margin-top: 16px !important;
+        }
+    }
+
+
+    
+    </style>
+   <style>
+    .containers {
+        width: 100% !important;
+        
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    padding: 0 20px !important; /* Adjust padding for better responsiveness */
+        
+    }
+
+    nav a {
+        transition: color 0.3s ease !important;
+    }
+
+    nav a:hover {
+        color: #f04438 !important;
+    }
+    #mobile-menu{
+            position:absolute !important;
+            top:50px !important;
+            z-index:1000 !important;
+        }
+    /* For screens between 1024px and 768px */
+    @media (max-width: 1024px) and (min-width: 768px) {
+        #hamburger-btn {
+            display: none !important; /* Hide hamburger button */
+        }
+
+        #right-section {
+            display: block !important; /* Only show desktop buttons */
+        }
+
+        #mobile-menu {
+            display: none  /* Hide mobile menu */
+        }
+    }
+
+    /* For mobile screens below 768px */
+    @media (max-width: 768px) {
+        #right-section {
+            display: none /* Hide desktop buttons */
+        }
+
+       
+
+        #hamburger-btn {
+            display: block !important; /* Show hamburger button */
+        }
+    }
+    @media (min-width: 450px){
+        .weblogo{
+            width:170px !important;
+            margin:10px !important;
+        }
+        
+    }
+    @media (max-width: 450px){
+ .containers{
+            padding:10px !important;
+        }
+        .weblogo{
+            width:120px !important;
+            margin:10px !important;
+        }
+        button, input, optgroup, select, textarea{
+            font-size: 70% !important; 
+        }
+
+
+    }
+    /* Loader Styles */
+/* Loader Styles */
+.loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px; /* Adjust as needed */
+    font-size: 1.5rem;
+    color: #f04438; /* Updated color */
+}
+
+/* Loading Text Container */
+.loading-text {
+    display: inline-block;
+    position: relative;
+    color: #f04438; /* Updated color */
+}
+
+/* Dots Animation */
+.loading-dots::after {
+    content: '';
+    display: inline-block;
+    width: 0.5em;
+    animation: dots 1.5s infinite steps(1);
+    color: #f04438; /* Updated color */
+}
+
+@keyframes dots {
+    0% {
+        content: '';
+    }
+    25% {
+        content: '.';
+    }
+    50% {
+        content: '..';
+    }
+    75% {
+        content: '...';
+    }
+}
+</style>
+    
+</head>
+<body class="bg-gray-50">
+<header class="bg-white shadow fixed top-0 w-full z-50" data-aos="fade-down" data-aos-duration="1000">
+        <div class="containers flex items-center justify-between  px-4 sm:px-6">
+            <!-- Left Section: Logo -->
+            <div class="flex items-center">
+                <a href="{% url 'home' %}" class="flex items-center">
+                        {% if request.COOKIES.django_language == 'en' %}
+                            <img src="{% static 'images/newlogo.png' %}" alt="English Logo" class='weblogo'>
+                        {% elif request.COOKIES.django_language == 'hi' %}
+                            <img src="{% static 'images/hindi_bsnk.png' %}" alt="Hindi Logo" class='weblogo'>
+                        {% else %}
+                            <img src="{% static 'images/newlogo.png' %}" alt="Default Logo" class='weblogo'>
+                        {% endif %}
+                </a>
+              
+
+                <!-- Hamburger Button for Mobile -->
+               
+            </div>
+    
+            <!-- Center Section: Navigation -->
+             <!-- Center Section: Navigation -->
+            <nav class="hidden lg:flex flex-grow justify-center space-x-6">
+                <a href="#home" class="nav-link text-gray-600">{% trans "Home" %}</a>
+                <a href="{% url 'blogs:blogGrid' %}" class="{% if request.resolver_match.url_name == 'blogGrid' %}text-gray-800 border-b-2 border-[#f04438]{% else %}text-gray-600 hover:text-gray-800{% endif %}">{% trans "Blogs" %}</a>
+                <a href="{% url 'tutorials' %}" class="{% if request.resolver_match.url_name == 'tutorials' %}text-gray-800 border-b-2 border-[#f04438]{% else %}text-gray-600 hover:text-gray-800{% endif %}">{% trans "Tutorials" %}</a>
+                <a href="#features" class="nav-link text-gray-600">{% trans "Features" %}</a>
+                <a href="{% url 'plan_pricing' %}" class="{% if request.resolver_match.url_name == 'plan_pricing' %}text-gray-800 border-b-2 border-[#f04438]{% else %}text-gray-600 hover:text-gray-800{% endif %}">{% trans "Plan & Pricing" %}</a>
+                <a href="#FAQ" class="nav-link text-gray-600">{% trans "FAQs" %}</a>
+                <a href="{% url 'ordernow' %}" class="text-[#f04438] {% if request.resolver_match.url_name == 'ordernow' %}border-b-2 border-[#f04438]{% endif %}">{% trans "Order Now" %}</a>
+            </nav>
+
+            
+            <div id="selectedLanguage"></div>  <!-- This will display the selected language -->
+<div class='d-flex w-100 mx-5 lang' style='flex-direction:columns; display:flex'> 
+  <select name="language" id="languageSwitcher" onchange="switchLanguage(this.value)">
+    <option value="">Select Language</option>
+    <option value="hi" {% if LANGUAGE_CODE == 'hi' %}selected{% endif %}>हिन्दी</option>
+    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+
+</select>
+ <button id="hamburger-btn" class="text-gray-600 focus:outline-none md:hidden ml-6" onclick="toggleMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                </div>
+<!-- Right Section: Log In, Sign Up, or Dashboard -->
+<div id="right-section" class="flex items-center space-x-4">
+    <div id="login-signup-buttons">
+        <a href="{% url 'login' %}" class="text-gray-600 font-medium">{% trans "Log in" %}</a>
+        <a href="{% url 'register' %}" class="bg-red-500 text-white px-4 py-2 rounded-md">{% trans "Sign up" %}</a>
+    </div>
+    <div id="dashboard-button" class="hidden">
+        <a href="{% url 'dashboard' %}" class="bg-red-500 text-white px-4 py-2 rounded-md">{% trans "Dashboard" context "webiste" %}</a>
+    </div>
+</div>
+
+<!-- Mobile Navigation Menu -->
+
+
+    </header>
+    <div id="mobile-menu" class="lg:hidden hidden bg-white px-4 shadow-md absolute right-0 top-5 w-100">
+    <nav class="flex flex-col space-y-4 p-4">
+        <a href="/#home" class="text-gray-600">{% trans "Home" %}</a>
+        <a href="{% url 'blogs:blogGrid' %}" class="{% if request.resolver_match.url_name == 'blogGrid' %}text-gray-800 border-b-2 border-[#f04438]{% else %}text-gray-600 hover:text-gray-800{% endif %}">{% trans "Blogs" %}</a>
+        <a href="{% url 'tutorials' %}" class="text-gray-600">{% trans "Tutorials" %}</a>
+        <a href="/#features" class="text-gray-600">{% trans "Features" %}</a>
+        <a href="{% url 'plan_pricing' %}" class="text-gray-600">{% trans "Plan & Pricing" %}</a>
+        <a href="/#FAQ" class="text-gray-600">{% trans "FAQs" %}</a>
+        <a href="{% url 'ordernow' %}" class="text-[#f04438]">{% trans "Order Now" %}</a>
+        <div class="flex items-center">
+            <div id="mobile-login-signup-buttons" class="block">
+                <a href="{% url 'login' %}" class="text-gray-600 font-medium">{% trans "Log in" %}</a>
+                <a href="{% url 'register' %}" class="bg-red-500 text-white px-4 py-2 rounded-md">{% trans "Sign up" %}</a>
+            </div>
+            <div id="mobile-dashboard-button" class="hidden">
+                <a href="{% url 'dashboard' %}" class="bg-red-500 text-white px-4 py-2 rounded-md">{% trans "Dashboard" %}</a>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+    
+    
+    <!-- Script to toggle mobile menu visibility -->
+    <script>
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const dashboardButton = document.getElementById('dashboard-button');
+            const loginSignupButtons = document.getElementById('login-signup-buttons');
+            const dashboardButtonMobile = document.getElementById('dashboard-button-mobile');
+            const loginSignupButtonsMobile = document.getElementById('login-signup-buttons-mobile');
+    
+            // Toggle mobile menu visibility
+            mobileMenu.classList.toggle('hidden');
+    
+            // Toggle dashboard visibility in mobile menu and show login/signup
+            if (mobileMenu.classList.contains('hidden')) {
+                dashboardButtonMobile.classList.add('hidden');
+                loginSignupButtonsMobile.classList.remove('hidden');
+            } else {
+                dashboardButtonMobile.classList.remove('hidden');
+                loginSignupButtonsMobile.classList.add('hidden');
+            }
+    
+            // Desktop: Show/Hide Dashboard button based on menu state
+            if (mobileMenu.classList.contains('hidden')) {
+                dashboardButton.classList.remove('hidden');
+                loginSignupButtons.classList.add('hidden');
+            } else {
+                dashboardButton.classList.add('hidden');
+                loginSignupButtons.classList.remove('hidden');
+            }
+        }
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dashboardButton = document.getElementById('dashboard-button');
+            const loginSignupButtons = document.getElementById('login-signup-buttons');
+            
+            // Get access_token from localStorage
+            const accessToken = localStorage.getItem('access_token');
+
+
+            if (accessToken) {
+                // If access_token exists, assume user is logged in
+                const userInfo = JSON.parse(localStorage.getItem('user_info')); // Fetch user info if available
+        
+                // If user is a superuser, redirect to admin dashboard, else to regular dashboard
+                {% if userInfo.is_superuser %}
+                        dashboardButton.innerHTML = `
+                            <a href="{% url 'customadmin:admin_dashboard' %}" class="bg-red-500 text-white px-4 py-2 rounded-md">{% trans 'Dashboard' %}</a>
+                        `;
+                    {% else %}
+                        dashboardButton.innerHTML = `
+                            <a href="/dashboard/" class="bg-red-500 text-white px-4 py-2 rounded-md">{% trans 'Dashboard' %}</a>
+                        `;
+                    {% endif %}
+        
+                dashboardButton.style.display = 'block'; // Show Dashboard button
+                loginSignupButtons.style.display = 'none'; // Hide Login/Sign Up buttons
+            } else {
+                // If no access_token, assume user is not logged in
+                dashboardButton.style.display = 'none'; // Hide Dashboard button
+                loginSignupButtons.style.display = 'block'; // Show Login/Sign Up buttons
+            }
+        });
+        
+        
+        
+    </script>
+    
+    
+    
+
+    <!-- Hero Section -->
+<section id="home" class="bg-gray-50 py-16 mt-24" >
+    <div class="container mx-auto text-center px-6">
+        <!-- Feature Section -->
+        <div class="inline-flex items-center space-x-4 border border-gray-300 rounded-full px-4 py-1">
+            <!-- Red Dot -->
+            <span class="text-red-500 text-lg font-bold">&#8226;</span>
+            <!-- New Feature Text -->
+            <span class="text-gray-800 text-sm font-medium">{% trans "New feature" %}</span>
+            
+            <!-- Link with Arrow -->
+            <a href="{% url 'login' %}" class="text-gray-600 text-sm font-medium flex items-center space-x-1 hover:text-black-600">
+                <span>{% trans "Check out the team dashboard" %}</span>
+                <!-- Font Awesome Arrow -->
+                <i class="fa fa-arrow-right text-sm"></i>
+            </a>
+        </div>
+
+       <!-- Headline -->
+       <h1 class="text-4xl font-bold text-gray-800 mt-6" data-aos="fade-up" data-aos-duration="1500">
+           {% trans "Secure Your Safety with ICE-Button: Instant Safety at Your Fingertips." %}
+       </h1>
+
+       <!-- Subtitle -->
+       <p class="text-gray-600 mt-4 max-w-2xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-duration="1800">
+           {% trans "Alert your trusted people instantly with ICE-Button. One tap for quick emergency assistance." %}
+       </p>
+
+        <div id="demoVideoModal" class="demo-modal">
+            <div class="demo-modal-content">
+            <span class="demo-close-btn">&times;</span>
+            <video controls class="demo-responsive-video" preload="auto">
+                <source src="https://res.cloudinary.com/dw8khjs5s/video/upload/v1734687248/Ice_Button_Hindi_vkwpur.mp4" type="video/mp4">
+                {% trans "Your browser does not support the video tag." %}
+            </video>
+            </div>
+        </div>
+        <!-- Buttons -->
+        <div class="mt-8 flex justify-center space-x-4">
+            <!-- Demo Button -->
+            <button id="demoButton" class="demo-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium flex items-center space-x-2 hover:bg-gray-300 transition" 
+                    data-aos="fade-up" data-aos-duration="2200">
+                <i class="fa fa-play-circle text-black text-xl"></i>
+                <span>{% trans "Demo" %}</span>
+            </button>
+            
+            <!-- Get Started Button -->
+            <a href="{% url 'login' %}" class="bg-red-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-600 transition" 
+                    data-aos="fade-up" data-aos-duration="2200">
+                {% trans "Get Started" %}
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- New Section Below the Hero Section -->
+<section id="container-2" class="bg-gray-50 py-16 mt-4">
+    <div class="container mx-auto text-center px-6">
+        <!-- Dashboard Section -->
+        <div class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 text-xl sm:text-3xl">{% trans "Dashboard"%}</h2>
+            <p class="text-gray-600 mt-4 max-w-3xl mx-auto text-sm sm:text-base">
+                {% trans "Include a visual or interactive dashboard showcasing key metrics or information." %}
+            </p>
+            <!-- Example Dashboard Image or Component -->
+            <div class="mt-12" data-aos="fade-up" data-aos-duration="2500">
+                <img src="{% static 'images/landing.png' %}" alt="{% trans 'Dashboard Preview' %}" class="rounded-xl mx-auto" style="width: 130%; max-width: 100%;">
+            </div>
+        </div>
+
+        <!-- Introduction Section -->
+        <div class="mb-12 mt-32" data-aos="fade-up" data-aos-duration="2000">
+            <h2 class="text-3xl font-bold text-gray-800 text-xl sm:text-3xl">{% trans "Introduction" %}</h2>
+            <p class="text-gray-600 mt-4 w-full sm:max-w-none mx-auto leading-relaxed text-sm sm:text-base">
+                {% trans "The ICE-Button is a reliable emergency alert system that provides real-time, multi-channel notifications during critical situations. It combines trusted hardware, software, and cloud services to ensure fast, efficient responses in emergencies. Designed for individuals, families, businesses, and institutions,The ICE-Button improves safety and helps in emergencies by making sure help arrives quickly to protect people and property." %}
+            </p>
+        </div>
+
+        <!-- Problem Statement Section -->
+        <div class="mt-32" data-aos="fade-up" data-aos-duration="2000">
+            <h2 class="text-3xl font-bold text-gray-800 text-xl sm:text-3xl">{% trans "Problem Statement" %}</h2>
+            <p class="text-gray-600 mt-4 w-full sm:max-w-none mx-auto leading-relaxed text-sm sm:text-base">
+                {% trans "In emergencies, delayed communication and unreliable alert systems can escalate situations. Many current solutions lack integration, reliability, or affordability, making it hard to alert multiple contacts or track events in real time. The ICE-Button addresses these challenges with an easy-to-use, automated system that sends alerts across multiple channels, enabling faster communication and quick responses while keeping everyone informed." %}
+            </p>
+        </div>
+    </div>
+</section>
+
+    
+<!-- Objectives Section -->
+<section id="objectives" class="bg-gray-50 py-16 mt-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-semibold text-red-600 text-center mb-4" data-aos="fade-up" data-aos-duration="1700">{% trans "Objectives" %}</h2>
+        <h3 class="text-4xl font-bold text-gray-800 text-center mb-6" data-aos="fade-up" data-aos-duration="1800">
+            {% trans "Key Objectives of ICE-Button" %}
+        </h3>
+        <p class="text-lg text-gray-600 text-center max-w-2xl mx-auto mb-16" data-aos="fade-up" data-aos-duration="1900">
+            {% trans "The ICE-Button is built to ensure safety, reliability, and efficiency, tackling key objectives for effective emergency response in critical situations." %}
+        </p>
+
+        <!-- Grid Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Objective 1 -->
+            <div class="text-center" data-aos="fade-up" data-aos-duration="2000">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-bell text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">
+                    {% trans "Real-Time Alerts" %}
+                </h4>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    {% trans "Instant notifications via SMS, WhatsApp, email, and voice calls to ensure rapid communication during emergencies." %}
+                </p>
+            </div>
+
+            <!-- Objective 2 -->
+            <div class="text-center" data-aos="fade-up" data-aos-duration="2100">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-video text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">
+                    {% trans "Audio-Video Documentation" %}
+                </h4>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    {% trans "Record and share event details for future review or evidence, promoting transparency and accountability." %}
+                </p>
+            </div>
+
+            <!-- Objective 3 -->
+            <div class="text-center" data-aos="fade-up" data-aos-duration="2200">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-video text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">
+                    {% trans "Live Streaming" %}
+                </h4>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    {% trans "Provide real-time visual access to emergency situations, enabling responders to assess the situation and respond accordingly." %}
+                </p>
+            </div>
+
+            <!-- Objective 4 -->
+            <div class="text-center" data-aos="fade-up" data-aos-duration="2300">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-hand-pointer text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">
+                    {% trans "Ease of Use" %}
+                </h4>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    {% trans "Easy setup and operation for users of all technical skill levels, ensuring accessibility for everyone." %}
+                </p>
+            </div>
+
+            <!-- Objective 5 -->
+            <div class="text-center" data-aos="fade-up" data-aos-duration="2400">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-wifi text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">
+                    {% trans "System Resilience" %}
+                </h4>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    {% trans "Ensures operation even in low-connectivity or during initial setup, allowing continuous emergency assistance." %}
+                </p>
+            </div>
+
+            <!-- Objective 6 -->
+            <div class="text-center" data-aos="fade-up" data-aos-duration="2500">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-share-alt text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">
+                    {% trans "Multi-Channel Notifications" %}
+                </h4>
+                <p class="text-gray-600 text-sm sm:text-base">
+                    {% trans "Send alerts across multiple channels simultaneously, ensuring the message reaches contacts on the most suitable platform." %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<div id="features" class="bg-gray-50 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-semibold text-red-600 text-center mb-4">{% trans "Features" %}</h2>
+        <h3 class="text-4xl font-bold text-gray-800 text-center mb-6">
+            {% trans "Key Features of ICE-Button" %}
+        </h3>
+        <p class="text-lg text-gray-600 text-center max-w-2xl mx-auto mb-16">
+            {% trans "The ICE-Button offers a comprehensive safety solution designed to provide peace of mind in critical situations. Here are some of its key features:" %}
+        </p>
+
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10">
+
+            <!-- Feature 1 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="far fa-bell text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "Multi-Channel Notification System" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "Sends alerts via SMS, WhatsApp, email, and voice calls, ensuring notifications reach multiple contacts across platforms quickly." %}
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-video text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "Audio and Video Recording & Streaming" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "Captures audio and video during emergencies, documenting events or streaming the situation in real time." %}
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-wifi text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "Easy Wi-Fi Setup & Hotspot Mode" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "Easily configured through a web app, it works even in low- or no-network areas, ensuring operation in emergencies." %}
+                </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-lightbulb text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "Intuitive LED Indicators" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "RGB LED lights provide clear visual feedback on system status, including boot-up, network connection, and active recording." %}
+                </p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-check-circle text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "'All is Well' Feature" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "With a single press of the blue button, users can send reassuring updates to their contacts, letting them know everything is fine." %}
+                </p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-signal text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "Reliable Performance in Low-Connectivity Areas" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "The system is designed to function even in areas with poor or unstable internet connection, ensuring alerts are sent during critical moments." %}
+                </p>
+            </div>
+
+            <!-- Feature 7 (Centered on Large Screens) -->
+            <div class="text-center lg:col-span-2">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white text-black rounded-lg border-2 border-gray-300 mb-4">
+                    <i class="fa-solid fa-users text-2xl"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2">{% trans "User-Friendly Design for All Skill Levels" %}</h4>
+                <p class="text-gray-600">
+                    {% trans "The ICE-Button is simple to set up and use, with an intuitive interface that makes it accessible to individuals with varying levels of technical expertise." %}
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+ 
+
+
+    
+    
+<section id="FAQ" class="py-12 px-4 md:px-8" >
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6" >
+        {% trans 'Frequently Asked Questions (FAQ)'%}
+    </h2>
+    <p class="text-center text-gray-600 mb-16" >
+         {% trans 'Everything you need to know about the product and billing.'%}
+    </p>
+
+    <!-- Container for dynamically loaded FAQs -->
+    <div class="max-w-6xl mx-auto space-y-12 ">
+    <div id="loader" class="loader">
+    <p class="loading-text">Loading<span class="loading-dots"></span></p>
+    </div>
+        <!-- The FAQ sections will be dynamically populated here -->
+    </div>
+</section>
+
+<section id="contact" class="relative text-gray-800 py-6 px-4  bg-gray-50 flex items-center justify-center">
+    <div class="container flex items-center justify-center ">
+        <div class="flex flex-col md:flex-row w-full  max-w-6xl">
+            
+            <!-- Image Div -->
+            <div class="w-full md:w-1/2 h-auto z-0 mb-0 flex justify-center -ml-10">
+                <img src="{% static 'images/contactgirl1.png' %}" alt="Contact Us"
+                    class="w-[85%] h-auto object-contain max-w-none ">
+            </div>
+            
+            <!-- Form Div -->
+            <div class="relative w-full md:w-1/2 h-auto bg-white p-6 border shadow-md flex flex-col justify-start z-10">
+                <h2 class="text-lg md:text-xl font-bold text-center mb-4">{% trans 'Get in Touch' %}</h2>
+                <p class="text-center text-gray-600 mb-6 text-xs">{% trans 'Have questions or feedback? Reach out to us using the form below.'%}</p>
+                <form action="#" method="post" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <!-- Full Name -->
+                    <div>
+                        <label for="name" class="block text-xs font-medium text-gray-700">
+                            {% trans 'Full Name'%}:
+                        </label>
+                        <input type="text" id="name" name="name" maxlength="100" placeholder="{% trans 'Enter your full name' %}"
+                            class="mt-1 block w-full border border-gray-300 p-3 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-xs" required>
+                    </div>
+                
+                    <!-- Email Address -->
+                    <div>
+                        <label for="email" class="block text-xs font-medium text-gray-700">
+                            {% trans 'Email Address' %}:
+                        </label>
+                        <input type="email" id="email" name="email" placeholder="{% trans 'Enter your email' %}"
+                            class="mt-1 block w-full border border-gray-300 p-3 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-xs" required>
+                    </div>
+                
+                    <!-- Phone Number with Country Code Dropdown -->
+                    <div class="phone-field-container">
+                        <label for="phone" class="block text-xs font-medium text-gray-700">
+                             {% trans 'Phone Number'%}:
+                        </label>
+                        <div class="flex mt-1">
+                            <select id="country_code" name="country_code" class="mt-1 block w-full border border-gray-300 p-3 rounded-l-md shadow-sm focus:ring-red-500 focus:border-red-500 text-xs">
+                                <option value="+91" selected>🇮🇳 +91 (India)</option>
+                                <option value="+1">🇺🇸 +1 (USA)</option>
+                                <option value="+44">🇬🇧 +44 (UK)</option>
+                                <option value="+61">🇦🇺 +61 (Australia)</option>
+                                <option value="+81">🇯🇵 +81 (Japan)</option>
+                                <option value="+49">🇩🇪 +49 (Germany)</option>
+                                <option value="+33">🇫🇷 +33 (France)</option>
+                                <option value="+86">🇨🇳 +86 (China)</option>
+                                <option value="+39">🇮🇹 +39 (Italy)</option>
+                                <option value="+7">🇷🇺 +7 (Russia)</option>
+                                <option value="+82">🇰🇷 +82 (South Korea)</option>
+                                <option value="+55">🇧🇷 +55 (Brazil)</option>
+                                <option value="+34">🇪🇸 +34 (Spain)</option>
+                                <option value="+62">🇮🇩 +62 (Indonesia)</option>
+                                <option value="+60">🇲🇾 +60 (Malaysia)</option>
+                                <option value="+63">🇵🇭 +63 (Philippines)</option>
+                                <option value="+65">🇸🇬 +65 (Singapore)</option>
+                                <option value="+64">🇳🇿 +64 (New Zealand)</option>
+                                <option value="+47">🇳🇴 +47 (Norway)</option>
+                                <option value="+46">🇸🇪 +46 (Sweden)</option>
+                                <option value="+41">🇨🇭 +41 (Switzerland)</option>
+                                <option value="+31">🇳🇱 +31 (Netherlands)</option>
+                                <option value="+34">🇪🇸 +34 (Spain)</option>
+                                <option value="+92">🇵🇰 +92 (Pakistan)</option>
+                                <option value="+971">🇦🇪 +971 (UAE)</option>
+                                <option value="+20">🇪🇬 +20 (Egypt)</option>
+                                <option value="+27">🇿🇦 +27 (South Africa)</option>
+                                <option value="+256">🇺🇬 +256 (Uganda)</option>
+                                <option value="+254">🇰🇪 +254 (Kenya)</option>
+                                <option value="+212">🇲🇦 +212 (Morocco)</option>
+                                <option value="+213">🇩🇿 +213 (Algeria)</option>
+                                <option value="+251">🇪🇹 +251 (Ethiopia)</option>
+                                <option value="+234">🇳🇬 +234 (Nigeria)</option>
+                                <option value="+1">🇨🇦 +1 (Canada)</option>
+                                <option value="+598">🇺🇾 +598 (Uruguay)</option>
+                                <option value="+591">🇧🇴 +591 (Bolivia)</option>
+                                <option value="+56">🇨🇱 +56 (Chile)</option>
+                                <option value="+51">🇵🇪 +51 (Peru)</option>
+                                <option value="+52">🇲🇽 +52 (Mexico)</option>
+                                <option value="+370">🇱🇹 +370 (Lithuania)</option>
+                                <option value="+48">🇵🇱 +48 (Poland)</option>
+                                <option value="+371">🇱🇻 +371 (Latvia)</option>
+                                <option value="+372">🇪🇪 +372 (Estonia)</option>
+                                <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                                <option value="+421">🇸🇰 +421 (Slovakia)</option>
+                                <option value="+30">🇬🇷 +30 (Greece)</option>
+                                <option value="+351">🇵🇹 +351 (Portugal)</option>
+                                <option value="+43">🇦🇹 +43 (Austria)</option>
+                                <option value="+32">🇧🇪 +32 (Belgium)</option>
+                                <option value="+90">🇹🇷 +90 (Turkey)</option>
+                                <option value="+380">🇺🇦 +380 (Ukraine)</option>
+                                <option value="+386">🇸🇮 +386 (Slovenia)</option>
+                                <option value="+385">🇭🇷 +385 (Croatia)</option>
+                                <option value="+382">🇲🇪 +382 (Montenegro)</option>
+                                <option value="+36">🇭🇺 +36 (Hungary)</option>
+                                <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                                <option value="+82">🇰🇷 +82 (South Korea)</option>
+                                <!-- Add more countries as needed -->
+                            </select>
+                            <input type="text" id="phone_number" name="phone" placeholder="{% trans 'Enter your phone number' %}"
+                                class="mt-1 block w-full border border-gray-300 p-3 rounded-r-md shadow-sm focus:ring-red-500 focus:border-red-500 text-xs" required>
+                        </div>
+                    </div>
+                
+                    <!-- Subject -->
+                    <div>
+                        <label for="subject" class="block text-xs font-medium text-gray-700">
+                             {% trans 'Subject'%}:
+                        </label>
+                        <input type="text" id="subject" name="subject"  placeholder="{% trans 'Enter your subject'%}"
+                            class="mt-1 block w-full border border-gray-300 p-3 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-xs" required>
+                    </div>
+                
+                    <!-- Message Box -->
+                    <div>
+                        <label for="message" class="block text-xs font-medium text-gray-700">
+                             {% trans 'Message'%}:
+                        </label>
+                        <textarea id="message" name="message" rows="3" maxlength="300" placeholder="{% trans 'Enter your message' %}"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 p-3 text-xs"></textarea>
+                    </div>
+                
+                    <div class="mt-4 relative">
+                        <button type="submit"
+                            class="bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 transition w-full text-sm flex items-center justify-center relative">
+                            <span class="loader hidden absolute inset-0 flex items-center justify-center">
+                                <div class="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                            </span>
+                            <span class="button-text"> {% trans 'Submit'%}</span>
+                        </button>
+                    </div>
+                    
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+    
+
+
+
+
+{% load static %}
+
+<footer class="bg-gray-900 text-gray-300 py-12 mt-24 relative overflow-hidden mx-auto px-6 justify-between">
+    <!-- Diagonal Gray Background -->
+    <div class="absolute inset-0 bg-gray-800 clip-path-diagonal"></div>
+
+    <!-- Current Layout (Above 700px) -->
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-8 lg:px-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8 hidden md:grid">
+        <!-- First Column -->
+        <div class="md:col-span-1 text-center md:text-left mb-8 md:mb-0 lg:-ml-8">
+            <div class="flex justify-center md:justify-start items-center mb-4">
+                {% if request.COOKIES.django_language == 'en' %}
+                            <img src="{% static 'images/ice_new.png' %}" alt="English Logo" class="h-14">
+                        {% elif request.COOKIES.django_language == 'hi' %}
+                            <img src="{% static 'images/hindi_white_bsnk.png' %}" alt="Hindi Logo" class="h-14">
+                        {% else %}
+                            <img src="{% static 'images/ice_new.png' %}" alt="Default Logo" class="h-14">
+                {% endif %}
+            </div>
+            <p class="text-sm leading-relaxed">
+                {% trans 'Empowering safety with innovation. ICE-Button ensures help is just a press away.'%}
+            </p>
+            <button onclick="window.location.href='{% url 'login' %}';"
+                class="mt-8 bg-white text-gray-900 text-sm font-semibold py-2 px-6 border-gray-900 hover:bg-gray-200 transition duration-300"
+                style="width:250px;">
+                {% trans 'Get started'%}
+            </button>
+        </div>
+
+        <!-- Help & Support -->
+        <div class="text-center md:text-left sm:ml-0 md:ml-24 lg:w-2/3 xl:w-2/3">
+            <h4 class="text-white font-semibold text-base mb-4">{% trans 'Help & Support'%}</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="{% url 'case_study'%}" class="hover:text-gray-200 transition">{% trans 'Case Study'%}</a></li>
+                <li><a href="/how-it-works/" class="hover:text-gray-200 transition">{% trans 'How It Works'%}</a></li>
+                <li><a href="#FAQ" class="hover:text-gray-200 transition">{% trans 'FAQs'%}</a></li>
+                <li><a href="#contact" class="hover:text-gray-200 transition">{% trans 'Contact Us'%}</a></li>
+            </ul>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="text-center md:text-left sm:ml-0 md:ml-24">
+            <h4 class="text-white font-semibold text-base mb-4">{% trans 'Quick Links'%}</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="#home" class="hover:text-gray-200 transition">{% trans 'Home'%}</a></li>
+                <li><a href="#features" class="hover:text-gray-200 transition">{% trans 'Features'%}</a></li>
+                <li><a href="{% url 'ordernow'%}" class="hover:text-gray-200 transition">{% trans 'Order Now'%}</a></li>
+                <li><a href="{% url 'tutorials'%}" class="hover:text-gray-200 transition">{% trans 'Tutorials'%}</a></li>
+            </ul>
+        </div>
+
+        <!-- Social Media -->
+        <div class="text-center md:text-left sm:ml-0 md:ml-24">
+            <h4 class="text-white font-semibold text-base mb-4">{% trans 'Social Media'%}</h4>
+            <ul class="space-y-3 text-sm">
+                <li class="flex justify-center md:justify-start items-center space-x-2">
+                    <i class="fa-brands fa-facebook-f"></i>
+                    <a href="https://www.facebook.com/people/ICE-Button/61569722721471/" class="hover:text-gray-200 transition" target="_blank">{% trans 'Facebook'%}</a>
+                </li>
+                <li class="flex justify-center md:justify-start items-center space-x-2">
+                    <i class="fa-brands fa-telegram"></i>
+                    <a href="https://t.me/Mobiloitte" class="hover:text-gray-200 transition" target="_blank">{% trans 'Telegram'%}</a>
+                </li>
+                <li class="flex justify-center md:justify-start items-center space-x-2">
+                    <i class="fa-brands fa-instagram"></i>
+                    <a href="https://www.instagram.com/ice.button/" class="hover:text-gray-200 transition" target="_blank">{% trans 'Instagram'%}</a>
+                </li>
+                <li class="flex justify-center md:justify-start items-center space-x-2">
+                    <i class="fa-brands fa-pinterest"></i>
+                    <a href="https://www.pinterest.com/ICEButton" class="hover:text-gray-200 transition" target="_blank">{% trans 'Pinterest'%}</a>
+                </li>
+                <li class="flex justify-center md:justify-start items-center space-x-2">
+                    <i class="fab fa-twitter"></i>
+                    <a href="https://x.com/ICE_Button_" class="hover:text-gray-200 transition" target="_blank">{% trans 'Twitter X'%}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="md:col-span-1 text-center md:text-left mb-8 md:mb-0 lg:ml-16 lg:w-80 lg:max-w-full">
+            <h4 class="text-white font-semibold text-base mb-4 whitespace-nowrap">
+                {% trans 'Subscribe to Our Newsletter'%}
+            </h4>
+            <p class="text-sm leading-relaxed mb-4">
+                {% trans 'Stay updated with the latest news and updates from ICE-Button.'%}
+            </p>
+            <form id="newsletterFormLarge"  class="space-y-4">
+                
+                <input
+                    type="email"
+                    name="email"
+                    id="emailInputLarge"
+                    placeholder="{% trans 'Enter your email' %}"
+                    required
+                    class="w-full px-4 py-2 text-gray-900 rounded focus:outline-none focus:ring focus:ring-gray-500"
+                />
+                <button
+                    type="submit"
+                    class="bg-[#f04438] text-white text-sm font-semibold py-2 px-6 rounded hover:bg-red-600 transition duration-300"
+                    style="width: 100%;"
+                >
+                    {% trans 'Subscribe'%}
+                </button>
+            </form>
+        </div>
+        
+        
+    </div>
+
+    <!-- Dropdown Layout (Below 700px) -->
+    <div class="relative block md:hidden text-center mb-4">
+        <div>
+            <button class="text-white font-semibold text-base w-full text-center" onclick="toggleDropdown('helpSupportDropdown')">
+                {% trans 'Help & Support'%} <span>+</span>
+            </button>
+            <ul id="helpSupportDropdown" class="hidden space-y-2 text-sm">
+                <li><a href="{% url 'case_study'%}" class="hover:text-gray-200 transition block">{% trans 'Case Study'%}</a></li>
+                <li><a href="/how-it-works/" class="hover:text-gray-200 transition block">{% trans 'How It Works'%}</a></li>
+                <li><a href="#FAQ" class="hover:text-gray-200 transition block">{% trans 'FAQs'%}</a></li>
+                <li><a href="#contact" class="hover:text-gray-200 transition block">{% trans 'Contact Us'%}</a></li>
+            </ul>
+        </div>
+    
+        <div class="mt-0">
+            <button class="text-white font-semibold text-base w-full text-center" onclick="toggleDropdown('quickLinksDropdown')">
+                {% trans 'Quick Links'%} <span>+</span>
+            </button>
+            <ul id="quickLinksDropdown" class="hidden space-y-2 text-sm">
+                <li><a href="#home" class="hover:text-gray-200 transition block">{% trans 'Home'%}</a></li>
+                <li><a href="#features" class="hover:text-gray-200 transition block">{% trans 'Features'%}</a></li>
+                <li><a href="{% url 'ordernow'%}" class="hover:text-gray-200 transition block">{% trans 'Order Now'%}</a></li>
+                <li><a href="{% url 'tutorials'%}" class="hover:text-gray-200 transition block">{% trans 'Tutorials'%}</a></li>
+            </ul>
+        </div>
+    
+        <div class="mt-0">
+            <button class="text-white font-semibold text-base w-full text-center " onclick="toggleDropdown('socialMediaDropdown')">
+                {% trans 'Social Media'%} <span>+</span>
+            </button>
+            <ul id="socialMediaDropdown" class="hidden space-y-2 text-sm">
+                <li class="flex justify-center items-center space-x-2">
+                    <i class="fa-brands fa-facebook-f"></i>
+                    <a href="https://www.facebook.com/people/ICE-Button/61569722721471/" class="hover:text-gray-200 transition" target="_blank">{% trans 'Facebook'%}</a>
+                </li>
+                <li class="flex justify-center items-center space-x-2">
+                    <i class="fa-brands fa-telegram"></i>
+                    <a href="https://t.me/Mobiloitte" class="hover:text-gray-200 transition" target="_blank">{% trans 'Telegram'%}</a>
+                </li>
+                <li class="flex justify-center items-center space-x-2">
+                    <i class="fa-brands fa-instagram"></i>
+                    <a href="https://www.instagram.com/ice.button/" class="hover:text-gray-200 transition" target="_blank">{% trans 'Instagram'%}</a>
+                </li>
+                <li class="flex justify-center items-center space-x-2">
+                    <i class="fa-brands fa-pinterest"></i>
+                    <a href="https://www.pinterest.com/ICEButton" class="hover:text-gray-200 transition" target="_blank">{% trans 'Pinterest'%}</a>
+                </li>
+                <li class="flex justify-center items-center space-x-2">
+                    <i class="fab fa-twitter"></i>
+                    <a href="https://x.com/ICE_Button_" class="hover:text-gray-200 transition" target="_blank">{% trans 'Twitter X'%}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="md:col-span-1 text-center md:text-left mb-8 md:mb-0 lg:-ml-8 mt-4">
+            <h4 class="text-white font-semibold text-base mb-4">{% trans 'Subscribe to Our Newsletter'%}</h4>
+            <p class="text-sm leading-relaxed mb-4">
+                {% trans 'Stay updated with the latest news and updates from ICE-Button.'%}
+            </p>
+            <form id="newsletterFormSmall" class="space-y-4">
+                <input
+                    type="email"
+                    id="emailInputSmall"
+                    name="email"
+                    placeholder="{% trans 'Enter your email' %}"
+                    required
+                    class="w-full px-4 py-2 text-gray-900 rounded focus:outline-none focus:ring focus:ring-gray-500"
+                />
+                <button
+                    type="submit"
+                    class="bg-[#f04438] text-white text-sm font-semibold py-2 px-6 rounded hover:bg-red-600 transition duration-300"
+                    style="width: 100%;"
+                >
+                    {% trans 'Subscribe'%}
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="relative mt-12 border-t border-gray-700 pt-6 text-sm">
+        <div class="max-w-7xl mx-auto flex flex-col items-center md:items-start space-y-4 text-center md:text-left">
+            <p class="text-gray-400">&copy; {% trans '2024 ICE-Button. All rights reserved'%}</p>
+            <ul class="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-gray-400">
+                <li><a href="/privacy-policy/" class="hover:text-white transition">{% trans 'Privacy Policy'%}</a></li>
+                <li><a href="/terms-of-use/" class="hover:text-white transition">{% trans 'Terms of Use'%}</a></li>
+                <li><a href="/sales-and-refund-policy/" class="hover:text-white transition">{% trans 'Sales and Refunds'%}</a></li>
+                <li><a href="/legal-information/" class="hover:text-white transition">{% trans 'Legal'%}</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+<script>
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        dropdown.classList.toggle('hidden');
+    }
+</script>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script>
+    // Function to show toast message
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+
+        // Append toast to the container
+        toastContainer.appendChild(toast);
+
+        // Automatically remove the toast after 3 seconds
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // Handle form submissions for Large Form
+       document.getElementById("newsletterFormLarge").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const email = document.getElementById("emailInputLarge").value;
+        const button = event.target.querySelector('button[type="submit"]');
+        
+        // Show loader
+        button.disabled = true;
+        button.innerHTML = `
+            <span class="loaders"></span> {% trans 'Subscribing...' %}
+        `;
+
+        fetch("/api/subscribe/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            showToast(data.message, 'success');
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            showToast("{% trans 'Error subscribing. Please try again.' %}", 'error');
+        })
+        .finally(() => {
+            // Restore button state
+            button.disabled = false;
+            button.innerHTML = "{% trans 'Subscribe' %}";
+        });
+    });
+
+    // Handle form submissions for Small Form
+    document.getElementById("newsletterFormSmall").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const email = document.getElementById("emailInputSmall").value;
+        const button = event.target.querySelector('button[type="submit"]');
+        
+        // Show loader
+        button.disabled = true;
+        button.innerHTML = `
+            <span class="loaders"></span> {% trans 'Subscribing...' %}
+        `;
+
+        fetch("/api/subscribe/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            showToast(data.message, 'success');
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            showToast("{% trans 'Error subscribing. Please try again.' %}", 'error');
+        })
+        .finally(() => {
+            // Restore button state
+            button.disabled = false;
+            button.innerHTML = "{% trans 'Subscribe' %}";
+        });
+    });
+</script>
+
+
+
+<style>
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+button[type="submit"] {
+    transition: all 0.3s ease; /* Match your existing transition */
+    position: relative; /* Ensure loader positioning context */
+}
+    .loaders {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+        margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    /* Toast container styles */
+    .toast-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Toast message styles */
+    .toast {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        color: #fff;
+        animation: fadeInOut 3s ease-in-out;
+    }
+
+    .toast.success {
+        background-color: #f04438; /* Green */
+    }
+
+    .toast.error {
+        background-color: #e53e3e; /* Red */
+    }
+
+    /* Toast fade animation */
+    @keyframes fadeInOut {
+        0% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        10% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+</style>
+
+
+
+<script>
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        dropdown.classList.toggle('hidden');
+    }
+</script>
+
+
+
+<!-- Success Modal -->
+<div id="successModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white w-11/12 max-w-md mx-auto rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold" style="color: #f04438;">Query Submitted</h3>
+        <p class="mt-4 text-gray-700">
+            Your Query Has been Submitted Successfully! ICE Button Support Team Will Connect with you Shortly!
+        </p>
+        <div class="mt-6 text-right">
+            <button style="background-color: #f04438;" class="text-white px-4 py-2 rounded-lg hover:opacity-90"
+                onclick="closeModal('successModal')">Okay</button>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="errorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white w-11/12 max-w-md mx-auto rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold" style="color: #f04438;">Submission Failed</h3>
+        <p class="mt-4 text-gray-700">
+            It's not you, it's us. Please try again later. There might be some issues submitting the form.
+            Alternatively, contact us at <a href="mailto:support@ice-button.com" class="text-blue-600 underline">
+                support@ice-button.com</a> with your query.
+        </p>
+        <div class="mt-6 text-right">
+            <button style="background-color: #f04438;" class="text-white px-4 py-2 rounded-lg hover:opacity-90"
+                onclick="closeModal('errorModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="{% static 'js/script.js' %}" defer></script>
+{% comment %} <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dashboardButton = document.getElementById('dashboard-button');
+        const loginSignupButtons = document.getElementById('login-signup-buttons');
+    
+        // Get user info from localStorage
+        const userInfo = JSON.parse(localStorage.getItem('user_info'));
+        console.log(userInfo)
+    
+        if (userInfo) {
+            // Check if the user is a superuser
+            if (userInfo.is_superuser) {
+                // Set the button link and text for superuser
+                dashboardButton.innerHTML = `
+                    <a href="{% url 'customadmin:admin_dashboard'%}" class="bg-red-500 text-white px-4 py-2 rounded-md">Admin Dashboard</a>
+                `;
+            } else {
+                // Set the button link and text for a regular user
+                dashboardButton.innerHTML = `
+                    <a href="/dashboard/" class="bg-red-500 text-white px-4 py-2 rounded-md">User Dashboard</a>
+                `;
+            }
+    
+            // Show the Dashboard button and hide Login/Sign Up buttons
+            dashboardButton.style.display = 'block';
+            loginSignupButtons.style.display = 'none';
+        } else {
+            // If no user info, show Login/Sign Up buttons and hide Dashboard button
+            dashboardButton.style.display = 'none';
+            loginSignupButtons.style.display = 'block';
+        }
+    });
+    
+</script> {% endcomment %}
+
+<script>
+// Fetch FAQs from the API
+async function fetchFAQs() {
+    const loader = document.getElementById('loader');
+    const faqContainer = document.querySelector('.max-w-6xl.mx-auto.space-y-12');
+
+    try {
+        // Show the loader
+        loader.style.display = 'flex';
+        faqContainer.style.display = 'none'; // Hide the FAQ container while loading
+
+        const language = getLangCode(); // Get current language (from dropdown selection or page reload)
+        const response = await fetch(`/api/faqs/`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('API Response:', data);
+        populateFAQs(data, language); // Pass the language to populateFAQs
+    } catch (error) {
+        console.error('Error fetching FAQs:', error);
+    } finally {
+        // Hide the loader and show the FAQ container
+        loader.style.display = 'none';
+        faqContainer.style.display = 'block';
+    }
+}
+
+function populateFAQs(data, lang) {
+    const faqContainer = document.querySelector('.max-w-6xl.mx-auto.space-y-12');
+    faqContainer.innerHTML = ''; // Clear existing content
+
+    data.forEach((section, sectionIndex) => {
+        const sectionElement = document.createElement('div');
+
+        // Dynamically access section title based on lang
+        const sectionTitleKey = `section_title_${lang}`; 
+        sectionElement.innerHTML = `
+            <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ('section${sectionIndex}', this)">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">${section[sectionTitleKey]}</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" class="toggle-icon h-6 w-6 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <div id="section${sectionIndex}" class="mt-4 space-y-6 hidden"></div>
+        `;
+
+        // Add FAQ content for each section
+        const faqList = sectionElement.querySelector(`#section${sectionIndex}`);
+        section.faq_s.forEach((faq, faqIndex) => {
+            const faqElement = document.createElement('div');
+            faqElement.classList.add('py-4', 'border-b', 'border-gray-200');
+
+            // Dynamically access question and answer based on lang
+            const questionKey = `question_${lang}`; 
+            const answerKey = `answer_${lang}`;
+
+            faqElement.innerHTML = `
+                <button class="flex justify-between items-center w-full text-left" onclick="toggleFAQ('faq${sectionIndex}-${faqIndex}', this)">
+                    <span class="font-semibold text-gray-900">${faq[questionKey]}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="toggle-icon h-6 w-6 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="faq${sectionIndex}-${faqIndex}" class="mt-2 text-gray-600 hidden">
+                    <p>${faq[answerKey]}</p>
+                </div>
+            `;
+            faqList.appendChild(faqElement);
+        });
+
+        faqContainer.appendChild(sectionElement);
+    });
+}
+
+function getLangCode() {
+    // Get the language code from the <html> tag, which Django sets based on user preference
+    return document.documentElement.lang || 'en'; // Default to 'en' if not set
+}
+
+
+
+function toggleFAQ(id, button) {
+    const element = document.getElementById(id);
+    if (element) {
+        const isHidden = element.classList.contains('hidden');
+        element.classList.toggle('hidden'); // Toggle visibility
+
+        const icon = button.querySelector('.toggle-icon');
+        if (icon) {
+            icon.classList.toggle('rotate-180', isHidden); // Rotate when opening
+        }
+    }
+}
+
+
+
+// Call the function on page load
+fetchFAQs();
+
+</script>
+
+<script>
+    // Set the minimum date to today
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("installation_date").setAttribute("min", today);
+</script>
+<script>
+document.querySelector('form').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent default form submission
+    const form = e.target;
+
+    // Clear all previous errors
+    clearFrontendErrors();
+
+    // Perform frontend validation
+    const isValid = validateForm(form);
+    if (!isValid) return; // Stop submission if validation fails
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const loader = submitButton.querySelector('.loader'); // Use existing loader
+    const buttonText = submitButton.querySelector('.button-text');
+
+    // Store original button height and set minimum height
+    submitButton.style.minHeight = `${submitButton.offsetHeight}px`;
+    
+    // Show loader and hide text
+    loader.classList.remove('hidden');
+    buttonText.style.visibility = 'hidden';
+    submitButton.disabled = true;
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    const payload = {
+        country_code: data.country_code,
+        phone_number: data.phone,
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        message: data.message,
+        csrfmiddlewaretoken: data.csrfmiddlewaretoken
+    };
+
+    try {
+        const response = await fetch('/api/get-in-touch/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': data.csrfmiddlewaretoken,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+            openModal('successModal');
+            clearForm(form); // Clear the form on success
+        } else if (response.status === 400) {
+            const errorData = await response.json();
+            displayValidationErrors(errorData);
+        } else {
+            openModal('errorModal');
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        openModal('errorModal');
+    } finally {
+        // Restore button state
+        loader.classList.add('hidden');
+        buttonText.style.visibility = 'visible';
+        submitButton.disabled = false;
+        submitButton.style.minHeight = ''; // Reset minimum height
+    }
+});
+    
+    // Validation Logic
+    function validateForm(form) {
+        let isValid = true;
+    
+        // Validate Full Name
+        const name = form.querySelector('[name="name"]');
+        if (name.value.length > 30) {
+            displayFrontendError(name, 'Full Name cannot exceed 30 characters.');
+            isValid = false;
+        }
+    
+        // Validate Email
+        const email = form.querySelector('[name="email"]');
+        const emailError = validateEmail(email.value);
+        if (emailError) {
+            displayFrontendError(email, emailError);
+            isValid = false;
+        }
+    
+        // Validate Subject
+        const subject = form.querySelector('[name="subject"]');
+        if (subject.value.length > 100) {
+            displayFrontendError(subject, 'Subject cannot exceed 100 characters.');
+            isValid = false;
+        }
+    
+        return isValid;
+    }
+    
+    // Custom Email Validation Logic
+    function validateEmail(value) {
+        if (!value) return 'Email is required.';
+    
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,10}$/i;
+        if (!emailRegex.test(value)) return 'Invalid email format.';
+    
+        // Disallow invalid domain extensions
+        if (
+            /\.com\..+/i.test(value) || 
+            /\.gov\.in\..+/i.test(value) || 
+            /\.edu\.in\..+/i.test(value) || 
+            /\.(\w+)\.\1/i.test(value)
+        ) {
+            return 'Invalid email format: Ensure no extra dots or duplicate domain extensions.';
+        }
+    
+        // Extended list of allowed domains
+        const allowedDomains = [
+            "com", "org", "gov", "edu", "net", "info", "biz", "me", "pro",
+            "gov.in", "edu.in", "ac.in", "org.in", "com.in", "co.in",
+            "gov.uk", "ac.uk", "org.uk", "co.uk",
+            "gov.au", "edu.au", "com.au", "org.au",
+            "gov.sg", "edu.sg", "com.sg",
+            "gov.ca", "com.ca", "edu.ca",
+            "gov.cn", "edu.cn", "com.cn",
+            "gov.jp", "edu.jp",
+            "gov.za", "edu.za",
+            "gov.br", "gov.ru",
+            "tech", "health", "ai", "io", "cloud", "tv", "news", "bank", "finance",
+            "eu", "uk", "ca", "au", "sg", "jp", "br"
+        ];
+    
+        const domainPattern = new RegExp(`(${allowedDomains.map(d => d.replace(".", "\\.")).join("|")})$`, "i");
+        if (!domainPattern.test(value)) return 'Invalid Email Domain.';
+    
+        if (/\.\./.test(value)) return 'Email cannot contain consecutive dots.';
+    
+        return '';
+    }
+    
+    // Display Validation Errors
+    function displayFrontendError(input, message) {
+        const fieldContainer = input.closest('.phone-field-container') || input.parentElement;
+    
+        const errorElement = document.createElement('div');
+        errorElement.className = 'validation-error text-red-500 text-xs mt-1';
+        errorElement.textContent = message;
+    
+        fieldContainer.insertAdjacentElement('beforeend', errorElement);
+    }
+    
+    // Clear Frontend Errors
+    function clearFrontendErrors() {
+        const errorElements = document.querySelectorAll('.validation-error');
+        errorElements.forEach(el => el.remove());
+    }
+    
+    // Clear Form
+    function clearForm(form) {
+        form.reset();
+        clearFrontendErrors();
+    }
+    
+    // Open Modal
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+    
+    // Close Modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+    
+    
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll(".nav-link");
+        const sections = document.querySelectorAll("[id]"); // All sections with IDs
+        const headerHeight = document.querySelector("header").offsetHeight;
+    
+        // Scroll to section with smooth scrolling and delayed active state update
+        const scrollToSection = (element) => {
+            const offset = element.offsetTop - headerHeight; // Adjust for sticky header
+            window.scrollTo({
+                top: offset,
+                behavior: "smooth",
+            });
+        };
+    
+        // Set the active link
+        const setActiveLink = (sectionId) => {
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href").substring(1) === sectionId) {
+                    link.classList.add("active");
+                }
+            });
+        };
+    
+        // Update active link dynamically based on scroll position
+        const updateActiveLink = () => {
+            let activeSection = null;
+    
+            sections.forEach((section) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= headerHeight + 5 && rect.bottom > headerHeight + 5) {
+                    activeSection = section.id;
+                }
+            });
+    
+            setActiveLink(activeSection);
+        };
+    
+        // Handle smooth scrolling on link clicks
+        navLinks.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute("href").substring(1);
+                const targetElement = document.getElementById(targetId);
+    
+                if (targetElement) {
+                scrollToSection(targetElement);
+                setTimeout(() => {
+                    setActiveLink(targetId); // Update active link after scrolling
+                }, 300); // Match delay to smooth scroll duration
+
+                // Update the URL without the hash
+                history.pushState(null, "", targetId);
+            }
+            });
+        });
+    
+        // Throttle scroll event to update active link
+        let isScrolling = false;
+        const throttle = (callback, delay) => {
+            if (isScrolling) return;
+            isScrolling = true;
+            setTimeout(() => {
+                callback();
+                isScrolling = false;
+            }, delay);
+        };
+    
+        window.addEventListener("scroll", () => {
+            throttle(updateActiveLink, 100);
+        });
+    
+        // Initialize active link on page load
+        if (window.location.hash) {
+            const element = document.getElementById(window.location.hash.substring(1));
+            if (element) {
+                scrollToSection(element);
+                setTimeout(() => {
+                    setActiveLink(window.location.hash.substring(1));
+                }, 3000);
+            }
+        }
+    
+        // Initialize AOS for animations
+        AOS.init();
+    });
+document.addEventListener("DOMContentLoaded", function() {
+    // Set the initial language selection (on page load)
+    const initialLang = document.documentElement.lang || 'en';  // Default to 'en' if no lang is set
+    displaySelectedLanguage(initialLang);  // Set the selected language on page load
+
+    // Function to switch the language
+    function switchLanguage(langCode) {
+        const url = "{% url 'set_language' %}";
+        const formData = new FormData();
+        formData.append('language', langCode);
+        formData.append('next', window.location.pathname); // Keep user on the current page
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF token for POST requests
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Language switched to: ${langCode}`);
+                window.location.href = window.location.href; // Forces a full page reload to reflect language change
+            } else {
+                console.error('Failed to switch language:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Ensure language switcher works on page load
+    const languageSelect = document.querySelector('[name="language"]');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', function() {
+            const langCode = this.value;
+            displaySelectedLanguage(langCode); // Display selected language on dropdown
+            switchLanguage(langCode); // Trigger language switch
+        });
+    }
+
+    // Function to display the selected language
+    function displaySelectedLanguage(langCode) {
+        // Sync the language dropdown with the selected language
+        const languageSelect = document.querySelector('[name="language"]');
+        if (languageSelect) {
+            languageSelect.value = langCode;  // Set the dropdown value to the selected language
+        }
+    }
+});
+
+
+</script>
+
+</body>
+</html>

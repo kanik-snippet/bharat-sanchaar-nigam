@@ -1,0 +1,485 @@
+/* General Styling */
+body {
+    background: #eee;
+    font-family:'Inter', sans-serif !important;
+    overflow: hidden;
+    scroll-behavior: smooth; /* Enable smooth scrolling globally */
+
+}
+.logo{
+    height: 60px;
+    width: 260px;
+}
+/* Media Queries */
+.smooth-transition {
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+}
+/* Smooth transitions */
+.profile-image, #btn-upgrade, #btn-pro-plan {
+    transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Initial hidden state */
+.loading-state {
+    opacity: 0;
+    transform: translateY(10px);
+
+}
+
+.loaded-state {
+    opacity: 1;
+    transform: translateY(0);
+
+}
+/* Add these CSS rules */
+.plan-card-preloader {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: opacity 0.4s ease-out;
+}
+
+.plan-card-content {
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+}
+
+.plan-card-loaded .plan-card-content {
+    opacity: 1;
+}
+
+.profile-image-preload {
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+}
+
+.profile-image-loaded {
+    opacity: 1;
+}
+/* Content Styling */
+.content {
+    width: calc(100% - 320px);
+    padding-left: 29px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    border-radius: 30px;
+    margin: 10px 0 0 0px;
+    background-color: #fff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border: 1px solid #0002;
+    border-right: none;
+    border-bottom: none;
+    min-height: 100vh;
+    overflow-y: auto; /* Allow scrolling when content is long */
+    scroll-behavior: smooth; /* Smooth scrolling for content */
+}
+@media (max-width: 767px) {
+    #side_nav {
+        margin-left: -320px;
+        position: fixed;
+        overflow-y: scroll; /* Allow vertical scrolling */
+        z-index: 100;
+        top: 0;
+        margin-top: 0;
+        transition: margin-left 0.8s;
+        scroll-behavior: smooth; /* Smooth scrolling for sidebar */
+
+    }
+
+    #side_nav.active {
+        margin-left: 0;
+    }
+
+    .navbar-toggler {
+        display: block;
+    }
+    .content {
+        width: 100%;
+    }
+}
+@media (max-width:385) {
+    #side_nav{
+        width: 50%;
+    }
+}
+.content > div {
+    max-width: 98%;
+    margin: 0 auto;
+    border-radius: 30px;
+    margin-bottom: 2%;
+}
+
+hr.h-color {
+    background: #eee;
+}
+
+/* Sidebar Styling */
+.sidebar li.active {
+    background: #eee;
+    border-radius: 8px;
+}
+
+.sidebar li.active a,
+.sidebar li.active a:hover {
+    color: #000;
+}
+
+.sidebar li a {
+    color: #fff;
+}
+
+.sidebar {
+    width: 320px;
+    background-color: white;
+    margin-top: 55px;
+    padding: 0 12px;
+    height: 100vh;
+    overflow: scroll;
+  
+}
+
+.sidenav-options a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 30px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+
+
+.sidenav-options a:hover {
+    transform: scale(1.05);
+}
+
+.sidenav-options a.subpage {
+    margin-left: 20px;
+}
+
+.sidenav-options a.subpage:active {
+    color: inherit;
+    background-color: transparent;
+}
+
+.sidenav-options hr {
+    background-color: wheat;
+    height: 1px;
+    border: none;
+    padding: 0%;
+    margin: 1%;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: white !important;
+}
+/* Style for active sidebar links */
+.nav-link.active {
+    background-color: #f04438;  /* Background color for active link */
+    color: white;                /* Text color for active link */
+    font-weight: bold;          /* Make the text bold for active link */
+}
+
+/* Optional: Hover effect for active links */
+.nav-link.active:hover {
+    background-color: #f04438;  /* Slightly darker shade on hover */
+}
+.nav-link.active span {
+    color: white !important;     /* Ensure text is white */
+}
+.nav-link.active i {
+    color: white !important;     /* Ensure icon is white */
+}
+.logo-container {
+    margin-right: 10px;
+}
+
+.logo-img {
+    width: 100px;
+    height: auto;
+}
+
+/* Form and Button Styling */
+select.form-control {
+    -webkit-appearance: menulist!important;
+    -moz-appearance: menulist!important;
+    -ms-appearance: menulist!important;
+    -o-appearance: menulist!important;
+    appearance: menulist!important;
+}
+
+#slipbtn {
+    background: #681E65;
+    color: white;
+    padding: 13px 20px;
+    margin: 10px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+.hover-effect {
+    transition: all 0.3s ease; /* Smooth transition for all properties */
+}
+
+.hover-effect:hover {
+    color: #f0f0f0; /* Lighten the text color on hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Slight white background on hover */
+    border-color: rgba(255, 255, 255, 0.8); /* Lighten the border color on hover */
+    transform: translateY(-2px); /* Slight upward lift on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow on hover */
+}
+#slipbtn:hover {
+    color: white;
+    background-color: #542051;
+}
+
+/* Profile Information */
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-details {
+    margin-left: 10px;
+}
+
+.profile-line {
+    height: 0.2mm;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin-top: 3px;
+    width: 100%;
+}
+
+.profile-mobile {
+    margin-top: 10px;
+}
+
+.profile-mobile1 {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.profile-mobile1 img,
+.profile-mobile1 p {
+    margin: 4px;
+}
+
+.icon {
+    width: 25px;
+    height: 25px;
+}
+.logotext {
+    display: flex;
+    justify-content: center; /* Center the logo horizontally */
+    align-items: center; /* Center the logo vertically */
+    width: 100%;
+    margin-bottom: 1rem; /* Adjust spacing as needed */
+}
+
+.pagination a:hover {
+    color: grey; /* Set the color back to grey on hover */
+}
+
+/* Logout Popup */
+#statuslogoutpopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+
+#statuslogoutpopupCard img {
+    max-width: 100px;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Additional Sidebar Styling */
+.sidenav-card {
+    margin-top: 8px;
+    width: 270px;
+    box-shadow: 0px 4px 12px 0 161D6F;
+    background: #CE2F26;
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .sidenav-card {
+        margin-top: 14px;
+        width: 270px;
+        box-shadow: 0px 4px 12px 0 #CE2F26;
+    }
+}
+
+@media only screen and (min-width: 320px) and (max-width: 425px) {
+    .sidenav-card {
+        margin-top: 12px;
+        width: 270px;
+        box-shadow: 0px 4px 12px 0 #CE2F26;
+    }
+}
+
+.profile-picture .img-fluid {
+    height: 70px;
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
+    min-height: 70px;
+    max-height: 70px;
+}
+
+/* Logout Button Styling */
+#cancel_button {
+    color: #000;
+    background: #ddd;
+    border: none;
+    border-radius: 19px;
+    padding: 10px;
+}
+
+#logout_confirm {
+    border: none;
+    border-radius: 19px;
+    padding: 10px;
+    background: #681e65;
+    color: white;
+}
+
+#loader-logout {
+    display: none;
+}
+
+/* Dashboard Button */
+#dashboard {
+    background: #681E65;
+    color: white;
+    display: flex;
+    height: 40px;
+    background: #681e65;
+    color: #fff;
+    border: none;
+    align-items: center;
+    margin: 5px;
+    padding: 7px 15px;
+    width: auto;
+    text-align: center;
+    justify-content: center;
+    border-radius: 30px;
+    cursor: pointer;
+    padding: 25px;
+}
+
+
+
+.sidenav-options a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 10px;
+}
+.sidenav-options a:hover{
+    background: #00000013;
+}
+
+.icon-text {
+    display: flex;
+    align-items: center;
+}
+
+.icon-text i {
+    color: #000;
+    font-size: 1.3rem;
+    margin-right: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.icon-text span {
+    font-size: 1rem; /* Adjust the font size as needed */
+    color: #333;
+}
+.span.active{
+    color:#fff;
+}
+.user-info{
+    border-top: 1px solid #0003;
+}
+.btn-upgrade {
+    background-color: #f04438;
+    color: #fff;
+    border-radius: 8px;
+    padding: 15px 15px 15px 15px;
+    text-align: left;
+    margin-left:0px;
+    margin-top: 20px;
+    margin-bottom: 48px;
+  }
+  .btn-upgrade p a {
+    margin: 0;
+    padding: 5px 0 5px 0;
+  }
+  .sidebar::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+    width:8px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+.hidden {
+  display: none; /* Completely hides the element */
+}
+
+.btn-logout-cancel{
+    background-color: #f04438;
+    color: white;
+    width: 100%;
+    border: none;
+    height: 50px;
+    border-radius: 5px;
+  }
+  .btn-logout-cancel:hover{
+    background-color: #f04438;
+    color: white;
+    
+  }
+  .btn-logout-yes{
+    background-color:#828a96;
+    color: white;
+    width: 100%;
+    height: 50px;
+    border-radius: 5px;
+    border: none;
+  }
+  .btn-logout-yes:hover{
+    background-color:#828a96;
+    color: white;
+  }
+
+  .content{
+    margin-bottom: 10px;
+  }

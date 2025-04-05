@@ -1,0 +1,747 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Profile Page{% endblock %}
+{% block body %}
+<!-- Include Bootstrap CSS -->
+
+<!-- Include custom styles -->
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+<div class="container-fluid mt-3">
+<div class="d-flex align-items-center mb-4">
+    <img id="profileImg2" src="https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg" alt="Profile picture"
+        class=" rounded-circle me-3" width="70" height="70">
+    <div>
+        <h1 class="fw-bold mb-0 fs-4 nameDisplay">Name will be displayed here</h1>
+        <p class="text-muted mb-0 emailDisplay">Email will be displayed here</p>
+    </div>
+</div>
+
+<!-- Button Group -->
+<div class="custom-btn-group mb-4 p-0 rounded" role="group" aria-label="User options">
+   <a href="{% url 'profile' %}" class="btn btn-profile-top" id="profileBtn">{% trans 'Profile'%}</a>
+    <a href="{% url 'changepass' %}" class="btn btn-profile-top" id="changePasswordBtn">{% trans 'Change Password'%}</a>
+    <!-- <a href="{% url 'subscription' %}" class="btn btn-profile-top" id="subscriptionBtn">{% trans 'Subscription Plan'%}</a>
+    <a href="{% url 'subscription_txn' %}" class="btn btn-profile-top" id="subscriptiontxnBtn">{% trans 'Subscription Transactions'%}</a> -->
+
+</div>
+
+
+
+<p class="fw-bold fs-4">{% trans 'Profile'%}</p>
+<p class="text-secondary mb-3">{% trans 'Update your photo and personal details here.'%}</p>
+
+
+<hr>
+
+<!-- Profile Form -->
+<form method="post" novalidate>
+    {% csrf_token %}
+    <div class="row align-items-center mb-3">
+        <div class="col-md-4  ">
+            <label class="form-label  fw-bold">{% trans 'Your photo'%}</label>
+            <div class="text-muted">{% trans 'This will be displayed on your profile.'%}</div>
+        </div>
+        <div class="col-md-6 d-flex align-items-center justify-content-start gap-3">
+            <img id="profileImg" src="https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg" 
+                 alt="Profile picture" 
+                 class="rounded-circle" 
+                 width="70" 
+                 height="70">
+            <div>
+                <input type="file" id="profilePicInput" accept=".gif,.png,.jpg,.jpeg" style="display:none" onchange="previewImage(event)">
+                <a href="javascript:void(0);" class="btn btn-link text-dark fw-bold text-decoration-none p-0 me-3" onclick="deleteProfilePic()">{% trans 'Delete'%}</a>
+
+            <a href="javascript:void(0);" class="btn btn-link text-danger fw-bold text-decoration-none p-0" onclick="triggerFileInput()">{% trans 'Change'%}</a>
+            </div>
+        </div>
+    </div>
+    
+
+
+<!-- Name Fields -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label for="first_name" class="form-label">{% trans 'Name'%}</label>
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <!-- First Name -->
+            <div class="col-md-6">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">{% trans 'First Name'%}</span>
+                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                           placeholder="First name" pattern="^[a-zA-Z\s\-]+$" required>
+                </div>
+                <div class="fnamError"></div>
+            </div>
+            <!-- Last Name -->
+            <div class="col-md-6">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">{% trans 'Last Name'%}</span>
+                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                           placeholder="Last name" pattern="^[a-zA-Z\s\-]+$" required>
+                </div>
+                <div class="lnamError"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label for="email" class="form-label">{% trans 'Email Address'%}</label>
+    </div>
+    <div class="col-md-6">
+        <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" disabled>
+    </div>
+    <div id="emailError"></div>
+</div>
+
+
+    <!-- Phone -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="phone" class="form-label">{% trans 'Phone Number'%}</label>
+        </div>
+        <div class="col-md-6">
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number"
+                pattern="^\+?[0-9]{7,15}$" required>
+        </div>
+        <div id="phoneError"></div>
+    </div>
+
+    <!-- Username -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="username" class="form-label">{% trans 'Username'%}</label>
+        </div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username"
+                pattern="^[a-zA-Z0-9_.-]{3,20}$" required>
+                <div id="usernameError"></div>
+        </div>
+        
+    </div>
+
+    <hr>
+
+    <button type="submit" class="btn btn-danger" id="updateButton" style="background-color:#f04438;color:#fff;">{% trans 'Update'%}</button>
+</form>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">{% trans 'Profile Updated'%}</h5>
+            </div>
+            <div class="modal-body">
+                <h5 class="modal-title" id="updateModalLabel">{% trans 'Profile Updated'%}</h5>
+                {% trans 'Your profile has been successfully updated!'%}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="refreshPageBtn" style="background-color: #f04438; color: white; border: none;">{% trans 'OK' %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">{% trans 'Form Submission Error'%}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="errorList" class="text-danger">
+                    <!-- Error messages will be dynamically inserted here -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">{% trans 'Form Submission Error'%}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{% trans 'Please fix the following errors before submitting'%}:</p>
+                <ul id="errorList" class="text-danger">
+                    <!-- Error messages will be dynamically inserted here -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- Modal for successful profile image deletion -->
+<div class="modal fade" id="deleteSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteSuccessModalLabel">{% trans 'Profile Image Deleted'%}</h5>
+            </div>
+            <div class="modal-body">
+                {% trans 'Your profile image has been successfully deleted.'%}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color:#f04438; color:white;"data-bs-dismiss="modal" id="closeModalButton">{% trans 'OK' %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- No Image to Delete Modal -->
+<div class="modal fade" id="noImageToDeleteModal" tabindex="-1" aria-labelledby="noImageToDeleteModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noImageToDeleteModalLabel">{% trans 'No Image Found'%}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% trans 'There is no profile image to delete.'%}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" style="background-color:#f04438; color:white;" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- General Error Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Error</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% trans 'An error occurred while deleting the profile image. Please try again.'%}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" style="background-color:#f04438; color:white;" data-bs-dismiss="modal">{% trans 'Close'%}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+<script>
+      // Add event listener to the close button in the modal to reload the page when clicked
+      document.getElementById('closeModalButton').addEventListener('click', function() {
+        location.reload();  // This will reload the page
+    });
+function validateUsername() {
+    const username = document.getElementById('username').value;
+    const feedback = document.getElementById('username-feedback');
+    
+    // Define regex for allowed characters: letters, numbers, underscores, dots, hyphens
+    const regex = /^[a-zA-Z0-9._-]{3,20}$/;
+
+    // Test the username value against the regex
+    if (!regex.test(username)) {
+        // Show feedback if the input doesn't match the regex
+        feedback.style.display = 'block';
+        document.getElementById('username').classList.add('is-invalid');
+    } else {
+        // Hide feedback and show valid state if the username is valid
+        feedback.style.display = 'none';
+        document.getElementById('username').classList.remove('is-invalid');
+        document.getElementById('username').classList.add('is-valid');
+    }
+}
+
+const currentPage = window.location.pathname;
+// Define the buttons
+const profileBtn = document.getElementById('profileBtn');
+const changePasswordBtn = document.getElementById('changePasswordBtn');
+const subscriptionBtn = document.getElementById('subscriptionBtn');
+const subscriptiontxnBtn = document.getElementById('subscriptiontxnBtn');
+
+
+// Add active class based on the current page URL
+if (currentPage.includes('change_password')) {
+    changePasswordBtn.classList.add('active');
+} else if (currentPage.includes('profile')) {
+    profileBtn.classList.add('active');
+} else if (currentPage.includes('subscription')) {
+    subscriptionBtn.classList.add('active');
+} else if (currentPage.includes('subscription_txn')) {
+    subscriptiontxnBtn.classList.add('active');
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetchProfileData();
+});
+
+function fetchProfileData() {
+    const bearerToken = localStorage.getItem('access_token');
+    
+    if (!bearerToken) {
+        console.error('No access token found in localStorage.');
+        return;
+    }
+
+    const apiUrl = "/news/api/profile/";
+
+    console.log("Fetching profile data from:", apiUrl);
+
+    fetch(apiUrl, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${bearerToken}`,
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        console.log("API Response Status:", response.status);
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to fetch data');
+        }
+    })
+    .then(data => {
+        console.log("Fetched profile data:", data);
+
+        // Populate first name, last name, and email in form fields
+        document.getElementById("first_name").value = data.first_name || '';
+        document.getElementById("last_name").value = data.last_name || '';
+        document.getElementById("email").value = data.email || '';
+        document.getElementById("phone").value = data.phone_number || '';
+        document.getElementById("username").value = data.username || '';
+        
+        // Check if profile image exists; if not, use a default image
+        const profileImg = document.getElementById("profileImg");
+        const profileImg2 = document.getElementById("profileImg2");
+        const defaultProfileImage = "https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg"; // Default profile image URL
+
+        const imageUrl = data.profile_image || defaultProfileImage;
+
+        // Update both image elements
+        profileImg.src = imageUrl;
+        profileImg2.src = imageUrl;
+
+        // Display full name in the profile section
+        const nameDisplay = document.getElementById("nameDisplay");
+        const emailDisplay = document.getElementById("emailDisplay");
+
+        if (nameDisplay) {
+            const fullName = `${data.first_name || ''} ${data.last_name || ''}`;
+            nameDisplay.textContent = fullName.trim() || 'No name available';
+        }
+
+        if (emailDisplay) {
+            emailDisplay.textContent = data.email || 'No email available';
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching profile data:", error);
+    });
+}
+
+
+
+
+// Call the function to fetch and populate data when the page loads
+fetchProfileData();
+
+function deleteProfilePic() {
+    const token = localStorage.getItem('access_token'); // Get the Bearer token
+    if (!token) {
+        alert('User is not authenticated');
+        return;
+    }
+
+    // Send the DELETE request to delete the profile image
+    fetch('/api/update-profile-image/', {
+        method: 'DELETE',  // Using DELETE method
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // If the delete is successful, reset the profile image to the default
+            const profileImg = document.getElementById('profileImg');
+            const profileImg2 = document.getElementById('profileImg2');
+            const defaultProfileImage = "https://storage.googleapis.com/a1aa/image/znrZwlRAKE4oIlerY5xficJJn99q6AXL9XGL0uAyxK16BUuTA.jpg"; // Default image URL
+
+            profileImg.src = defaultProfileImage;
+            profileImg2.src = defaultProfileImage;
+
+            // Show the success modal
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteSuccessModal'));
+            deleteModal.show();
+        } else {
+            return response.json().then(data => {
+                // Check if the response contains 'No profile image found to delete.'
+                if (data.detail === 'No profile image found to delete.') {
+                    // Show the "No Image to Delete" modal
+                    const noImageModal = new bootstrap.Modal(document.getElementById('noImageToDeleteModal'));
+                    noImageModal.show();
+                } else {
+                    // Otherwise, show a general error modal
+                    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                    errorModal.show();
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting profile image:', error);
+        // Show a general error modal if something goes wrong
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+    });
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('form');
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const errorList = document.getElementById('errorList');
+
+    // Real-time validation
+    form.addEventListener('input', function (e) {
+        const field = e.target;
+
+        if (field.checkValidity()) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        } else {
+            field.classList.remove('is-valid');
+            field.classList.add('is-invalid');
+        }
+    });
+
+    // Final form validation before submission
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent form submission by default
+        let isValid = true;
+
+        errorList.innerHTML = ''; // Clear previous errors
+
+        form.querySelectorAll('[required]').forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+                const errorMessage = `${field.name.replace('_', ' ')} is required.`;
+                const listItem = document.createElement('li');
+                listItem.textContent = errorMessage;
+                errorList.appendChild(listItem);
+            } else if (!field.checkValidity()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+                const errorMessage = `${field.name.replace('_', ' ')} is invalid.`;
+                const listItem = document.createElement('li');
+                listItem.textContent = errorMessage;
+                errorList.appendChild(listItem);
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+        });
+
+        if (!isValid) {
+            // Show error modal if the form is invalid
+            errorModal.show();
+        } else {
+            // Proceed with form submission if valid
+            updateProfileData(event);
+        }
+    });
+});
+// Get DOM elements
+const profileImg = document.getElementById('profileImg');
+const profilePicInput = document.getElementById('profilePicInput');
+const updateButton = document.getElementById('updateButton');
+let selectedImage = null;
+
+// Get the Bearer token (assuming you have it stored in localStorage or a cookie)
+const token = localStorage.getItem('access_token');  // Replace this with the correct way to get the token if it's different
+
+// Trigger the file input when the "Update" button is clicked
+function triggerFileInput() {
+    profilePicInput.click();
+}
+
+// Preview the selected image before uploading
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        // Display the selected image as a preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            profileImg.src = e.target.result;  // Update the profile image preview
+        };
+        reader.readAsDataURL(file);
+        selectedImage = file;  // Store the selected file
+    }
+}
+
+
+
+// Send the selected image to the API when the "Update" button is clicked
+updateButton.addEventListener('click', async (event) => {
+    if (!selectedImage) {
+        return;
+    }
+
+    // Create FormData to send the image as a profile_image key
+    const formData = new FormData();
+    formData.append('profile_image', selectedImage);  // Append the selected image
+
+    // Check if the token exists
+    if (!token) {
+        alert('User is not authenticated');
+        return;
+    }
+
+    try {
+        // Send the image to the API with Bearer token in the Authorization header
+        const response = await fetch('/api/update-profile-image/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,  // Include Bearer token in header
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Profile image updated successfully:', data);
+            // Optionally, you can trigger a reload of the page or update the UI
+        } else {
+            throw new Error('Failed to update profile image');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+// Function to handle profile updates, including the image
+function updateProfileData(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const bearerToken = localStorage.getItem('access_token');
+
+    if (!bearerToken) {
+        return;
+    }
+
+    const firstName = document.getElementById("first_name").value;
+    const lastName = document.getElementById("last_name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const username = document.getElementById("username").value;
+    const profilePic = document.getElementById('profilePicInput').files[0]; // Get the selected file
+
+    const updatedData = {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        phone_number: phone,
+        username: username,
+    };
+
+    const formData = new FormData();
+
+    // Append the text fields
+    for (const key in updatedData) {
+        formData.append(key, updatedData[key]);
+    }
+
+    // Append the profile image with the key 'profile_image' if it exists
+    if (profilePic) {
+        formData.append('profile_image', profilePic);
+    }
+
+    const apiUrl = "/news/api/profile/update/";
+
+    fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${bearerToken}`,
+            // No Content-Type header because FormData will set it automatically
+        },
+        body: formData, // Send the form data with the image
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            return response.json().then(errorData => {
+                throw errorData;
+            });
+        }
+    })
+    .then(data => {
+        const updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+        updateModal.show();
+
+        document.getElementById('refreshPageBtn').addEventListener('click', () => {
+            location.reload();
+        });
+    })
+    .catch(error => {
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        const errorList = document.getElementById('errorList');
+        errorList.innerHTML = ''; // Clear previous errors
+
+        // Show error messages in the modal
+        for (const [field, messages] of Object.entries(error)) {
+            messages.forEach(message => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${field}: ${message}`;
+                errorList.appendChild(listItem);
+            });
+        }
+
+        errorModal.show();
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const firstName = document.getElementById("first_name");
+    const lastName = document.getElementById("last_name");
+    const email = document.getElementById("email");
+    const phone = document.getElementById("phone");
+    const username = document.getElementById("username");
+
+    // Error containers
+    const fnamError = document.querySelector(".fnamError");
+    const lnamError = document.querySelector(".lnamError");
+    const emailError = document.getElementById("emailError");
+    const phoneError = document.getElementById("phoneError");
+    const usernameError = document.getElementById("usernameError");
+
+    // Utility function to show error in relevant div
+    const showError = (container, message) => {
+        container.innerHTML = `<span class="text-danger">${message}</span>`;
+    };
+
+    const clearError = (container) => {
+        container.innerHTML = "";
+    };
+
+    // Validation functions
+    const validateFirstName = () => {
+        const pattern = /^[a-zA-Z\s\-]+$/;
+        if (!firstName.value.trim()) {
+            showError(fnamError, "First Name is required.");
+            return false;
+        } else if (!pattern.test(firstName.value.trim())) {
+            showError(fnamError, "Only letters, spaces, and hyphens are allowed.");
+            return false;
+        } else {
+            clearError(fnamError);
+            return true;
+        }
+    };
+
+    const validateLastName = () => {
+        const pattern = /^[a-zA-Z\s\-]+$/;
+        if (!lastName.value.trim()) {
+            showError(lnamError, "Last Name is required.");
+            return false;
+        } else if (!pattern.test(lastName.value.trim())) {
+            showError(lnamError, "Only letters, spaces, and hyphens are allowed.");
+            return false;
+        } else {
+            clearError(lnamError);
+            return true;
+        }
+    };
+
+    const validateEmail = () => {
+        const pattern = /^\S+@\S+\.\S+$/;
+        if (!email.value.trim()) {
+            showError(emailError, "Email is required.");
+            return false;
+        } else if (!pattern.test(email.value.trim())) {
+            showError(emailError, "Invalid email format.");
+            return false;
+        } else {
+            clearError(emailError);
+            return true;
+        }
+    };
+
+    const validatePhone = () => {
+        const pattern = /^\+?[0-9]{7,15}$/;
+        if (!phone.value.trim()) {
+            showError(phoneError, "Phone Number is required.");
+            return false;
+        } else if (!pattern.test(phone.value.trim())) {
+            showError(phoneError, "Enter a valid phone number (7-15 digits).");
+            return false;
+        } else {
+            clearError(phoneError);
+            return true;
+        }
+    };
+
+    const validateUsername = () => {
+        const pattern = /^[a-zA-Z0-9_.-]{3,20}$/;
+        if (!username.value.trim()) {
+            showError(usernameError, "Username is required.");
+            return false;
+        } else if (!pattern.test(username.value.trim())) {
+            showError(usernameError, "Username must be 3-20 characters with letters, numbers, _, ., or -.");
+            return false;
+        } else {
+            clearError(usernameError);
+            return true;
+        }
+    };
+
+    // Live validation
+    firstName.addEventListener("input", validateFirstName);
+    lastName.addEventListener("input", validateLastName);
+    phone.addEventListener("input", validatePhone);
+    username.addEventListener("input", validateUsername);
+
+    // Form submission validation
+    form.addEventListener("submit", (event) => {
+        const isFirstNameValid = validateFirstName();
+        const isLastNameValid = validateLastName();
+        const isEmailValid = validateEmail();
+        const isPhoneValid = validatePhone();
+        const isUsernameValid = validateUsername();
+
+        // Prevent form submission if any validation fails
+        if (!isFirstNameValid || !isLastNameValid || !isEmailValid || !isPhoneValid || !isUsernameValid) {
+            event.preventDefault();
+        }
+    });
+});
+
+
+</script>
+{% endblock %}

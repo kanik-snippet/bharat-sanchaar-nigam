@@ -1,0 +1,795 @@
+#header{
+  display: flex;
+  margin-top: 27px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#Back_icon a{
+  text-decoration: none;
+  color: black;
+}
+
+
+.new-class {
+  background-color: white;
+  height: auto; /* Dynamically adjusts based on content */
+  border-radius: 23px; /* Rounded corners */
+  padding: 1.5rem; /* Scales with font size */
+  overflow-x: hidden; /* Prevents horizontal overflow */
+  overflow-y: auto; /* Allows vertical scrolling if needed */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds subtle depth */
+  max-width: 100%; /* Ensures responsiveness */
+}
+
+@media (max-width: 600px) {
+  .new-class {
+      padding: 15px; /* Adjust padding for smaller screens */
+      border-radius: 15px; /* Smaller rounding for compact layouts */
+  }
+}
+
+.table-container {
+  max-width: 100%;
+  overflow-x: auto; /* Allow horizontal scrolling for wide tables */
+  margin-bottom: 15px;
+  border-radius: 8px; /* Optional: To match the container */
+  border: 1px solid #e0e0e0; /* Optional: Add a subtle border for clarity */
+}
+
+.pagination {
+  margin-top: 20px;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination li {
+  margin: 0 5px;
+}
+
+.pagination a {
+  padding: 10px;
+  border-radius: 5px;
+  color: grey;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  text-decoration: none;
+}
+
+.pagination .active a {
+  background-color: #f04438;
+  border: none;
+  color: white;
+}
+
+.pagination .disabled span {
+  color: lightgrey;
+}
+
+.select_pagination {
+  background-color: #f04438;
+  border: none;
+  color: white;
+}
+
+
+
+
+
+#search-bar,
+#search-bar-hospital,
+#start-date-selector,
+#end-date-selector,
+#download-csv-button,
+#status-select {
+  transition: all 0.3s ease;
+  vertical-align: middle;
+}
+#call_type-select {
+  transition: all 0.3s ease;
+  vertical-align: middle;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+#search-bar,
+#search-bar-hospital,
+#start-date-selector,
+#end-date-selector,
+#download-csv-button,
+#status-select,
+#call_type-select,
+#apply-button,
+#clear-button {
+  border-radius: 20px;
+}
+
+#search-bar,
+#search-bar-hospital,
+#start-date-selector,
+#end-date-selector,
+#download-csv-button,
+#call_type-select,
+#status-select {
+  border: 1px solid #ccc;
+  background: #f6f6f6;
+  color: grey;
+}
+
+.actions {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+    
+}
+
+.actions:hover {
+  background-color: #ccc;
+  border: 1px solid #999;
+}
+
+.actions.clicked {
+  background-color: #ddd;
+  border: 1px solid #888;
+  cursor: default; /* Set the cursor to default when in the clicked state */
+}
+
+
+
+#download-csv-button,
+#apply-button,
+#clear-button {
+  display: flex;
+  border-radius: 20px;
+  height: 40px;
+  cursor: pointer;
+  justify-content:center;
+  white-space: nowrap;
+}
+#download-csv-button{
+  background: white;
+  border: 1px solid #ddd  ;
+  color: black;
+  align-items: center;
+  margin: 0 auto;
+  display: block;
+  
+}
+#apply-button {
+  background: #f04438;
+  color: #fff;
+  border: none;
+  align-items: center;
+  margin: 0 auto;
+  display: block;
+}
+
+#clear-button {
+  background: #ddd;
+  color: #000;
+}
+
+.actions {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.actions:hover {
+  background-color: #ccc;
+  border: 1px solid #999;
+}
+
+.actions.clicked {
+  background-color: #ddd;
+  border: 1px solid #888;
+  cursor: default;
+}
+
+
+.button-container {
+  display: flex;
+  flex-direction: column; 
+}
+
+#new-doctor-request-button,
+#add-doctor-button {
+  display: flex;
+  border-radius: 20px;
+  height: 40px;
+  cursor: pointer;
+  background: #f04438;
+  color: #fff;
+  border: none;
+  align-items: center;
+  margin: 5px;
+  padding: 7px 15px; 
+  width: auto; 
+  text-align: center;
+  justify-content: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.block-icon-container {
+display: flex;
+justify-content: left;
+align-items: left;
+}
+
+.blocked-icon {
+border-radius: 5px;
+border: 1px solid grey;
+max-width: 32px;
+max-height: 32px;
+}
+
+/* Overlay style to cover the entire screen */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Make sure it appears above other content */
+}
+
+/* Popup card style */
+#userDetailsPopupCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  max-width: 90%;
+  width: 500px; /* Adjust as needed */
+}
+
+/* Style for close button */
+#userDetailsPopupCard button {
+  background: #f04438;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 19px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+#userDetailsPopupCard button:hover {
+  background: #1d4f73;
+}
+
+/* Style for user details content */
+#userDetailsContent {
+  margin-bottom: 20px;
+}
+
+/* Optional: Add responsiveness */
+@media (max-width: 768px) {
+  #userDetailsPopupCard {
+    width: 90%;
+  }
+}
+
+
+
+#statuspopupCard {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 300px;
+margin: auto;
+border: 1px solid gray;
+padding: 35px;
+border-radius: 23px;
+background-color: white;
+z-index: 1000;
+}
+
+#statuspopupCard img {
+max-width: 100px;
+}
+#statusblockpopupCard {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 300px;
+margin: auto;
+border: 1px solid gray;
+padding: 35px;
+border-radius: 23px;
+background-color: white;
+z-index: 1000;
+}
+
+#statusblockpopupCard img {
+max-width: 100px;
+}
+#statusunblockpopupCard {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 300px;
+margin: auto;
+border: 1px solid gray;
+padding: 35px;
+border-radius: 23px;
+background-color: white;
+z-index: 1000;
+}
+
+
+#statusPopupCard {
+/* display: none; */
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 300px;
+margin: auto;
+border: 1px solid gray;
+padding: 35px;
+border-radius: 23px;
+background-color: white;
+z-index: 1000;
+}
+#deletePlanPopupCard {
+/* display: none; */
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 300px;
+margin: auto;
+border: 1px solid gray;
+padding: 35px;
+border-radius: 23px;
+background-color: white;
+z-index: 1000;
+}
+
+#statusunblockpopupCard img {
+max-width: 100px;
+}
+.overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+z-index: 999;
+}
+
+
+
+
+#deletedevicepopupCard {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  margin: auto;
+  border: 1px solid gray;
+  padding: 35px;
+  border-radius: 23px;
+  background-color: white;
+  z-index: 1000;
+  }
+#deletevideopopupCard {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  margin: auto;
+  border: 1px solid gray;
+  padding: 35px;
+  border-radius: 23px;
+  background-color: white;
+  z-index: 1000;
+  }
+#deleteEmailpopupCard {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  margin: auto;
+  border: 1px solid gray;
+  padding: 35px;
+  border-radius: 23px;
+  background-color: white;
+  z-index: 1000;
+  }
+#deletePhonepopupCard {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  margin: auto;
+  border: 1px solid gray;
+  padding: 35px;
+  border-radius: 23px;
+  background-color: white;
+  z-index: 1000;
+  }
+#deleteuserpopupCard {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  margin: auto;
+  border: 1px solid gray;
+  padding: 35px;
+  border-radius: 23px;
+  background-color: white;
+  z-index: 1000;
+  }
+#logout-popup-card {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 300px;
+  margin: auto;
+  border: 1px solid gray;
+  padding: 35px;
+  border-radius: 23px;
+  background-color: white;
+  z-index: 1000;
+  }
+
+
+
+.table-body{
+  background-color: #f04438; 
+  color: #fff;
+}
+
+h1{
+  font-family: 'Calistoga', serif;
+
+}
+
+i{
+  color: #ffffff;
+
+}
+
+
+
+/* .new-class{
+  background-color: white; 
+  height: 100%;
+  border-radius: 23px; padding: 23px;
+
+} */
+
+.clear-div{
+  margin-top: 32px; 
+  border: none;
+
+}
+
+.download-csv{
+  margin-top: 32px;
+  border: none;
+}
+
+/* #loader{
+  display: none;
+} */
+  
+ #queryloader{
+  display: none;
+} 
+
+.color-red{
+  color : red;
+}
+
+.color-grey{
+  color : grey;
+}
+
+.color-blue{
+  color : blue;
+}
+
+.color-green{
+  color : green;;
+}
+
+.block-popup{
+  align-items: center;
+  justify-content: center; 
+  display: flex; 
+  color: #a7364b;
+
+}
+
+.unblock-popup{
+  align-items: center;
+  justify-content: center;
+  display: flex; 
+  color: #41b241;
+
+}
+
+#hide-block-popup{
+
+color: #000; 
+background: #ddd; 
+border: none; 
+border-radius: 19px; 
+padding: 10px"
+}
+
+.block-button{
+  border: none; 
+  border-radius: 19px; 
+  padding: 10px; 
+  background: #f04438; 
+  color: white;
+}
+
+#bloackLoader{
+  display: none;
+}
+
+.cancel-popup{
+  color: #000; 
+  background: #ddd; 
+  border: none; 
+  border-radius: 19px; 
+  padding: 10px
+}
+
+
+.create-button {
+  display: flex;
+  border-radius: 20px;
+  height: 40px;
+  cursor: pointer;
+  border: 1px solid #f04438;
+  justify-content: center;
+  flex-grow: 1;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  transition: transform 0.3s, box-shadow 0.3s;
+
+}
+
+.create-button.active-button {
+  background-color: #f04438 !important;
+  color: white !important;
+}
+
+
+
+.create-button:hover {
+
+  color: black;
+  transform: scale(1.05); 
+}
+
+div .create-button {
+   text-decoration: none;
+
+}
+
+
+.page-link{
+  background-color: #f04438; 
+  border:none;
+}
+
+
+
+
+
+.add-category-button {
+background: #f04438;
+color:white;
+border: none;
+border-radius: 20px;
+height: 40px;
+
+}
+.add-category-button i , .button-container a i{
+  margin-right: 3px;
+}
+
+.add-category-button:hover {
+  cursor: pointer;
+  color: white
+}
+
+.column_images{
+  height: 100px;
+  width: 200px;
+}
+
+#popupCard {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 300px;
+margin: auto;
+border: 1px solid gray;
+padding: 35px;
+border-radius: 23px;
+background-color: white;
+z-index: 1000;
+}
+
+
+.edit-button,
+.delete-button {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+
+
+.edit-button img,
+.delete-button img {
+  width: 30px; /* Adjust the width based on your image size */
+  height: 30px; /* Adjust the height based on your image size */
+  vertical-align: middle;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+
+.delete-cancel-button{
+color: #000; 
+background: #ddd; 
+border: none; 
+border-radius: 19px; 
+padding: 10px
+}
+
+
+#back-button{
+text-decoration: none; 
+color: black;
+
+}
+
+
+.fa:hover{
+color:black;
+}
+
+
+.category-img-all{
+  height:100px;
+  width:200px;
+}
+
+
+
+#plan-type,
+#life-cover,
+#payable-mode,
+#coverage-till
+{
+  transition: all 0.3s ease;
+  vertical-align: middle;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: #f6f6f6;
+}
+
+
+@media (max-width: 930px){
+  #header h1{
+    font-size: 35px;
+  }
+  .button-container #add-doctor-button{
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .button-container {
+    flex-direction: row; 
+  }
+}
+
+@media (max-width: 768px) {
+  #header{
+    flex-direction: column;
+  }
+  .download-csv {
+    margin-top: 8px;
+
+  }
+}
+@media (max-width:541px){
+  #header h1{
+    font-size: 27px;
+  }
+}
+
+
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.1);
+  
+}
+
+.modal-content {
+  display: block;
+  margin: auto;
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #999;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+

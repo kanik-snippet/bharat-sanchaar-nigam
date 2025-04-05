@@ -1,0 +1,28 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Update FAQ{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <a href="javascript:history.back()" style="background-color: #f04438; border-color: #f04438; color:white" class="btn col-md-2">
+        <i class="fa fa-arrow-left" style="color:white"></i> Back
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4" style="color: #f04438;">Update FAQ</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary btn-block" id="addFAQButton"
+                                style="background-color: #f04438; border-color: #f04438;">
+                            <i class="fas fa-plus"></i> Update FAQ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,127 @@
+
+    body {
+        font-family: sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .container-fluid {
+        max-width: 100%;
+    }
+
+    .table-wrapper {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+
+        overflow-x: auto;
+    }
+    .table tr{
+        border: 1px solid transparent;
+    }
+    .card {
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .toast-container {
+        position: fixed;
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        left: auto;
+    }
+
+    
+    @media (min-width: 992px) {
+        .col-lg-3 {
+            flex: 0 0 auto;
+            width:25%;
+        }
+    }
+    @media (min-width:750px) {
+        .col-lg-3 {
+            flex: 0 0 auto;
+            width:50%;
+        }
+    }
+    .table th, .table td {
+        vertical-align: middle;
+        
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    .status-active {
+        color: green;
+    }
+    .status-inactive {
+        color: gray;
+    }
+    .table th{
+        background-color: #F04438;
+        color:white;
+    }
+
+
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        
+    }
+
+    .page-btn {
+        margin: 0 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        background-color: #f8f9fa;
+    }
+
+    .page-btn.active {
+        background-color: #F04438;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .page-btn:hover {
+        background-color: #F04438;
+        color:white;
+        font-weight: bold;
+    }
+
+    .toast-container {
+        z-index: 1050;
+    }
+
+
+    .video-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: #F04438;
+        color: white;
+        padding: 10px 20px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    /* Ensure the table is scrollable horizontally on smaller screens */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+}
+
+.table {
+    min-width: 600px; /* Minimum width for the table */
+    width: 100%;
+}
+.table tr td{
+    min-width: fit-content;
+}
+
+@media screen and (max-width: 768px) {
+    .table-wrapper {
+        padding: 10px; /* Optional padding for better aesthetics */
+    }
+}

@@ -1,0 +1,95 @@
+
+.sidenav-card {
+  text-align: center;
+  padding: 20px;
+  border-radius: 15px;
+  background: #f04438;
+  color: #fff;
+  box-shadow: 0 0 10px #ec5145;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sidenav-card img {
+  border-radius: 50%;
+  max-width: 80px;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sidenav-card h5 {
+  margin-bottom: 10px;
+}
+
+.sidenav-card p {
+  margin: 0;
+}
+
+.sidenav-options {
+  padding:0 20px 20px 20px;
+}
+
+.sidenav-options a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #000;
+}
+
+
+.active-button {
+  background-color: #f04438 !important;
+  color: white !important;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+}
+
+.user-card {
+  width: 300px;
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.user-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-card input {
+  width: 100%;
+  padding: 8px;
+  margin-right: 10px;
+}
+
+.user-card label {
+  font-weight: bold;
+}
+
+.numbers {
+  font-size: 20px;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  margin-bottom: 20px; 
+}
+.h1 {
+  color: #161e29;
+
+  text-align: center;
+  font-family: Calistoga;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

@@ -1,0 +1,338 @@
+/* General Styling */
+body {
+    background: #F2F2F2;
+}
+
+/* Media Queries */
+@media (max-width: 767px) {
+    #side_nav {
+        margin-left: -320px;
+        position: fixed;
+        overflow: scroll;
+        z-index: 100;
+        top: 0;
+        transition: margin-left 0.8s;
+    }
+
+    #side_nav.active {
+        margin-left: 0;
+    }
+
+    .navbar-toggler {
+        display: block;
+    }
+}
+
+/* Content Styling */
+.content {
+    width: 100%;
+    padding-left: 29px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    border-radius: 30px;
+    margin-top: 79px;
+    background-color: #F2F2F2;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.content > div {
+    max-width: 98%;
+    margin: 0 auto;
+    border-radius: 30px;
+}
+
+hr.h-color {
+    background: #eee;
+}
+
+/* Sidebar Styling */
+.sidebar li.active {
+    background: #eee;
+    border-radius: 8px;
+}
+
+.sidebar li.active a,
+.sidebar li.active a:hover {
+    color: #000;
+}
+
+.sidebar li a {
+    color: #fff;
+}
+
+.sidebar {
+    background-color: white;
+    padding: 0 12px;
+    height: 100vh;
+}
+
+.sidenav-options a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 30px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.sidenav-options a.active {
+    background: #ec5145;
+    color: white;
+}
+.sidenav-options a.active i{
+    /* background: #ec5145; */
+    color: white;
+}
+
+.sidenav-options a:hover {
+    transform: scale(1.05);
+}
+
+.sidenav-options a.subpage {
+    margin-left: 20px;
+}
+
+.sidenav-options a.subpage:active {
+    color: inherit;
+    background-color: transparent;
+}
+
+.sidenav-options hr {
+    background-color: wheat;
+    height: 1px;
+    border: none;
+    padding: 0%;
+    margin: 1%;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: white !important;
+}
+
+.logo-container {
+    margin-right: 10px;
+}
+
+.logo-img {
+    width: 100px;
+    height: auto;
+}
+
+/* Form and Button Styling */
+select.form-control {
+    -webkit-appearance: menulist!important;
+    -moz-appearance: menulist!important;
+    -ms-appearance: menulist!important;
+    -o-appearance: menulist!important;
+    appearance: menulist!important;
+}
+
+#slipbtn {
+    background: #f04438;
+    color: white;
+    padding: 13px 20px;
+    margin: 10px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+#slipbtn:hover {
+    color: white;
+    background-color: #f04438;
+}
+
+/* Profile Information */
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-details {
+    margin-left: 10px;
+}
+
+.profile-line {
+    height: 0.2mm;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin-top: 3px;
+    width: 100%;
+}
+
+.profile-mobile {
+    margin-top: 10px;
+}
+
+.profile-mobile1 {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.profile-mobile1 img,
+.profile-mobile1 p {
+    margin: 4px;
+}
+
+.icon {
+    width: 25px;
+    height: 25px;
+}
+
+.pagination a:hover {
+    color: grey; /* Set the color back to grey on hover */
+}
+
+/* Logout Popup */
+#statuslogoutpopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+#deleteFaqCard {
+    /* display: none; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+
+#statuslogoutpopupCard img {
+    max-width: 100px;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Additional Sidebar Styling */
+.sidenav-card {
+    margin-top: 8px;
+    width: 270px;
+    box-shadow: 0px 4px 12px 0 161D6F;
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .sidenav-card {
+        margin-top: 14px;
+        width: 270px;
+        box-shadow: 0px 4px 12px 0 #ec5145;
+    }
+}
+
+@media only screen and (min-width: 320px) and (max-width: 425px) {
+    .sidenav-card {
+        margin-top: 12px;
+        width: 270px;
+        box-shadow: 0px 4px 12px 0 #ec5145;
+    }
+}
+
+.profile-picture .img-fluid {
+    height: 70px;
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
+    min-height: 70px;
+    max-height: 70px;
+}
+
+/* Logout Button Styling */
+#cancel_button {
+    color: #000;
+    background: #ddd;
+    border: none;
+    border-radius: 19px;
+    padding: 10px;
+}
+
+#logout_confirm {
+    border: none;
+    border-radius: 19px;
+    padding: 10px;
+    background: #f04438;
+    color: white;
+}
+
+#loader-logout {
+    display: none;
+}
+
+/* Dashboard Button */
+#dashboard {
+    background: #f04438;
+    color: white;
+    display: flex;
+    height: 40px;
+    background: #f04438;
+    color: #fff;
+    border: none;
+    align-items: center;
+    margin: 5px;
+    padding: 7px 15px;
+    width: auto;
+    text-align: center;
+    justify-content: center;
+    border-radius: 30px;
+    cursor: pointer;
+    padding: 25px;
+}
+
+
+
+.sidenav-options a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.icon-text {
+    display: flex;
+    align-items: center;
+}
+
+.icon-text i {
+    color: #f04438;
+    font-size: 1.8rem;
+    margin-right: 0.9rem;
+}
+.btn-1{
+    color: #f04438;
+    font-size: 1.8rem;
+    margin-right: 0.9rem;
+}
+
+.icon-text span {
+    font-size: 1rem; /* Adjust the font size as needed */
+}
+

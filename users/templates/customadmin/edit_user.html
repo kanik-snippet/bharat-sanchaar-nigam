@@ -1,0 +1,216 @@
+{% extends 'customadmin/nav.html' %}
+{% load static %}
+{% block title %}Edit User{% endblock %}
+{% block body %}
+<div class="container mt-1">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <!-- Success or Error Messages -->
+            {% if messages %}
+            <div class="mt-4">
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4" style="color: #f04438;">Edit User</h3>
+
+                    <!-- Form -->
+                    <form id="editUserForm" method="POST" action="{% url 'edit_user' user.id %}">
+                        {% csrf_token %}
+                        
+                        <!-- Username Field -->
+                        <div class="form-group mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="username" 
+                                   value="{{ form.username.value }}" required pattern="^\w+$" minlength="3">
+                            {% for error in form.username.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email" 
+                                   value="{{ form.email.value }}" required>
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Role Field -->
+                        <div class="form-group mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select name="role" class="form-select" id="role" required onchange="updateAssignedPlace()">
+                                <option value="janta" {% if user.role == 'janta' %}selected{% endif %}>Janta</option>
+                                <option value="sabhasad" {% if user.role == 'sabhasad' %}selected{% endif %}>Sabhasad</option>
+                                <option value="chairman" {% if user.role == 'chairman' %}selected{% endif %}>Chairman</option>
+                                <option value="vidhayak" {% if user.role == 'vidhayak' %}selected{% endif %}>Vidhayak</option>
+                                <option value="sarpanch" {% if user.role == 'sarpanch' %}selected{% endif %}>Sarpanch</option>
+                                <option value="cm" {% if user.role == 'cm' %}selected{% endif %}>CM</option>
+                                <option value="pm" {% if user.role == 'pm' %}selected{% endif %}>PM</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </div>
+                        <!-- Resident Location Section -->
+<h5 class="mt-4">Resident Location</h5>
+
+<div class="form-group mb-3">
+    <label for="user_country" class="form-label">Country</label>
+    <select name="user_country" class="form-select" id="user_country">
+        <option value="">Select Country</option>
+        {% for country in countries %}
+            <option value="{{ country.id }}" {% if user.user_country_id == country.id %}selected{% endif %}>{{ country.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group mb-3">
+    <label for="user_state" class="form-label">State</label>
+    <select name="user_state" class="form-select" id="user_state">
+        <option value="">Select State</option>
+        {% for state in states %}
+            <option value="{{ state.id }}" {% if user.user_state_id == state.id %}selected{% endif %}>{{ state.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group mb-3">
+    <label for="user_district" class="form-label">District</label>
+    <select name="user_district" class="form-select" id="user_district">
+        <option value="">Select District</option>
+        {% for district in districts %}
+            <option value="{{ district.id }}" {% if user.user_district_id == district.id %}selected{% endif %}>{{ district.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group mb-3">
+    <label for="user_city" class="form-label">City</label>
+    <select name="user_city" class="form-select" id="user_city">
+        <option value="">Select City</option>
+        {% for city in cities %}
+            <option value="{{ city.id }}" {% if user.user_city_id == city.id %}selected{% endif %}>{{ city.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group mb-3">
+    <label for="user_ward" class="form-label">Ward</label>
+    <select name="user_ward" class="form-select" id="user_ward">
+        <option value="">Select Ward</option>
+        {% for ward in wards %}
+            <option value="{{ ward.id }}" {% if user.user_ward_id == ward.id %}selected{% endif %}>{{ ward.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+                        <!-- Assigned Place Field -->
+                        <div class="form-group mb-3" id="assigned_place_group">
+                            <label for="assigned_place" class="form-label">Assigned Place</label>
+                            <select name="assigned_place" class="form-select" id="assigned_place">
+                                <!-- Default "Select Place" option -->
+                                <option value="" {% if not assigned_place_id %}selected{% endif %}>Select Place</option>
+                                
+                                <!-- Dynamically populated options -->
+                                {% for place in assigned_places %}
+                                    <option value="{{ place.id }}" {% if place.id == assigned_place_id %}selected{% endif %}>
+                                        {{ place.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                         <!-- Active Status Dropdown -->
+                         <div class="form-group mb-3">
+                            <label class="form-label">Account Status</label>
+                            <select name="is_active" class="form-select" required>
+                                <option value="True" {% if user.is_active %}selected{% endif %}>Active</option>
+                                <option value="False" {% if not user.is_active %}selected{% endif %}>Inactive</option>
+                            </select>
+                        </div>
+
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <!-- Back Button -->
+                            <a href="{% url 'user_management' %}" class="btn" style="background-color: #f04438; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn" style="background-color: #f04438; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function updateAssignedPlace() {
+            var role = document.getElementById("role").value;
+            var assignedPlaceGroup = document.getElementById("assigned_place_group");
+            var assignedPlaceSelect = document.getElementById("assigned_place");
+
+            if (role === "janta") {
+                assignedPlaceGroup.style.display = "none";
+                return;
+            }
+
+            assignedPlaceGroup.style.display = "block";
+            assignedPlaceSelect.innerHTML = "";
+
+            var defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.text = "Select Place";
+            assignedPlaceSelect.appendChild(defaultOption);
+
+            // Ensure roleToData exists
+            var roleToData = {
+                "pm": {{ countries|safe }},
+                "cm": {{ states|safe }},
+                "vidhayak": {{ districts|safe }},
+                "chairman": {{ cities|safe }},
+                "sarpanch": {{ villages|safe }},
+                "sabhasad": {{ wards|safe }}
+            };
+
+            var data = roleToData[role] || [];
+
+            console.log("Role:", role);  // Debugging
+            console.log("Data for role:", data); // Debugging
+
+            data.forEach(function (item) {
+                var option = document.createElement("option");
+                option.value = item.id;
+                option.text = item.name;
+                assignedPlaceSelect.appendChild(option);
+            });
+
+            var assignedPlaceId = "{{ assigned_place_id|default:'' }}";
+            if (assignedPlaceId) {
+                assignedPlaceSelect.value = assignedPlaceId;
+            }
+        }
+
+        // Call function on page load
+        updateAssignedPlace();
+
+        // Bind to role change event
+        document.getElementById("role").addEventListener("change", updateAssignedPlace);
+    });
+</script>
+
+    
+{% endblock %}

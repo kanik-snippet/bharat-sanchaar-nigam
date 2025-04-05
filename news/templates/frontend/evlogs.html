@@ -1,0 +1,129 @@
+{% extends 'frontend/nav.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Emergency Logs{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="{% static 'css/evlogs.css' %}">
+
+<div class="container-fluid px-4 mt-4">
+    <div class="row">
+        <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+            <h1 class="fs-3 fw-bold text-dark" style="margin-top: 12px;">{% trans 'Emergency Logs'%}</h1>
+            <button id="video-btn" class="btn btn-danger video-btn d-none" onclick="window.open('', '_blank')">{% trans 'Watch Video'%}</button>
+        </div>
+        <p class="fs-6 text-muted">{% trans 'Emergency Logs will be shown here'%}</p>
+        
+        <!-- Event Details Section -->
+        <div class="col-lg-3">      
+            <h3 id="device-name" class="card-title mb-3">{% trans 'Workshop'%}</h3>
+            <p><strong>{% trans 'Event ID:'%}</strong> <span id="event-id" class="text-muted">Loading...</span></p>
+            <p><strong>{% trans 'Mac Address:'%}</strong> <span id="mac-address" class="text-muted">Loading...</span></p>
+                
+        </div>
+    </div>
+    <div class="table-wrapper rounded">
+        <div class="table-responsive">
+            <table class="table text-center">
+                <thead>
+                    <tr>
+                        <th>{% trans 'Log ID'%}</th>
+                        <th>{% trans 'Device'%}</th>
+                        <th>{% trans 'Sent To'%}</th>
+                        <th>{% trans 'Status'%}</th>
+                        <th>{% trans 'Call Type'%}</th>
+                        <th>{% trans 'Created At'%}</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                    <!-- Rows will be dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Image Placeholder -->
+        <div id="noDataImage" class="text-center d-none">
+            <img src="{% static 'images/no_data.jpg' %}" alt="No Data" class="img-fluid" style="max-width: 300px; margin-top: 20px;">
+            <p class="text-muted mt-2">{% trans 'No logs available'%}</p>
+        </div>
+    </div>
+    
+    
+
+    <!-- Pagination -->
+    <nav>
+        <ul id="pagination" class="pagination justify-content-center">
+            <!-- Dynamic Pagination -->
+        </ul>
+    </nav>
+
+    <!-- Toast Notification -->
+    <div id="videoToast" class="toast align-items-center text-bg-danger border-0 toast-container" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">{% trans 'Video not found!'%}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadEventLogs() {
+        const eventId = "{{ event_id }}";
+        const accessToken = localStorage.getItem('access_token');
+
+        if (!eventId || !accessToken) {
+            console.error("Event ID or Access Token is missing.");
+            return;
+        }
+
+        const apiUrl = `/api/notifications/event/${eventId}`;
+
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const event = data.event;
+            const logs = data.logs;
+            const logsTableBody = document.getElementById('logsTableBody');
+            const noDataImage = document.getElementById('noDataImage');
+
+            document.getElementById('event-id').innerText = event.event_id;
+            document.getElementById('device-name').innerText = event.device_name;
+            document.getElementById('mac-address').innerText = logs[0]?.device.mac_address || 'N/A';
+
+            const videoBtn = document.getElementById('video-btn');
+            if (event.video_url) {
+                videoBtn.classList.remove('d-none');
+                videoBtn.onclick = () => window.open(event.video_url, '_blank');
+            } else {
+                videoBtn.classList.add('d-none');
+            }
+
+            if (logs && Array.isArray(logs) && logs.length > 0) {
+                logs.forEach(log => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${log.id}</td>
+                        <td>${log.device.device_name}</td>
+                        <td>${log.sent_to}</td>
+                        <td class="${log.status === 'Delivered' ? 'text-success' : 'text-muted'}">${log.status}</td>
+                        <td>${log.call_type}</td>
+                        <td>${new Date(log.created_at).toLocaleString()}</td>
+                    `;
+                    logsTableBody.appendChild(row);
+                });
+            }else{
+                noDataImage.classList.remove('d-none'); // Show the placeholder image
+
+            }
+        })
+        .catch(error => console.error("Error fetching data:", error));
+    }
+
+    loadEventLogs();
+</script>
+{% endblock %}

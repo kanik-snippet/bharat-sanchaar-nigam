@@ -1,0 +1,428 @@
+
+    
+
+/*----------------------------- start css------------------------- */
+.view-table tr,th{
+    border-top : 1px solid transparent;
+    border-bottom : 1px solid transparent;
+}
+.details-button{
+    display: flex;
+}
+
+.General-button{
+    margin-right: 40px;
+}
+.product-button,.General-button{
+    width:280px
+}
+
+.image-view{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upper-button {
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    border: 1px solid #f04438;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    transition: transform 0.3s, box-shadow 0.3s;
+
+}
+.create-button-health{
+    background-color: #f04438 !important;
+    color: white !important;
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    border: 1px solid #f04438;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.upper-button.active-button {
+    background-color: #f04438 !important;
+    color: white !important;
+}
+
+
+.upper-button:hover {
+
+    color: black;
+    transform: scale(1.05); 
+}
+
+.create-button-health{
+    background-color: #f04438 !important;
+    color: white !important;
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    border: 1px solid #f04438;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.inner-table-data th,td{
+    vertical-align:top;
+}
+.doctor-details-table td {
+    word-wrap: break-word; /* Allows long words to be broken and wrapped onto the next line */
+    overflow-wrap: break-word; /* Similar to word-wrap, but with better support in modern browsers */
+}
+@media only screen and (min-width: 320px){
+
+    .table td{
+        word-break: break-all;
+    }
+
+}
+.doctor-details-table td:nth-child(3) {
+    word-wrap: break-word; /* Allow text to wrap onto the next line */
+}
+.view-table table tr {
+    border: 2px solid transparent;
+}
+
+.form-group a{
+ text-decoration:none;
+ 
+}
+.profile-pic{
+   width: 150px; 
+   height: 150px; 
+   border-radius: 50%; 
+   overflow: hidden; 
+   margin-bottom: 20px;
+}
+.profile-pic img{
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+}
+.profile-pic-empty{
+    width: 150px; 
+    height: 150px; 
+    border-radius: 50%; 
+    overflow: hidden; 
+    margin-bottom: 20px; 
+    background-color: #ddd; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.profile-pic-empty img{
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+}
+.items-container{
+    background-color: white; 
+    border-radius: 23px; 
+    padding: 23px
+}
+
+/* .table th{
+    width:50px;
+} */
+.view-table tr td a{
+    text-decoration: none;
+}
+.inner-table-data th{
+    width:20%;
+}
+.upper-content h1{
+    font-family: 'Calistoga', serif;
+    
+}
+.lower-button{
+    margin-top: 32px; 
+    border: none;
+}
+.view-table  tr td{
+    border-top:none;
+  }
+.view-table tbody tr td {
+    border-top:none;
+}
+.view-table tbody tr th {
+    border-top:none;
+}
+.view-table thead tr th {
+    border-top:none;
+}
+
+/* -------------------------------------for accept reject popup------------------------------------- */
+#accept-button,
+#reject-button {
+    display: flex;
+    border-radius: 20px;
+    height: 40px;
+    cursor: pointer;
+    justify-content: center;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+}
+
+#accept-button {
+    background: #f04438;
+    color: #fff;
+    border: none;
+    display: flex;
+    justify-content: center;
+}
+
+#reject-button {
+    background: #ddd;
+    color: #000;
+}
+#acceptpopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+}
+
+#acceptpopupCard img {
+    max-width: 100px;
+}
+#rejectpopupCard {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    margin: auto;
+    border: 1px solid gray;
+    padding: 35px;
+    border-radius: 23px;
+    background-color: white;
+    z-index: 1000;
+    }
+    
+    #rejectpopupCard img {
+        max-width: 100px;
+    }
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    .popup-cancle-button{
+        color: #000; 
+        background: #ddd; 
+        border: none; 
+        border-radius: 19px; 
+        padding: 10px;
+    }
+    .popup-accept-button,.popup-reject-button{
+        border: none; 
+        border-radius: 19px; 
+        padding: 10px; 
+        background: #f04438; 
+        color: white;  
+    }
+
+    @media only screen and (max-width: 425px) {
+        #acceptpopupCard,
+        #rejectpopupCard {
+        max-width: 90%;
+        width: 80vw; 
+        padding: 20px;
+        }
+        .popup-cancle-button,
+        .popup-accept-button,
+        .popup-reject-button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        #reject_reason{
+            font-size: small;
+        }
+    }
+    .popup-reject-button:hover {
+        color: white;
+
+    }
+    .popup-accept-button:hover{
+        color:white;
+
+        
+    }
+    
+
+    /* -------------------------------------for static content square images ------------------------------------- */
+    .square-box-images img{
+        width: 200px; 
+        height: 200px; 
+        border: 1px solid #f04438;
+    }
+
+    .img-thumbnail {
+        max-width: 100%;
+        height: auto;
+    }
+    .desc{
+        padding: 0 20px;
+        margin-left:12px;
+    }
+    /* -------------------------------------for query management popup ------------------------------------- */
+    #reply-button-popup {
+        background: #f04438;
+        border-radius: 30px;
+        color: white;
+        padding: 7px 10px; /* Adjust padding */
+        margin: 3px; /* Adjust margin */
+        display: inline-block; /* Ensure buttons stay on the same line */
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        border:none;
+    }
+    .form-replay{
+        margin-left: 144px;
+        width:20%;
+        
+    }
+
+  
+    #send-reply-button-popup {
+        background: #f04438;
+        border-radius: 30px;
+        color: white;
+        display: inline-block; /* Ensure buttons stay on the same line */
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        border:none;
+    }
+    #back-reply-button-popup {
+        border-radius: 30px;
+        background: #ddd;
+        color: #000;
+        border:none;
+    }
+    .popup-error-message{
+        color:red;
+    }
+    #reject_reason_error{
+        color: red; display: block;
+    }
+    .popup-model-content{
+       border-radius: 30px;
+    }
+    /* #loader{
+        display: none;
+    } */
+
+
+
+
+/* -------------------------------another css--------------------------------- */
+.text1,
+    .text2,
+    .text3 {
+      /* Common styles for text elements */
+      font-family: "Outfit", sans-serif;
+      background: #ffffff;
+      padding: 2px;
+      /* Add any additional styles or adjustments here */
+    }
+  
+    .text1 {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 29px;
+      color: #080515;
+    }
+  
+    .text2 {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 23px;
+      color: #08051599;
+    }
+  
+    .text3 {
+      font-family: "Calistoga", sans-serif;
+      font-size: 40px;
+      font-weight: 400;
+      line-height: 52px;
+      letter-spacing: 0em;
+      text-align: center;
+    }
+    .text4 {
+      font-family: "Calistoga", sans-serif;
+      font-size: 40px;
+      font-weight: 400;
+      line-height: 52px;
+      letter-spacing: 0em;
+    }
+
+
+/*------------------------policy request  image css -----------------------  */
+.insurance-image{
+    display:flex;
+    vertical-align:middle ;
+    background:#eee;
+    border-radius:10px;
+}
+.insurance-image img{
+    display:flex; 
+    margin:auto; 
+    max-width:100%; 
+    max-height:100%; 
+}
+/* --------------------------- end css ----------------------- */
+
+/* --------------------------- Change Password ----------------------- */
+.btn-outline-secondary{
+    margin:0px;
+}
+
+.btn-outline-secondary i.far.fa-eye {
+    color:#495057; 
+}
+
+/* Hover effect */
+.btn-outline-secondary:hover i.far.fa-eye {
+    color: white;
+}
+.btn-outline-secondary i.far.fa-eye-slash {
+    color: #495057;
+}
+
+.btn-outline-secondary:hover i.far.fa-eye-slash {
+    color: white; 
+}
